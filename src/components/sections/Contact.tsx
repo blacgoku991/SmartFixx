@@ -68,7 +68,10 @@ export function Contact() {
           detail && typeof detail === "object" && "error" in detail
             ? String((detail as { error: unknown }).error)
             : "";
-        throw new Error(message || "L'envoi a échoué.");
+        /* Le code HTTP est affiché : il distingue une panne de la fonction (500)
+           d'un refus du service d'envoi (502) ou d'une clé absente (503), et rend
+           la copie d'écran d'un visiteur exploitable sans accès aux journaux. */
+        throw new Error(message || `L'envoi a échoué (erreur ${response.status}).`);
       }
 
       setStatus("sent");
