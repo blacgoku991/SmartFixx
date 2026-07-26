@@ -4,7 +4,7 @@ import { ArrowUpRight, Check, Copy, Mail, MapPin, Phone, Timer } from "lucide-re
 import { SectionHeading } from "../ui/SectionHeading";
 import { Reveal } from "../ui/Reveal";
 import { Magnetic } from "../ui/Magnetic";
-import { BUDGET_RANGES, PROJECT_TYPES, site } from "@/data/site";
+import { BUDGET_RANGES, PROJECT_TYPES, phoneE164, site } from "@/data/site";
 import { cn } from "@/lib/utils";
 
 type Status = "idle" | "sending" | "sent" | "error";
@@ -148,7 +148,7 @@ export function Contact() {
               {site.phone && (
                 <Reveal delay={0.15}>
                   <a
-                    href={`tel:${site.phone.replace(/\s/g, "")}`}
+                    href={`tel:${phoneE164}`}
                     className="panel panel-hover flex items-center gap-3.5 p-4"
                   >
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-violet/[0.08] text-violet-400">

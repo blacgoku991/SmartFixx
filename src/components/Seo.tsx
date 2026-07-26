@@ -1,5 +1,5 @@
 import { FAQ_ITEMS } from "@/data/faq";
-import { SERVICES, site } from "@/data/site";
+import { SERVICES, phoneE164, site } from "@/data/site";
 import { LANDINGS } from "@/data/landings";
 import type { RouteDef } from "@/data/routes";
 import { cityBySlug, hubBySlug } from "@/data/cities";
@@ -32,7 +32,7 @@ export function Seo({ route }: { route: RouteDef }) {
       description: `${site.name} est une agence web installée à ${site.city} (${site.postalCode}) : création de site internet sur-mesure, refonte complète et automatisation des logiciels métiers pour les TPE et PME des Hauts-de-Seine et d'Île-de-France.`,
       slogan: "On conçoit, on refond, on automatise.",
       email: site.email,
-      ...(site.phone ? { telephone: site.phone } : {}),
+      ...(phoneE164 ? { telephone: phoneE164 } : {}),
       foundingDate: site.foundingYear,
       /* PNG et non SVG : Google demande une image matricielle pour le logo
          d'une organisation, et ignore le vectoriel. */

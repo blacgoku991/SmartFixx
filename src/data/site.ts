@@ -75,7 +75,7 @@ export const site: SiteConfig = {
   tagline: "Création de site web, refonte et automatisation informatique",
   url: "https://smartfixx.fr",
   email: "contact@smartfixx.fr",
-  phone: "",
+  phone: "06 18 74 51 80",
   city: "Asnières-sur-Seine",
   region: "Île-de-France",
   postalCode: "92600",
@@ -138,6 +138,18 @@ export const site: SiteConfig = {
      adresses ; ajoutez-les dès que les profils existent, l'effet est réel. */
   social: [],
 };
+
+/**
+ * Le même numéro au format international, dérivé et non ressaisi — deux champs
+ * indépendants finissent toujours par diverger.
+ *
+ * `site.phone` reste la forme affichée, lisible par un francophone. Cette forme
+ * sert aux liens `tel:` et au JSON-LD, où schema.org attend un numéro
+ * composable depuis l'étranger.
+ */
+export const phoneE164 = site.phone
+  ? `+33${site.phone.replace(/[^\d]/g, "").replace(/^0/, "")}`
+  : "";
 
 export const PROJECT_TYPES = [
   "Création de site web",
