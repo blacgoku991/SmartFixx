@@ -1,4 +1,5 @@
 import { Suspense, lazy, useCallback, useState } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Preloader } from "./components/Preloader";
 import { Cursor } from "./components/Cursor";
 import { Nav } from "./components/Nav";
@@ -107,6 +108,8 @@ export default function App({ prerender = false, pathname }: AppProps) {
         aria-hidden="true"
         className="noise pointer-events-none fixed inset-0 z-[150] opacity-[0.028] mix-blend-overlay"
       />
+
+      <SpeedInsights />
     </>
   );
 }
