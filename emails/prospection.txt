@@ -4,23 +4,37 @@ Bonjour {{PRENOM}},
 
 {{ACCROCHE}}
 
-Je suis développeur web à {{VILLE}}. Je conçois des sites pour les commerces,
-artisans et PME du secteur, et j'automatise les tâches qui se répètent :
-ressaisies d'un logiciel à l'autre, exports manuels, relances.
+Je conçois des sites web à {{VILLE}} et je supprime le travail répétitif qui va
+avec. Deux métiers, parce que c'est presque toujours le même problème : un site
+qui ne rapporte rien, et des heures perdues à recopier ce qu'il produit.
 
-Si vous voulez, je regarde ce que donne l'existant de {{ENTREPRISE}} et je vous
-dis franchement ce qui mérite d'être repris — et ce qui n'en vaut pas la peine.
-C'est gratuit et sans engagement, et je peux passer vous voir puisque je suis à
-côté.
+CE QUI PEUT TOURNER SANS VOUS
 
-Un simple « oui, dites-m'en plus » en réponse suffit.
+- Les demandes du site qui arrivent directement dans votre CRM, sans ressaisie
+- Les devis et factures générés, envoyés, puis relancés tout seuls
+- Les stocks et les prix synchronisés entre le site et votre logiciel de gestion
+- Les avis clients demandés automatiquement après chaque prestation
+- Vos chiffres consolidés dans un tableau de bord à jour, sans un seul export
+- Une alerte par e-mail ou SMS dès qu'un seuil est franchi, plutôt que de
+  surveiller
 
-Mohamed Maatoug
-SmartFixx — sites web & automatisation
+La règle est simple : si une tâche revient chaque semaine et suit toujours les
+mêmes étapes, elle peut disparaître.
+
+Ce que je propose à {{ENTREPRISE}} : je regarde l'existant et je vous dis par
+écrit ce qui mérite d'être repris, ce qui peut être automatisé, et ce qui n'en
+vaut pas la peine. Gratuit, sans engagement, et si la réponse est qu'il n'y a
+rien à faire, je vous le dirai aussi.
+
+Répondez simplement à ce message — je suis à côté, on peut aussi en parler de
+vive voix.
+
+SmartFixx
+Sites web & automatisation — Asnières-sur-Seine
 contact@smartfixx.fr · https://smartfixx.fr
 
 ---
 Vous recevez ce message à une adresse professionnelle, au titre de votre
-activité. SmartFixx, SASU au capital de 50 €, 18 avenue Victoria, 75001 Paris —
-SIREN 943 047 290. Pour ne plus rien recevoir de ma part : répondez « stop », je
-retire l'adresse le jour même.
+activité. SmartFixx — SASU immatriculée au RCS de Paris, SIREN 943 047 290.
+Pour ne plus rien recevoir : répondez « stop », l'adresse est retirée le jour
+même.

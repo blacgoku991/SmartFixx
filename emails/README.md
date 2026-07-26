@@ -80,7 +80,26 @@ la CNIL sanctionne, bien plus que le premier message.
 - **Répondre aux réponses.** Une conversation réelle améliore la réputation du
   domaine ; un envoi sans retour la dégrade.
 
-Le fond clair et l'absence d'illustrations ne sont pas un choix esthétique : un
-e-mail sombre et illustré part beaucoup plus souvent en indésirable, et de
-nombreuses messageries professionnelles bloquent les images par défaut. Tout le
-sens doit tenir dans le texte seul.
+Le gabarit reprend l'identité sombre du site. C'est un choix assumé, avec une
+contrepartie : à contenu égal, un e-mail sombre passe un peu moins bien les
+filtres qu'un fond clair. Deux précautions le compensent :
+
+- **une seule image**, le logo, et aucune information ne dépend d'elle — les
+  messageries qui bloquent les images n'enlèvent que la marque, pas le sens ;
+- **les fonds sont posés cellule par cellule**, sinon un client en thème clair
+  inverse le texte et le rend illisible.
+
+Si un domaine se met à mal délivrer, la première chose à tester est la version
+texte seule, puis un fond clair.
+
+## Identité affichée
+
+Le pied de page ne porte ni nom de personne ni adresse postale : seulement la
+dénomination, la forme juridique et le SIREN. C'est le minimum qui satisfait
+l'obligation d'identification de l'expéditeur, tout en gardant hors du message
+ce qui relève de la vie privée.
+
+Un point à connaître : signer d'un prénom et d'un nom augmente sensiblement le
+taux de réponse en prospection — un message signé d'une entreprise se lit comme
+un publipostage. Si vous voulez le récupérer sans exposer davantage, ajoutez
+simplement le prénom à la signature.

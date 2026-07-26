@@ -3,36 +3,37 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light" />
-    <meta name="supported-color-schemes" content="light" />
+    <meta name="color-scheme" content="dark light" />
     <title>SmartFixx — prise de contact</title>
   </head>
 
   <!--
     GABARIT DE PROSPECTION — voir emails/README.md avant le premier envoi.
 
-    Remplacer les champs entre doubles accolades :
-      {{PRENOM}}      prénom du destinataire, ou « Bonjour, » seul si inconnu
+    Champs à remplacer :
+      {{PRENOM}}      prénom du destinataire, ou retirer « {{PRENOM}} » et
+                      laisser « Bonjour, » si inconnu
       {{ENTREPRISE}}  raison sociale
-      {{VILLE}}       commune, pour ancrer la proximité
-      {{ACCROCHE}}    UNE phrase précise sur cette entreprise-là — c'est le seul
-                      élément qui distingue un message lu d'un message supprimé
+      {{VILLE}}       commune du destinataire
+      {{ACCROCHE}}    UNE phrase précise sur cette entreprise-là — seul élément
+                      qui distingue un message lu d'un message supprimé
       {{LIEN_DESABO}} lien ou adresse de désinscription (obligatoire)
 
-    Fond clair et presque aucune image : un e-mail sombre et illustré part
-    beaucoup plus souvent en indésirable, et la moitié des messageries
-    professionnelles bloquent les images par défaut. Tout le sens doit tenir
-    dans le texte.
+    Reprend l'identité sombre du site. Contrepartie assumée : un e-mail sombre
+    passe un peu moins bien les filtres qu'un fond clair, et les messageries qui
+    bloquent les images n'afficheront pas le logo. Tout le sens tient donc dans
+    le texte, et les couleurs de fond sont posées cellule par cellule pour ne
+    pas être inversées par un client en thème clair.
   -->
 
-  <body style="margin:0;padding:0;background:#F1F3F7;">
+  <body style="margin:0;padding:0;background:#04050A;">
     <div
-      style="display:none;font-size:1px;color:#F1F3F7;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;"
+      style="display:none;font-size:1px;color:#04050A;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;"
     >
       {{ACCROCHE}}
     </div>
 
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F1F3F7;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#04050A;">
       <tr>
         <td align="center" style="padding:28px 16px;">
           <table
@@ -41,33 +42,31 @@
             cellpadding="0"
             cellspacing="0"
             border="0"
-            style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid #E2E6ED;border-radius:14px;"
+            style="width:100%;max-width:600px;background:#0B0D14;border:1px solid #1E2230;border-radius:16px;"
           >
             <!-- En-tête -->
             <tr>
-              <td style="padding:28px 34px 0 34px;">
-                <!-- width=100% : sans lui, le tableau se réduit à son contenu et
-                     l'alignement à droite de la ville n'a aucun effet. -->
+              <td style="padding:30px 34px 0 34px;">
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td width="34" style="padding-right:11px;vertical-align:middle;">
+                    <td width="36" style="padding-right:12px;vertical-align:middle;">
                       <img
                         src="https://smartfixx.fr/email-logo.png"
-                        width="34"
-                        height="34"
+                        width="36"
+                        height="36"
                         alt="SmartFixx"
-                        style="display:block;width:34px;height:34px;border:0;"
+                        style="display:block;width:36px;height:36px;border:0;"
                       />
                     </td>
                     <td
                       width="100%"
-                      style="vertical-align:middle;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:17px;font-weight:700;color:#0B0D14;letter-spacing:-0.01em;"
+                      style="vertical-align:middle;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:18px;font-weight:600;color:#F4F6FB;letter-spacing:-0.01em;"
                     >
                       SmartFixx
                     </td>
                     <td
                       align="right"
-                      style="vertical-align:middle;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#6B7383;"
+                      style="vertical-align:middle;white-space:nowrap;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11.5px;color:#6E7686;"
                     >
                       Asnières-sur-Seine
                     </td>
@@ -76,49 +75,132 @@
               </td>
             </tr>
 
-            <!-- Corps -->
+            <!-- Accroche -->
+            <tr>
+              <td style="padding:26px 34px 0 34px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                <p style="margin:0 0 18px 0;font-size:15.5px;line-height:1.68;color:#A9B2C4;">
+                  Bonjour {{PRENOM}},
+                </p>
+                <p
+                  style="margin:0 0 18px 0;font-size:17.5px;line-height:1.55;color:#F4F6FB;font-weight:600;letter-spacing:-0.01em;"
+                >
+                  {{ACCROCHE}}
+                </p>
+                <p style="margin:0 0 16px 0;font-size:15.5px;line-height:1.7;color:#A9B2C4;">
+                  Je conçois des sites web à {{VILLE}} et je supprime le travail répétitif qui va
+                  avec. Deux métiers, parce que c&apos;est presque toujours le même problème : un
+                  site qui ne rapporte rien, et des heures perdues à recopier ce qu&apos;il produit.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Ce qu'on automatise -->
+            <tr>
+              <td style="padding:8px 34px 0 34px;">
+                <div
+                  style="padding:20px 22px;background:#0F1220;border:1px solid #1E2230;border-radius:12px;"
+                >
+                  <div
+                    style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10.5px;text-transform:uppercase;letter-spacing:0.1em;color:#4FF0D4;margin-bottom:14px;"
+                  >
+                    Ce qui peut tourner sans vous
+                  </div>
+
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td
+                        style="padding:0 0 10px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;line-height:1.55;color:#F4F6FB;"
+                      >
+                        <span style="color:#4FF0D4;">—</span> Les demandes du site qui arrivent
+                        directement dans votre CRM, sans ressaisie
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        style="padding:0 0 10px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;line-height:1.55;color:#F4F6FB;"
+                      >
+                        <span style="color:#4FF0D4;">—</span> Les devis et factures générés, envoyés,
+                        puis relancés tout seuls
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        style="padding:0 0 10px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;line-height:1.55;color:#F4F6FB;"
+                      >
+                        <span style="color:#4FF0D4;">—</span> Les stocks et les prix synchronisés
+                        entre le site et votre logiciel de gestion
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        style="padding:0 0 10px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;line-height:1.55;color:#F4F6FB;"
+                      >
+                        <span style="color:#4FF0D4;">—</span> Les avis clients demandés
+                        automatiquement après chaque prestation
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        style="padding:0 0 10px 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;line-height:1.55;color:#F4F6FB;"
+                      >
+                        <span style="color:#4FF0D4;">—</span> Vos chiffres consolidés dans un tableau
+                        de bord à jour, sans un seul export manuel
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        style="padding:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;line-height:1.55;color:#F4F6FB;"
+                      >
+                        <span style="color:#4FF0D4;">—</span> Une alerte par e-mail ou SMS dès
+                        qu&apos;un seuil est franchi, plutôt que de surveiller
+                      </td>
+                    </tr>
+                  </table>
+
+                  <div
+                    style="margin-top:14px;padding-top:13px;border-top:1px solid #1E2230;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13.5px;line-height:1.6;color:#6E7686;"
+                  >
+                    La règle est simple : si une tâche revient chaque semaine et suit toujours les
+                    mêmes étapes, elle peut disparaître.
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Proposition -->
             <tr>
               <td
-                style="padding:26px 34px 0 34px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15.5px;line-height:1.68;color:#2A2F3A;"
+                style="padding:22px 34px 0 34px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15.5px;line-height:1.7;color:#A9B2C4;"
               >
-                <p style="margin:0 0 16px 0;">Bonjour {{PRENOM}},</p>
-
-                <p style="margin:0 0 16px 0;">{{ACCROCHE}}</p>
-
-                <p style="margin:0 0 16px 0;">
-                  Je suis développeur web à {{VILLE}}. Je conçois des sites pour les commerces,
-                  artisans et PME du secteur, et j&apos;automatise les tâches qui se répètent —
-                  ressaisies d&apos;un logiciel à l&apos;autre, exports manuels, relances.
-                </p>
-
-                <p style="margin:0 0 16px 0;">
-                  Si vous voulez, je regarde ce que donne l&apos;existant de {{ENTREPRISE}} et je
-                  vous dis franchement ce qui mérite d&apos;être repris — et ce qui n&apos;en vaut
-                  pas la peine. C&apos;est gratuit et sans engagement, et je peux passer vous voir
-                  puisque je suis à côté.
+                <p style="margin:0 0 18px 0;">
+                  Ce que je propose à {{ENTREPRISE}} : je regarde l&apos;existant et je vous dis par
+                  écrit ce qui mérite d&apos;être repris, ce qui peut être automatisé, et ce qui
+                  n&apos;en vaut pas la peine. Gratuit, sans engagement, et si la réponse est
+                  qu&apos;il n&apos;y a rien à faire, je vous le dirai aussi.
                 </p>
               </td>
             </tr>
 
             <!-- Appel à l'action -->
             <tr>
-              <td style="padding:8px 34px 0 34px;">
+              <td style="padding:0 34px 0 34px;">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td style="background:#0B0D14;border-radius:9px;">
+                    <td style="background:#4FF0D4;border-radius:10px;">
                       <a
-                        href="https://smartfixx.fr/"
-                        style="display:inline-block;padding:12px 22px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;font-weight:600;color:#FFFFFF;text-decoration:none;"
-                        >Voir mon travail</a
+                        href="https://smartfixx.fr/#contact"
+                        style="display:inline-block;padding:13px 26px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;font-weight:600;color:#04050A;text-decoration:none;"
+                        >Demander le diagnostic</a
                       >
                     </td>
                   </tr>
                 </table>
 
                 <p
-                  style="margin:16px 0 0 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;line-height:1.68;color:#2A2F3A;"
+                  style="margin:15px 0 0 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;line-height:1.65;color:#A9B2C4;"
                 >
-                  Un simple « oui, dites-m&apos;en plus » en réponse suffit.
+                  Ou répondez simplement à ce message — je suis à côté, on peut aussi en parler de
+                  vive voix.
                 </p>
               </td>
             </tr>
@@ -127,15 +209,16 @@
             <tr>
               <td style="padding:22px 34px 0 34px;">
                 <div
-                  style="border-top:1px solid #E8EBF0;padding-top:16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6;color:#2A2F3A;"
+                  style="border-top:1px solid #1E2230;padding-top:16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6;color:#A9B2C4;"
                 >
-                  <strong style="font-weight:600;">Mohamed Maatoug</strong><br />
-                  <span style="color:#6B7383;">SmartFixx — sites web &amp; automatisation</span><br />
-                  <a href="mailto:contact@smartfixx.fr" style="color:#0B6E5E;text-decoration:none;"
+                  <strong style="font-weight:600;color:#F4F6FB;">SmartFixx</strong><br />
+                  <span style="color:#6E7686;">Sites web &amp; automatisation — Asnières-sur-Seine</span
+                  ><br />
+                  <a href="mailto:contact@smartfixx.fr" style="color:#4FF0D4;text-decoration:none;"
                     >contact@smartfixx.fr</a
                   >
                   ·
-                  <a href="https://smartfixx.fr/" style="color:#0B6E5E;text-decoration:none;"
+                  <a href="https://smartfixx.fr/" style="color:#4FF0D4;text-decoration:none;"
                     >smartfixx.fr</a
                   >
                 </div>
@@ -144,17 +227,16 @@
 
             <!-- Mentions obligatoires -->
             <tr>
-              <td style="padding:20px 34px 28px 34px;">
+              <td style="padding:18px 34px 28px 34px;">
                 <div
-                  style="border-top:1px solid #E8EBF0;padding-top:14px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11.5px;line-height:1.65;color:#8A91A0;"
+                  style="border-top:1px solid #1E2230;padding-top:14px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11.5px;line-height:1.65;color:#5C6373;"
                 >
                   Vous recevez ce message à une adresse professionnelle, au titre de votre activité.
-                  SmartFixx, SASU au capital de 50 €, 18 avenue Victoria, 75001 Paris —
-                  SIREN 943 047 290.<br />
-                  <a href="{{LIEN_DESABO}}" style="color:#8A91A0;text-decoration:underline;"
-                    >Ne plus recevoir de message de ma part</a
+                  SmartFixx — SASU immatriculée au RCS de Paris, SIREN 943 047 290.<br />
+                  <a href="{{LIEN_DESABO}}" style="color:#5C6373;text-decoration:underline;"
+                    >Ne plus recevoir de message</a
                   >
-                  — un mot suffit, je retire l&apos;adresse le jour même.
+                  — un mot suffit, l&apos;adresse est retirée le jour même.
                 </div>
               </td>
             </tr>
