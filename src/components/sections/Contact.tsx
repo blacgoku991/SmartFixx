@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUpRight, Check, Copy, Mail, MapPin, Phone, Timer } from "lucide-react";
 import { SectionHeading } from "../ui/SectionHeading";
@@ -17,7 +17,6 @@ const FIELDS = [
   "type",
   "budget",
   "message",
-  "ref_interne",
 ] as const;
 
 /**
@@ -36,12 +35,22 @@ export function Contact() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
+  /* Horodatage d'ouverture du formulaire : le serveur s'en sert pour repérer une
+     soumission instantanée, signature d'un envoi automatisé. Renseigné dans un
+     effet, donc uniquement dans le navigateur — au pré-rendu il vaudrait la date
+     du build. */
+  const openedAt = useRef(0);
+  useEffect(() => {
+    openedAt.current = Date.now();
+  }, []);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const payload = Object.fromEntries(
+    const payload: Record<string, string> = Object.fromEntries(
       FIELDS.map((key) => [key, String(data.get(key) ?? "").trim()]),
     );
+    payload.ts = String(openedAt.current);
 
     setStatus("sending");
     setError("");
@@ -217,22 +226,6 @@ export function Contact() {
                     exit={{ opacity: 0, y: -12 }}
                     className="space-y-4"
                   >
-                    {/* Pot de miel : hors écran et hors tabulation, donc invisible pour un
-                        visiteur et pour un lecteur d'écran. Rempli, il fait seulement
-                        signaler la demande dans l'objet de l'e-mail — elle est envoyée
-                        quand même, voir api/contact.ts.
-                        Le nom ne doit correspondre à aucune catégorie de remplissage
-                        automatique : Chrome remplit « website », « url » ou « nickname »
-                        même avec autocomplete="off". */}
-                    <input
-                      type="text"
-                      name="ref_interne"
-                      tabIndex={-1}
-                      autoComplete="off"
-                      aria-hidden="true"
-                      className="pointer-events-none absolute -left-[9999px] h-0 w-0 opacity-0"
-                    />
-
                     <div className="grid gap-4 sm:grid-cols-2">
                       <Field label="Nom et prénom" required>
                         <input
