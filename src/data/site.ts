@@ -8,7 +8,12 @@
  *   - `city` / `region` / `postalCode` : le référencement local est le premier
  *     levier pour une agence — un concurrent avec une ville dans son titre et
  *     une fiche Google Business passera devant un site sans ancrage géographique.
- *   - `legal.siren`  : obligatoire en mentions légales
+ *   - `legal.*`      : identité légale, obligatoire en mentions légales
+ *
+ * ⚠️ `legal.address` est le **siège social**. `city` / `postalCode` / `geo`
+ * décrivent l'implantation commerciale exploitée par le référencement local.
+ * Ne mélangez pas les deux : la rue du siège combinée au code postal
+ * commercial fabriquerait une adresse qui n'existe pas.
  */
 
 type SiteConfig = {
@@ -31,7 +36,36 @@ type SiteConfig = {
   /** Format schema.org `openingHours`, repris dans le JSON-LD local. */
   openingHours: string;
   foundingYear: string;
-  legal: { company: string; siren: string; address: string };
+  /**
+   * Identité légale — mentions obligatoires (LCEN art. 6-III, code de commerce
+   * R. 123-237). `address` est le **siège social**, distinct de `city` /
+   * `postalCode` qui décrivent l'implantation commerciale : les deux peuvent
+   * légitimement différer, et les confondre produit une adresse inexistante.
+   */
+  legal: {
+    company: string;
+    legalForm: string;
+    /** Capital social formaté, unité comprise. */
+    capital: string;
+    siren: string;
+    siret: string;
+    /** TVA intracommunautaire — vide si non assujetti. */
+    vat: string;
+    /** Greffe d'immatriculation au RCS, sans le mot « RCS ». */
+    rcs: string;
+    /** Siège social, ligne complète. */
+    address: string;
+    /** Directeur de la publication : une personne physique nommée. */
+    publisher: string;
+    /**
+     * Médiateur de la consommation. Obligatoire uniquement si vous contractez
+     * avec des particuliers (art. L. 612-1 du code de la consommation) ; exige
+     * un abonnement auprès d'un médiateur agréé. Vide = section masquée.
+     */
+    mediator: string;
+  };
+  /** Hébergeur : nom, adresse et moyen de contact exigés par la LCEN. */
+  host: { name: string; address: string; url: string };
   social: ReadonlyArray<{ label: string; href: string }>;
 };
 
@@ -79,8 +113,20 @@ export const site: SiteConfig = {
   foundingYear: "2026",
   legal: {
     company: "SmartFixx",
-    siren: "",
-    address: "",
+    legalForm: "SASU (société par actions simplifiée unipersonnelle)",
+    capital: "50 €",
+    siren: "943 047 290",
+    siret: "943 047 290 00011",
+    vat: "FR15943047290",
+    rcs: "Paris",
+    address: "18 avenue Victoria, 75001 Paris",
+    publisher: "Mohamed Maatoug",
+    mediator: "",
+  },
+  host: {
+    name: "Vercel Inc.",
+    address: "340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis",
+    url: "https://vercel.com",
   },
   social: [
     { label: "LinkedIn", href: "https://www.linkedin.com/" },

@@ -43,7 +43,11 @@ export function Seo({ route }: { route: RouteDef }) {
         ? {
             address: {
               "@type": "PostalAddress",
-              ...(site.legal.address ? { streetAddress: site.legal.address } : {}),
+              /* Pas de `streetAddress` : `legal.address` est le siège social, et
+                 le coller à `postalCode` / `city` — l'implantation commerciale —
+                 fabriquerait une adresse inexistante. Une `PostalAddress` sans
+                 rue reste valide, et c'est la forme attendue d'une entreprise
+                 qui se déplace chez ses clients. */
               addressLocality: site.city,
               addressRegion: site.region,
               postalCode: site.postalCode,

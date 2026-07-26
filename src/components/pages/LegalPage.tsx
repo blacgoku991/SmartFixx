@@ -7,11 +7,11 @@ import { site } from "@/data/site";
  * fiabilité d'un site marchand et l'absence d'identification est un signal
  * négatif franc.
  *
- * ⚠️ Les champs laissés vides dans `site.ts` (SIREN, adresse) apparaissent en
- * « à compléter » : renseignez-les avant la mise en ligne.
+ * Toutes les données d'identité viennent de `site.legal` : rien n'est écrit en
+ * dur ici. La section « Médiation » ne s'affiche que si un médiateur est
+ * renseigné — publier « à compléter » sur une page légale est pire que de taire
+ * une mention qui ne s'applique pas encore.
  */
-
-const MISSING = "à compléter";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -44,11 +44,13 @@ export function LegalNotice() {
               <p>
                 <strong className="font-medium text-fog">{site.legal.company}</strong>
                 <br />
-                {site.legal.address || `Adresse : ${MISSING}`}
+                {site.legal.legalForm} au capital de {site.legal.capital}
                 <br />
-                {site.postalCode} {site.city}, France
+                Siège social : {site.legal.address}
                 <br />
-                SIREN : {site.legal.siren || MISSING}
+                SIREN : {site.legal.siren} — SIRET : {site.legal.siret}
+                <br />
+                RCS {site.legal.rcs} — TVA intracommunautaire : {site.legal.vat}
                 <br />
                 E-mail :{" "}
                 <a href={`mailto:${site.email}`} className="text-mint hover:underline">
@@ -61,13 +63,21 @@ export function LegalNotice() {
                   </>
                 )}
               </p>
-              <p>Responsable de la publication : {site.legal.company}.</p>
+              <p>Directeur de la publication : {site.legal.publisher}.</p>
             </Section>
 
             <Section title="Hébergement">
               <p>
-                Le site est hébergé sur une infrastructure située dans l&apos;Union européenne.
-                Identité et coordonnées de l&apos;hébergeur : {MISSING}.
+                Le site est hébergé par {site.host.name}, {site.host.address} —{" "}
+                <a
+                  href={site.host.url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-mint hover:underline"
+                >
+                  {site.host.url.replace(/^https?:\/\//, "")}
+                </a>
+                .
               </p>
             </Section>
 
@@ -93,13 +103,16 @@ export function LegalNotice() {
               </p>
             </Section>
 
-            <Section title="Médiation de la consommation">
-              <p>
-                Conformément à l&apos;article L. 612-1 du Code de la consommation, tout consommateur
-                peut recourir gratuitement à un médiateur de la consommation en vue de la résolution
-                amiable d&apos;un litige. Coordonnées du médiateur : {MISSING}.
-              </p>
-            </Section>
+            {site.legal.mediator && (
+              <Section title="Médiation de la consommation">
+                <p>
+                  Conformément à l&apos;article L. 612-1 du Code de la consommation, tout
+                  consommateur peut recourir gratuitement à un médiateur de la consommation en vue
+                  de la résolution amiable d&apos;un litige. Coordonnées du médiateur :{" "}
+                  {site.legal.mediator}.
+                </p>
+              </Section>
+            )}
 
             <Section title="Droit applicable">
               <p>
@@ -141,7 +154,8 @@ export function PrivacyPolicy() {
           <div className="mt-12 space-y-10">
             <Section title="Responsable du traitement">
               <p>
-                {site.legal.company}, {site.postalCode} {site.city}, France. Contact :{" "}
+                {site.legal.company}, {site.legal.address}, France — SIREN {site.legal.siren}.
+                Contact :{" "}
                 <a href={`mailto:${site.email}`} className="text-mint hover:underline">
                   {site.email}
                 </a>
@@ -182,8 +196,16 @@ export function PrivacyPolicy() {
             <Section title="Destinataires">
               <p>
                 Vos données ne sont ni vendues, ni louées, ni transmises à des fins publicitaires.
-                Seuls les prestataires techniques strictement nécessaires (messagerie, hébergement),
-                établis dans l&apos;Union européenne, peuvent y avoir accès.
+                Le formulaire de contact n&apos;envoyant rien à nos serveurs — il ouvre votre
+                logiciel de messagerie —, le contenu de votre message ne transite par aucun
+                prestataire de notre côté : il suit le trajet de votre propre messagerie.
+              </p>
+              <p>
+                L&apos;hébergement du site est assuré par {site.host.name} ({site.host.address}),
+                société établie hors de l&apos;Union européenne. Ce prestataire traite les données
+                techniques de connexion inhérentes à l&apos;affichage des pages (adresse IP,
+                horodatage) ; le transfert est encadré par les clauses contractuelles types
+                adoptées par la Commission européenne.
               </p>
             </Section>
 
