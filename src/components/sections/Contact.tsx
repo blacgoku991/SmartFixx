@@ -7,40 +7,66 @@ import { Magnetic } from "../ui/Magnetic";
 import { BUDGET_RANGES, PROJECT_TYPES, site } from "@/data/site";
 import { cn } from "@/lib/utils";
 
-type Status = "idle" | "sent";
+type Status = "idle" | "sending" | "sent" | "error";
+
+const FIELDS = [
+  "name",
+  "company",
+  "email",
+  "phone",
+  "type",
+  "budget",
+  "message",
+  "website",
+] as const;
 
 /**
- * Sans back-end, l'envoi compose un e-mail pré-rempli dans le client du visiteur.
- * Pour un envoi direct, branchez ici un endpoint (Formspree, Resend, une
- * fonction serverless…) à la place de `window.location.href`.
+ * L'envoi passe par `api/contact.ts`, une fonction serverless qui relaie la
+ * demande par e-mail.
+ *
+ * Le formulaire composait auparavant un `mailto:` : il fallait que le visiteur
+ * envoie lui-même le message depuis son logiciel de messagerie, et l'écran de
+ * confirmation s'affichait de toute façon. Sur mobile ou sur un webmail, le
+ * clic ne produisait rien et la demande était perdue des deux côtés sans que
+ * personne ne le sache. Ici l'état affiché suit la réponse du serveur : une
+ * confirmation signifie que l'e-mail est parti.
  */
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
+  const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const get = (key: string) => String(data.get(key) ?? "").trim();
+    const payload = Object.fromEntries(
+      FIELDS.map((key) => [key, String(data.get(key) ?? "").trim()]),
+    );
 
-    const body = [
-      `Nom : ${get("name")}`,
-      `Société : ${get("company") || "—"}`,
-      `E-mail : ${get("email")}`,
-      `Téléphone : ${get("phone") || "—"}`,
-      `Type de projet : ${get("type")}`,
-      `Budget : ${get("budget")}`,
-      "",
-      "Message :",
-      get("message"),
-    ].join("\n");
+    setStatus("sending");
+    setError("");
 
-    const subject = `Nouveau projet — ${get("type")} — ${get("name")}`;
-    window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(
-      subject,
-    )}&body=${encodeURIComponent(body)}`;
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    setStatus("sent");
+      if (!response.ok) {
+        const detail: unknown = await response.json().catch(() => null);
+        const message =
+          detail && typeof detail === "object" && "error" in detail
+            ? String((detail as { error: unknown }).error)
+            : "";
+        throw new Error(message || "L'envoi a échoué.");
+      }
+
+      setStatus("sent");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "L'envoi a échoué.");
+      setStatus("error");
+    }
   };
 
   const copyEmail = async () => {
@@ -165,10 +191,10 @@ export function Contact() {
                     <span className="flex h-16 w-16 items-center justify-center rounded-full border border-mint/30 bg-mint/10">
                       <Check className="h-7 w-7 text-mint" />
                     </span>
-                    <h3 className="text-2xl font-semibold">C&apos;est parti.</h3>
+                    <h3 className="text-2xl font-semibold">Demande envoyée.</h3>
                     <p className="max-w-sm text-[14.5px] leading-relaxed text-fog-dim">
-                      Votre logiciel de messagerie s&apos;ouvre avec le récapitulatif pré-rempli —
-                      il ne reste qu&apos;à envoyer. Si rien ne se passe, écrivez-nous directement à{" "}
+                      Nous l&apos;avons bien reçue et vous répondons sous 24 h ouvrées. Un doute,
+                      une pièce à joindre ? Écrivez-nous à{" "}
                       <a href={`mailto:${site.email}`} className="text-mint underline">
                         {site.email}
                       </a>
@@ -179,7 +205,7 @@ export function Contact() {
                       onClick={() => setStatus("idle")}
                       className="btn-ghost mt-2"
                     >
-                      Remplir un nouveau message
+                      Envoyer une autre demande
                     </button>
                   </motion.div>
                 ) : (
@@ -191,6 +217,18 @@ export function Contact() {
                     exit={{ opacity: 0, y: -12 }}
                     className="space-y-4"
                   >
+                    {/* Pot de miel : hors écran et hors tabulation, donc invisible pour un
+                        visiteur et pour un lecteur d'écran. Rempli = robot, la fonction
+                        serverless écarte la demande. */}
+                    <input
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -left-[9999px] h-0 w-0 opacity-0"
+                    />
+
                     <div className="grid gap-4 sm:grid-cols-2">
                       <Field label="Nom et prénom" required>
                         <input
@@ -275,9 +313,26 @@ export function Contact() {
                       demande.
                     </label>
 
+                    {status === "error" && (
+                      <p
+                        role="alert"
+                        className="rounded-lg border border-[#FF5C8A]/30 bg-[#FF5C8A]/10 px-4 py-3 text-[13.5px] leading-relaxed text-[#FFC2D4]"
+                      >
+                        {error} Rien n&apos;est perdu : écrivez-nous à{" "}
+                        <a href={`mailto:${site.email}`} className="underline">
+                          {site.email}
+                        </a>
+                        , ou réessayez dans un instant.
+                      </p>
+                    )}
+
                     <Magnetic strength={0.16} className="pt-2">
-                      <button type="submit" className="btn-primary group w-full">
-                        Envoyer ma demande
+                      <button
+                        type="submit"
+                        disabled={status === "sending"}
+                        className="btn-primary group w-full disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {status === "sending" ? "Envoi…" : "Envoyer ma demande"}
                         <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                       </button>
                     </Magnetic>

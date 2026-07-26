@@ -171,9 +171,10 @@ export function PrivacyPolicy() {
                 et à établir un devis.
               </p>
               <p>
-                À ce stade, l&apos;envoi ouvre votre logiciel de messagerie avec un message
-                pré-rempli : les informations transitent donc par votre propre fournisseur de
-                messagerie, et ce site n&apos;enregistre rien.
+                À l&apos;envoi, ces informations sont transmises à notre serveur, qui les relaie
+                immédiatement par e-mail à {site.email}. Elles ne sont enregistrées dans aucune
+                base de données : votre demande existe sous la forme d&apos;un e-mail dans notre
+                messagerie, et nulle part ailleurs.
               </p>
             </Section>
 
@@ -196,16 +197,20 @@ export function PrivacyPolicy() {
             <Section title="Destinataires">
               <p>
                 Vos données ne sont ni vendues, ni louées, ni transmises à des fins publicitaires.
-                Le formulaire de contact n&apos;envoyant rien à nos serveurs — il ouvre votre
-                logiciel de messagerie —, le contenu de votre message ne transite par aucun
-                prestataire de notre côté : il suit le trajet de votre propre messagerie.
+                Deux prestataires techniques interviennent, strictement pour acheminer votre
+                demande et afficher ce site :
               </p>
               <p>
-                L&apos;hébergement du site est assuré par {site.host.name} ({site.host.address}),
-                société établie hors de l&apos;Union européenne. Ce prestataire traite les données
-                techniques de connexion inhérentes à l&apos;affichage des pages (adresse IP,
-                horodatage) ; le transfert est encadré par les clauses contractuelles types
-                adoptées par la Commission européenne.
+                <strong className="font-medium text-fog">{site.host.name}</strong> (
+                {site.host.address}) héberge le site et exécute la fonction qui transmet le
+                formulaire. <strong className="font-medium text-fog">Resend</strong> (Resend, Inc.,
+                États-Unis) assure l&apos;acheminement de l&apos;e-mail.
+              </p>
+              <p>
+                Ces deux sociétés sont établies hors de l&apos;Union européenne. Les transferts
+                correspondants sont encadrés par les clauses contractuelles types adoptées par la
+                Commission européenne. Aucun des deux ne conserve le contenu de votre message
+                au-delà de son acheminement.
               </p>
             </Section>
 
