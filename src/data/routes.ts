@@ -88,7 +88,7 @@ const CITY_ROUTES: RouteDef[] = CITIES.map((city) => ({
   path: `/creation-site-internet-${city.slug}`,
   kind: "city",
   title: `Création de site internet à ${city.name} (${city.postalCode}) | SmartFixx`,
-  description: `Agence web à ${city.name} (${city.postalCode}) : création de site internet sur-mesure, refonte et automatisation. Bureaux à Asnières-sur-Seine, ${city.reach}. À partir de 1 490 € HT.`,
+  description: `Agence web à ${city.name} (${city.postalCode}) : création de site internet sur-mesure, refonte et automatisation. Basés à Asnières-sur-Seine, ${city.reach}. À partir de 1 490 € HT.`,
   priority: 0.8,
 }));
 

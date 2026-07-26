@@ -407,7 +407,7 @@ export function ZonesPage({ hubs }: { hubs: Hub[] }) {
               Où nous intervenons en <span className="grad-text">Île-de-France</span>
             </h1>
             <p className="mt-6 text-[15.5px] leading-[1.75] text-fog-dim">
-              Nos bureaux sont à {site.city} ({site.postalCode}) et nous intervenons dans toute
+              Nous sommes installés à {site.city} ({site.postalCode}) et nous intervenons dans toute
               l&apos;Île-de-France. Les communes détaillées ci-dessous sont celles où nous nous
               déplaçons le plus souvent — la liste n&apos;a rien de limitatif. Partout ailleurs en
               France, nous travaillons à distance, avec des points en visio réguliers.

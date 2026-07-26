@@ -46,7 +46,7 @@ export const CITIES: City[] = [
     department: "Hauts-de-Seine",
     departmentCode: "92",
     hub: "/agence-web-hauts-de-seine",
-    reach: "commune limitrophe d'Asnières, dix minutes de nos bureaux",
+    reach: "commune limitrophe, à dix minutes",
     neighbours: ["Asnières-sur-Seine", "Levallois-Perret", "Saint-Ouen-sur-Seine", "Paris 17e"],
     transport: "métro 13 (Mairie de Clichy), RER C, nombreuses lignes de bus vers Paris",
     fabric:
@@ -409,7 +409,7 @@ export const HUBS: Hub[] = [
     description:
       "Création de site internet, refonte et automatisation en Seine-Saint-Denis depuis Asnières-sur-Seine. Un marché local encore peu disputé, où les premières places restent accessibles.",
     intro:
-      "Le 93 commence à quinze minutes de nos bureaux. C'est, de tous les départements franciliens, celui où l'écart entre la réalité des entreprises et leur visibilité en ligne est le plus grand.",
+      "Le 93 commence à quinze minutes d'Asnières. C'est, de tous les départements franciliens, celui où l'écart entre la réalité des entreprises et leur visibilité en ligne est le plus grand.",
     angle:
       "Beaucoup d'entreprises de Seine-Saint-Denis sont excellentes et parfaitement connues dans leur quartier, sans aucune présence en ligne structurée. Dans le même temps, la population se renouvelle et cherche presque exclusivement sur mobile. Cette combinaison — forte demande, faible concurrence numérique — rend les premières places bien plus accessibles ici que dans le 92. Pour un artisan ou un commerçant, c'est souvent le meilleur rapport entre effort et résultat de toute l'Île-de-France.",
   },
