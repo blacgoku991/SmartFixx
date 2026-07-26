@@ -218,12 +218,12 @@ export function Contact() {
                     className="space-y-4"
                   >
                     {/* Pot de miel : hors écran et hors tabulation, donc invisible pour un
-                        visiteur et pour un lecteur d'écran. Rempli = robot, la fonction
-                        serverless écarte la demande.
+                        visiteur et pour un lecteur d'écran. Rempli, il fait seulement
+                        signaler la demande dans l'objet de l'e-mail — elle est envoyée
+                        quand même, voir api/contact.ts.
                         Le nom ne doit correspondre à aucune catégorie de remplissage
                         automatique : Chrome remplit « website », « url » ou « nickname »
-                        même avec autocomplete="off", et la demande d'un vrai prospect
-                        serait alors écartée sans que personne ne s'en aperçoive. */}
+                        même avec autocomplete="off". */}
                     <input
                       type="text"
                       name="ref_interne"

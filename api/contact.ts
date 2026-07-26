@@ -47,17 +47,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const body: Record<string, unknown> =
     typeof req.body === "string" ? safeParse(req.body) : (req.body ?? {});
 
-  /* Pot de miel : un champ invisible pour l'humain, irrésistible pour un robot.
-     On répond 200 pour ne pas lui apprendre qu'il a été repéré.
-     Le nom du champ évite tout libellé que le remplissage automatique des
-     navigateurs reconnaît — « website », « url », « nickname » sont remplis par
-     Chrome malgré autocomplete="off", ce qui ferait passer un vrai prospect pour
-     un robot et perdrait sa demande en silence. La trace ci-dessous rend ce cas
-     visible dans les journaux au lieu de le laisser deviner. */
-  if (clean(body.ref_interne)) {
-    console.warn("Pot de miel déclenché, demande écartée.", { from: clean(body.email) });
-    return res.status(200).json({ ok: true });
-  }
+  /* Pot de miel : un champ invisible pour l'humain, qu'un robot remplit.
+     Il ne bloque volontairement rien. Le premier essai écartait la demande, et
+     le remplissage automatique de Chrome suffisait à qualifier un vrai prospect
+     de robot : le site confirmait l'envoi, aucun e-mail ne partait, et personne
+     ne pouvait le savoir. Pour une activité qui reçoit quelques demandes par
+     semaine, perdre un client coûte incomparablement plus cher que supprimer un
+     courrier indésirable. La demande part donc toujours ; seul l'objet signale
+     le doute, et le tri reste humain. */
+  const suspect = Boolean(clean(body.ref_interne));
 
   const fields = {} as Record<Field, string>;
   for (const key of Object.keys(LIMITS) as Field[]) fields[key] = clean(body[key]);
@@ -76,7 +74,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: "Cette adresse e-mail semble incorrecte." });
   }
 
-  console.log("Demande reçue, transmission en cours.", { from: fields.email, to: TO });
+  console.log("Demande reçue, transmission en cours.", { from: fields.email, to: TO, suspect });
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -110,7 +108,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         to: [TO],
         /* Répondre à l'e-mail transfère directement au prospect. */
         reply_to: fields.email,
-        subject: `Nouvelle demande — ${fields.type || "projet"} — ${fields.name}`,
+        subject: `${suspect ? "[Robot probable] " : ""}Nouvelle demande — ${
+          fields.type || "projet"
+        } — ${fields.name}`,
         text: lines.join("\n"),
       }),
     });
