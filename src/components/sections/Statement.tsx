@@ -14,7 +14,10 @@ export function Statement() {
 
   const xLeft = useTransform(scrollYProgress, [0, 1], ["6%", "-14%"]);
   const xRight = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.28, 0.72, 1], [0.25, 1, 1, 0.25]);
+  /* Plancher à 0.4 et non 0.25 : en dessous, le texte passe sous le rapport de
+     contraste de 3:1 exigé pour les grandes tailles, y compris aux extrémités
+     de la course où il reste lisible à l'écran. */
+  const opacity = useTransform(scrollYProgress, [0, 0.28, 0.72, 1], [0.4, 1, 1, 0.4]);
 
   return (
     <section ref={ref} className="relative overflow-hidden py-24 sm:py-32">

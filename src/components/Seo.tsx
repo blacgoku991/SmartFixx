@@ -34,8 +34,27 @@ export function Seo({ route }: { route: RouteDef }) {
       email: site.email,
       ...(site.phone ? { telephone: site.phone } : {}),
       foundingDate: site.foundingYear,
-      logo: { "@type": "ImageObject", url: `${base}/favicon.svg` },
+      /* PNG et non SVG : Google demande une image matricielle pour le logo
+         d'une organisation, et ignore le vectoriel. */
+      logo: { "@type": "ImageObject", url: `${base}/icon-512.png`, width: 512, height: 512 },
       image: `${base}/og-image.png`,
+      /* Identifiants publics et vérifiables. Ils rattachent le site à une
+         entreprise réelle que Google peut recouper avec les registres, ce qui
+         pèse pour une jeune structure sans historique ni liens entrants. */
+      ...(site.legal.vat ? { vatID: site.legal.vat } : {}),
+      ...(site.legal.siret ? { taxID: site.legal.siret } : {}),
+      ...(site.legal.siren
+        ? {
+            identifier: {
+              "@type": "PropertyValue",
+              propertyID: "SIREN",
+              value: site.legal.siren.replace(/\s/g, ""),
+            },
+          }
+        : {}),
+      ...(site.legal.publisher
+        ? { founder: { "@type": "Person", name: site.legal.publisher } }
+        : {}),
       currenciesAccepted: "EUR",
       openingHours: site.openingHours,
       ...(hasAddress
@@ -71,7 +90,9 @@ export function Seo({ route }: { route: RouteDef }) {
         "Intégration d'API",
         "Robotisation des tâches (RPA)",
       ],
-      sameAs: site.social.map((item) => item.href),
+      /* Omis tant qu'aucun profil officiel n'est renseigné : un `sameAs` vide ou
+         pointant sur des accueils de plateformes n'identifie rien. */
+      ...(site.social.length ? { sameAs: site.social.map((item) => item.href) } : {}),
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: `Prestations ${site.name}`,

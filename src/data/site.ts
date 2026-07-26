@@ -110,7 +110,9 @@ export const site: SiteConfig = {
   location: "Asnières-sur-Seine (92600) · Toute l'Île-de-France · À distance partout en France",
   responseTime: "Réponse sous 24 h ouvrées",
   openingHours: "Mo-Fr 09:00-19:00",
-  foundingYear: "2026",
+  /* Immatriculation au RCS de Paris le 11/04/2025. Une date inventée dans le
+     JSON-LD se contredit avec les registres publics que Google recoupe. */
+  foundingYear: "2025",
   legal: {
     company: "SmartFixx",
     legalForm: "SASU (société par actions simplifiée unipersonnelle)",
@@ -128,10 +130,13 @@ export const site: SiteConfig = {
     address: "340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis",
     url: "https://vercel.com",
   },
-  social: [
-    { label: "LinkedIn", href: "https://www.linkedin.com/" },
-    { label: "GitHub", href: "https://github.com/" },
-  ],
+  /* Profils officiels de l'entreprise, repris en `sameAs` dans le JSON-LD :
+     c'est ainsi que Google relie le site à une entité connue. Les deux entrées
+     précédentes pointaient sur les accueils de LinkedIn et GitHub, pas sur des
+     profils — un `sameAs` vers une page d'accueil n'identifie rien et le lien
+     du pied de page ne menait nulle part. Vide tant qu'il n'y a pas de vraies
+     adresses ; ajoutez-les dès que les profils existent, l'effet est réel. */
+  social: [],
 };
 
 export const PROJECT_TYPES = [

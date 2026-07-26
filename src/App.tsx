@@ -17,6 +17,7 @@ import { LandingPage } from "./components/pages/LandingPage";
 import { LegalNotice, PrivacyPolicy } from "./components/pages/LegalPage";
 import { CityPage, HubPage, ZonesPage } from "./components/pages/CityPage";
 import { useSmoothScroll } from "./hooks/useSmoothScroll";
+import { useLowPower } from "./hooks/useEnvironment";
 import { routeFor } from "./data/routes";
 import { LANDINGS } from "./data/landings";
 import { HUBS, cityBySlug, hubBySlug } from "./data/cities";
@@ -56,6 +57,9 @@ function HomePage({ ready }: { ready: boolean }) {
 export default function App({ prerender = false, pathname }: AppProps) {
   const [ready, setReady] = useState(prerender);
   useSmoothScroll();
+  /* Mobile, `prefers-reduced-motion`, ou machine modeste : la scène WebGL n'est
+     alors pas chargée du tout. */
+  const lowPower = useLowPower();
 
   const handleLoaded = useCallback(() => setReady(true), []);
 
@@ -83,8 +87,15 @@ export default function App({ prerender = false, pathname }: AppProps) {
 
       <Nav isHome={isHome} />
 
-      {/* Décor WebGL — réservé à l'accueil, où il habite le hero. */}
-      {!prerender && isHome && (
+      {/*
+        Décor WebGL — accueil uniquement, et seulement sur une machine capable.
+        Il était chargé partout : sur mobile, three.js et son moteur de rendu
+        repoussaient le plus grand rendu (LCP) à près de 11 s sous Lighthouse.
+        C'est précisément la mesure que Google utilise pour classer, et il
+        l'évalue sur mobile. Les appareils écartés gardent les dégradés CSS du
+        hero — la page reste habitée, elle s'affiche simplement tout de suite.
+      */}
+      {!prerender && isHome && !lowPower && (
         <Suspense fallback={null}>
           <HeroScene />
         </Suspense>

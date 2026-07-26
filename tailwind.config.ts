@@ -27,7 +27,9 @@ export default {
         fog: {
           DEFAULT: "#C3CBDE",
           dim: "#7E88A3",
-          faint: "#4B5468",
+          /* 5.0:1 sur le fond #04050A. L'ancienne valeur (#4B5468) tombait à
+             2.68:1, sous le minimum de 4.5:1 exigé pour du petit texte. */
+          faint: "#767E90",
         },
       },
       fontFamily: {
