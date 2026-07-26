@@ -6,7 +6,7 @@
 export const FAQ_ITEMS = [
   {
     q: "Combien coûte la création d'un site web ?",
-    a: "À partir de 1 490 € HT pour un site vitrine jusqu'à 5 pages, et à partir de 3 900 € HT pour un site sur-mesure avec direction artistique dédiée, animations et rédaction du contenu. Une automatisation démarre à 890 € HT par connecteur. Le devis final dépend du périmètre réel : il est ferme, détaillé, et il ne bouge plus une fois signé.",
+    a: "Le montant dépend du périmètre réel : nombre de pages, création graphique, rédaction du contenu, fonctionnalités et reprise éventuelle d'un site existant. Un site vitrine et une refonte sur-mesure ne se chiffrent pas de la même façon, c'est pourquoi nous ne publions pas de tarif type. Le premier échange est gratuit et sans engagement ; vous recevez ensuite un devis ferme et détaillé, qui ne bouge plus une fois signé.",
   },
   {
     q: "Combien de temps prend la création d'un site internet ?",

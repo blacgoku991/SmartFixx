@@ -10,7 +10,6 @@ import { Automation } from "./components/sections/Automation";
 import { Stack } from "./components/sections/Stack";
 import { Process } from "./components/sections/Process";
 import { Work } from "./components/sections/Work";
-import { Pricing } from "./components/sections/Pricing";
 import { Faq } from "./components/sections/Faq";
 import { Contact } from "./components/sections/Contact";
 import { Footer } from "./components/sections/Footer";
@@ -48,7 +47,6 @@ function HomePage({ ready }: { ready: boolean }) {
       <Stack />
       <Process />
       <Work />
-      <Pricing />
       <Faq />
       <Contact />
     </main>

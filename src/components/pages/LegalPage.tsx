@@ -96,9 +96,9 @@ export function LegalNotice() {
 
             <Section title="Responsabilité">
               <p>
-                Les informations publiées sur ce site sont fournies à titre indicatif. Les tarifs
-                affichés sont des points de départ ; seul un devis signé engage {site.legal.company}
-                . Malgré le soin apporté à leur mise à jour, ces informations peuvent comporter des
+                Les informations publiées sur ce site sont fournies à titre indicatif. Aucun prix
+                n&apos;y est affiché : seul un devis signé engage {site.legal.company}. Malgré le
+                soin apporté à leur mise à jour, ces informations peuvent comporter des
                 inexactitudes.
               </p>
             </Section>

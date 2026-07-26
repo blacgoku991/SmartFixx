@@ -30,7 +30,7 @@ export const LANDINGS: Record<string, Landing> = {
     facts: [
       { value: "92600", label: "Basé à Asnières-sur-Seine" },
       { value: "2 à 3 sem.", label: "Site vitrine livré" },
-      { value: "1 490 €", label: "À partir de, HT" },
+      { value: "48 h", label: "Première maquette" },
     ],
     blocks: [
       {
@@ -61,10 +61,10 @@ export const LANDINGS: Record<string, Landing> = {
         ],
       },
       {
-        h2: "Combien ça coûte, concrètement",
+        h2: "Comment on chiffre un projet",
         paragraphs: [
-          "Un site vitrine jusqu'à cinq pages démarre à 1 490 € HT. Un site sur-mesure avec direction artistique dédiée, animations et rédaction du contenu démarre à 3 900 € HT. La maintenance est facultative, à partir de 79 €/mois — votre site fonctionne sans elle.",
-          "Le devis est ferme : une fois signé, le prix ne bouge plus. Et si votre besoin réel est plus petit que ce que vous imaginiez, on vous le dit.",
+          "Chaque projet est chiffré sur mesure : un site vitrine de cinq pages et une refonte avec direction artistique dédiée, animations et rédaction du contenu n'ont pas le même périmètre, donc pas le même montant. On part de ce que vous avez, de ce qui vous bloque et de ce que le site doit produire.",
+          "Le devis arrive après un échange, gratuit et sans engagement. Il est ferme et détaillé — ce qui est inclus, ce qui ne l'est pas — et une fois signé, le montant ne bouge plus. Si votre besoin réel est plus petit que ce que vous imaginiez, on vous le dit.",
         ],
       },
     ],
@@ -193,8 +193,8 @@ export const LANDINGS: Record<string, Landing> = {
       "La double saisie coûte plus cher qu'un développement. Si vos équipes recopient les mêmes informations d'un logiciel à l'autre, retapent des chiffres dans un tableur chaque lundi ou renvoient les mêmes rapports à la main, il y a presque toujours moyen de supprimer ce travail.",
     facts: [
       { value: "≈ 6 h", label: "Récupérées par semaine" },
-      { value: "890 €", label: "Par connecteur, à partir de" },
       { value: "24/7", label: "Sans intervention humaine" },
+      { value: "Devis ferme", label: "Avant tout engagement" },
     ],
     blocks: [
       {

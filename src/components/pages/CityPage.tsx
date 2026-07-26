@@ -70,7 +70,7 @@ export function CityPage({ city }: { city: City }) {
             {[
               { value: city.postalCode, label: city.name },
               { value: "2 à 3 sem.", label: "Site vitrine livré" },
-              { value: "1 490 €", label: "À partir de, HT" },
+              { value: "48 h", label: "Première maquette" },
             ].map((fact) => (
               <div key={fact.label} className="flex flex-col gap-1">
                 <div className="font-display text-xl font-semibold text-white sm:text-2xl">
@@ -95,8 +95,8 @@ export function CityPage({ city }: { city: City }) {
                 <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </a>
             </Magnetic>
-            <a href="/#tarifs" className="btn-ghost">
-              Voir les tarifs
+            <a href="/#realisations" className="btn-ghost">
+              Voir nos réalisations
             </a>
           </motion.div>
         </div>
@@ -163,10 +163,10 @@ export function CityPage({ city }: { city: City }) {
               </h2>
               <p className="mt-5 text-[15.5px] leading-[1.75] text-fog-dim">{city.faq.a}</p>
               <p className="mt-6 text-[14.5px] leading-relaxed text-fog-faint">
-                Tarifs de départ : 1 490 € HT pour un site vitrine, 3 900 € HT en sur-mesure, 890 €
-                HT par automatisation.{" "}
-                <a href="/#tarifs" className="text-mint hover:underline">
-                  Voir le détail des formules
+                Chaque projet est chiffré sur mesure, selon son périmètre réel. Le devis est ferme
+                et détaillé : une fois signé, le montant ne bouge plus.{" "}
+                <a href="/#contact" className="text-mint hover:underline">
+                  Demander un devis
                 </a>
                 .
               </p>

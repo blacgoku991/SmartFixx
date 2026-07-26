@@ -36,7 +36,6 @@ export function Seo({ route }: { route: RouteDef }) {
       foundingDate: site.foundingYear,
       logo: { "@type": "ImageObject", url: `${base}/favicon.svg` },
       image: `${base}/og-image.png`,
-      priceRange: "€€",
       currenciesAccepted: "EUR",
       openingHours: site.openingHours,
       ...(hasAddress

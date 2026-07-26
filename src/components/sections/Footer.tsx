@@ -13,7 +13,6 @@ const COLUMNS = [
       { label: "Création de site internet", href: "/creation-site-internet-asnieres-sur-seine" },
       { label: "Refonte de site internet", href: "/refonte-site-internet" },
       { label: "Automatisation informatique", href: "/automatisation-informatique" },
-      { label: "Tarifs", href: "/#tarifs" },
     ],
   },
   {

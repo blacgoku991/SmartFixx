@@ -84,8 +84,8 @@ export function LandingPage({ landing }: { landing: Landing }) {
                   <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
               </Magnetic>
-              <a href="/#tarifs" className="btn-ghost">
-                Voir les tarifs
+              <a href="/#realisations" className="btn-ghost">
+                Voir nos réalisations
               </a>
             </motion.div>
           </div>

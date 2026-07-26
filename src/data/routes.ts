@@ -37,7 +37,7 @@ const STATIC_ROUTES: RouteDef[] = [
     kind: "landing",
     title: "Agence web à Asnières-sur-Seine (92600) — Création de site internet",
     description:
-      "Agence web à Asnières-sur-Seine : création de site internet sur-mesure pour commerces, artisans et PME du 92. Rendez-vous sur place, site livré en 2 à 3 semaines, à partir de 1 490 € HT.",
+      "Agence web à Asnières-sur-Seine : création de site internet sur-mesure pour commerces, artisans et PME du 92. Rendez-vous sur place, site livré en 2 à 3 semaines, devis ferme et gratuit.",
     priority: 0.9,
   },
   {
@@ -88,7 +88,7 @@ const CITY_ROUTES: RouteDef[] = CITIES.map((city) => ({
   path: `/creation-site-internet-${city.slug}`,
   kind: "city",
   title: `Création de site internet à ${city.name} (${city.postalCode}) | SmartFixx`,
-  description: `Agence web à ${city.name} (${city.postalCode}) : création de site internet sur-mesure, refonte et automatisation. Basés à Asnières-sur-Seine, ${city.reach}. À partir de 1 490 € HT.`,
+  description: `Agence web à ${city.name} (${city.postalCode}) : création de site internet sur-mesure, refonte et automatisation. Basés à Asnières-sur-Seine, ${city.reach}. Devis ferme et gratuit.`,
   priority: 0.8,
 }));
 
