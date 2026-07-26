@@ -1,0 +1,26 @@
+Objet : {{ENTREPRISE}} — une remarque sur votre site
+
+Bonjour {{PRENOM}},
+
+{{ACCROCHE}}
+
+Je suis développeur web à {{VILLE}}. Je conçois des sites pour les commerces,
+artisans et PME du secteur, et j'automatise les tâches qui se répètent :
+ressaisies d'un logiciel à l'autre, exports manuels, relances.
+
+Si vous voulez, je regarde ce que donne l'existant de {{ENTREPRISE}} et je vous
+dis franchement ce qui mérite d'être repris — et ce qui n'en vaut pas la peine.
+C'est gratuit et sans engagement, et je peux passer vous voir puisque je suis à
+côté.
+
+Un simple « oui, dites-m'en plus » en réponse suffit.
+
+Mohamed Maatoug
+SmartFixx — sites web & automatisation
+contact@smartfixx.fr · https://smartfixx.fr
+
+---
+Vous recevez ce message à une adresse professionnelle, au titre de votre
+activité. SmartFixx, SASU au capital de 50 €, 18 avenue Victoria, 75001 Paris —
+SIREN 943 047 290. Pour ne plus rien recevoir de ma part : répondez « stop », je
+retire l'adresse le jour même.

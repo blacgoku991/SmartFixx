@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta name="supported-color-schemes" content="light" />
+    <title>SmartFixx — prise de contact</title>
+  </head>
+
+  <!--
+    GABARIT DE PROSPECTION — voir emails/README.md avant le premier envoi.
+
+    Remplacer les champs entre doubles accolades :
+      {{PRENOM}}      prénom du destinataire, ou « Bonjour, » seul si inconnu
+      {{ENTREPRISE}}  raison sociale
+      {{VILLE}}       commune, pour ancrer la proximité
+      {{ACCROCHE}}    UNE phrase précise sur cette entreprise-là — c'est le seul
+                      élément qui distingue un message lu d'un message supprimé
+      {{LIEN_DESABO}} lien ou adresse de désinscription (obligatoire)
+
+    Fond clair et presque aucune image : un e-mail sombre et illustré part
+    beaucoup plus souvent en indésirable, et la moitié des messageries
+    professionnelles bloquent les images par défaut. Tout le sens doit tenir
+    dans le texte.
+  -->
+
+  <body style="margin:0;padding:0;background:#F1F3F7;">
+    <div
+      style="display:none;font-size:1px;color:#F1F3F7;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;"
+    >
+      {{ACCROCHE}}
+    </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F1F3F7;">
+      <tr>
+        <td align="center" style="padding:28px 16px;">
+          <table
+            role="presentation"
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid #E2E6ED;border-radius:14px;"
+          >
+            <!-- En-tête -->
+            <tr>
+              <td style="padding:28px 34px 0 34px;">
+                <!-- width=100% : sans lui, le tableau se réduit à son contenu et
+                     l'alignement à droite de la ville n'a aucun effet. -->
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td width="34" style="padding-right:11px;vertical-align:middle;">
+                      <img
+                        src="https://smartfixx.fr/email-logo.png"
+                        width="34"
+                        height="34"
+                        alt="SmartFixx"
+                        style="display:block;width:34px;height:34px;border:0;"
+                      />
+                    </td>
+                    <td
+                      width="100%"
+                      style="vertical-align:middle;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:17px;font-weight:700;color:#0B0D14;letter-spacing:-0.01em;"
+                    >
+                      SmartFixx
+                    </td>
+                    <td
+                      align="right"
+                      style="vertical-align:middle;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#6B7383;"
+                    >
+                      Asnières-sur-Seine
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Corps -->
+            <tr>
+              <td
+                style="padding:26px 34px 0 34px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15.5px;line-height:1.68;color:#2A2F3A;"
+              >
+                <p style="margin:0 0 16px 0;">Bonjour {{PRENOM}},</p>
+
+                <p style="margin:0 0 16px 0;">{{ACCROCHE}}</p>
+
+                <p style="margin:0 0 16px 0;">
+                  Je suis développeur web à {{VILLE}}. Je conçois des sites pour les commerces,
+                  artisans et PME du secteur, et j&apos;automatise les tâches qui se répètent —
+                  ressaisies d&apos;un logiciel à l&apos;autre, exports manuels, relances.
+                </p>
+
+                <p style="margin:0 0 16px 0;">
+                  Si vous voulez, je regarde ce que donne l&apos;existant de {{ENTREPRISE}} et je
+                  vous dis franchement ce qui mérite d&apos;être repris — et ce qui n&apos;en vaut
+                  pas la peine. C&apos;est gratuit et sans engagement, et je peux passer vous voir
+                  puisque je suis à côté.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Appel à l'action -->
+            <tr>
+              <td style="padding:8px 34px 0 34px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="background:#0B0D14;border-radius:9px;">
+                      <a
+                        href="https://smartfixx.fr/"
+                        style="display:inline-block;padding:12px 22px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;font-weight:600;color:#FFFFFF;text-decoration:none;"
+                        >Voir mon travail</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+
+                <p
+                  style="margin:16px 0 0 0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14.5px;line-height:1.68;color:#2A2F3A;"
+                >
+                  Un simple « oui, dites-m&apos;en plus » en réponse suffit.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Signature -->
+            <tr>
+              <td style="padding:22px 34px 0 34px;">
+                <div
+                  style="border-top:1px solid #E8EBF0;padding-top:16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6;color:#2A2F3A;"
+                >
+                  <strong style="font-weight:600;">Mohamed Maatoug</strong><br />
+                  <span style="color:#6B7383;">SmartFixx — sites web &amp; automatisation</span><br />
+                  <a href="mailto:contact@smartfixx.fr" style="color:#0B6E5E;text-decoration:none;"
+                    >contact@smartfixx.fr</a
+                  >
+                  ·
+                  <a href="https://smartfixx.fr/" style="color:#0B6E5E;text-decoration:none;"
+                    >smartfixx.fr</a
+                  >
+                </div>
+              </td>
+            </tr>
+
+            <!-- Mentions obligatoires -->
+            <tr>
+              <td style="padding:20px 34px 28px 34px;">
+                <div
+                  style="border-top:1px solid #E8EBF0;padding-top:14px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11.5px;line-height:1.65;color:#8A91A0;"
+                >
+                  Vous recevez ce message à une adresse professionnelle, au titre de votre activité.
+                  SmartFixx, SASU au capital de 50 €, 18 avenue Victoria, 75001 Paris —
+                  SIREN 943 047 290.<br />
+                  <a href="{{LIEN_DESABO}}" style="color:#8A91A0;text-decoration:underline;"
+                    >Ne plus recevoir de message de ma part</a
+                  >
+                  — un mot suffit, je retire l&apos;adresse le jour même.
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
