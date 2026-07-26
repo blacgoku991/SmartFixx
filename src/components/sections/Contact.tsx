@@ -17,7 +17,7 @@ const FIELDS = [
   "type",
   "budget",
   "message",
-  "website",
+  "ref_interne",
 ] as const;
 
 /**
@@ -219,10 +219,14 @@ export function Contact() {
                   >
                     {/* Pot de miel : hors écran et hors tabulation, donc invisible pour un
                         visiteur et pour un lecteur d'écran. Rempli = robot, la fonction
-                        serverless écarte la demande. */}
+                        serverless écarte la demande.
+                        Le nom ne doit correspondre à aucune catégorie de remplissage
+                        automatique : Chrome remplit « website », « url » ou « nickname »
+                        même avec autocomplete="off", et la demande d'un vrai prospect
+                        serait alors écartée sans que personne ne s'en aperçoive. */}
                     <input
                       type="text"
-                      name="website"
+                      name="ref_interne"
                       tabIndex={-1}
                       autoComplete="off"
                       aria-hidden="true"

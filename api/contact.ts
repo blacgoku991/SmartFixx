@@ -48,8 +48,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     typeof req.body === "string" ? safeParse(req.body) : (req.body ?? {});
 
   /* Pot de miel : un champ invisible pour l'humain, irrésistible pour un robot.
-     On répond 200 pour ne pas lui apprendre qu'il a été repéré. */
-  if (clean(body.website)) return res.status(200).json({ ok: true });
+     On répond 200 pour ne pas lui apprendre qu'il a été repéré.
+     Le nom du champ évite tout libellé que le remplissage automatique des
+     navigateurs reconnaît — « website », « url », « nickname » sont remplis par
+     Chrome malgré autocomplete="off", ce qui ferait passer un vrai prospect pour
+     un robot et perdrait sa demande en silence. La trace ci-dessous rend ce cas
+     visible dans les journaux au lieu de le laisser deviner. */
+  if (clean(body.ref_interne)) {
+    console.warn("Pot de miel déclenché, demande écartée.", { from: clean(body.email) });
+    return res.status(200).json({ ok: true });
+  }
 
   const fields = {} as Record<Field, string>;
   for (const key of Object.keys(LIMITS) as Field[]) fields[key] = clean(body[key]);
@@ -67,6 +75,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!looksLikeEmail(fields.email)) {
     return res.status(400).json({ error: "Cette adresse e-mail semble incorrecte." });
   }
+
+  console.log("Demande reçue, transmission en cours.", { from: fields.email, to: TO });
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
