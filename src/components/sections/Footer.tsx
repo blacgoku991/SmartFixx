@@ -133,7 +133,7 @@ export function Footer() {
             </a>
             <span aria-hidden="true">·</span>
             <a href="/politique-de-confidentialite" className="transition-colors hover:text-fog">
-              Confidentialité
+              Politique de confidentialité
             </a>
           </p>
         </div>
