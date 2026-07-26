@@ -154,7 +154,7 @@ export const CITIES: City[] = [
     department: "Hauts-de-Seine",
     departmentCode: "92",
     hub: "/agence-web-hauts-de-seine",
-    reach: "dix minutes d'Asnières, à pied depuis certains quartiers",
+    reach: "dix minutes, à pied depuis certains quartiers",
     neighbours: ["Asnières-sur-Seine", "Colombes", "Courbevoie", "La Garenne-Colombes"],
     transport: "transilien J (gare de Bois-Colombes), bus vers La Défense et Paris",
     fabric:
@@ -343,7 +343,7 @@ export const CITIES: City[] = [
     department: "Val-d'Oise",
     departmentCode: "95",
     hub: "/agence-web-val-d-oise",
-    reach: "vingt minutes d'Asnières, de l'autre côté de la Seine",
+    reach: "vingt minutes, de l'autre côté de la Seine",
     neighbours: ["Colombes", "Gennevilliers", "Bezons", "Sartrouville"],
     transport: "transilien J (gare d'Argenteuil), RER A à Sartrouville, nombreux bus",
     fabric:
@@ -381,9 +381,9 @@ export const HUBS: Hub[] = [
     slug: "/agence-web-hauts-de-seine",
     name: "Hauts-de-Seine",
     code: "92",
-    title: "Agence web dans les Hauts-de-Seine (92) | Création de site — SmartFixx",
+    title: "Agence web dans les Hauts-de-Seine (92) — SmartFixx",
     description:
-      "Agence web installée à Asnières-sur-Seine : création de site internet, refonte et automatisation dans tous les Hauts-de-Seine. Intervention sur place, devis ferme sous 3 jours.",
+      "Création de site internet, refonte et automatisation dans tout le 92, depuis Asnières-sur-Seine. Intervention sur place, devis ferme et gratuit.",
     intro:
       "SmartFixx est basé à Asnières-sur-Seine, au cœur du 92. C'est le département où nous intervenons le plus, et le seul où le rendez-vous sur place est la règle plutôt que l'exception.",
     angle:
@@ -393,9 +393,9 @@ export const HUBS: Hub[] = [
     slug: "/agence-web-paris",
     name: "Paris",
     code: "75",
-    title: "Agence web à Paris | Création et refonte de site internet — SmartFixx",
+    title: "Agence web à Paris — Création et refonte de site",
     description:
-      "Création de site internet et automatisation à Paris, depuis Asnières-sur-Seine (92). Approche par arrondissement et par spécialité plutôt que sur les requêtes généralistes saturées.",
+      "Création de site internet et automatisation à Paris, depuis Asnières-sur-Seine. Approche par arrondissement plutôt que par requêtes saturées.",
     intro:
       "Nous sommes à dix minutes du périphérique, et une bonne partie de nos projets sont parisiens. Paris demande néanmoins une stratégie différente du reste de l'Île-de-France.",
     angle:
@@ -405,9 +405,9 @@ export const HUBS: Hub[] = [
     slug: "/agence-web-seine-saint-denis",
     name: "Seine-Saint-Denis",
     code: "93",
-    title: "Agence web en Seine-Saint-Denis (93) | Création de site — SmartFixx",
+    title: "Agence web en Seine-Saint-Denis (93) — SmartFixx",
     description:
-      "Création de site internet, refonte et automatisation en Seine-Saint-Denis depuis Asnières-sur-Seine. Un marché local encore peu disputé, où les premières places restent accessibles.",
+      "Création de site internet et automatisation en Seine-Saint-Denis, depuis Asnières-sur-Seine. Un marché local encore peu disputé.",
     intro:
       "Le 93 commence à quinze minutes d'Asnières. C'est, de tous les départements franciliens, celui où l'écart entre la réalité des entreprises et leur visibilité en ligne est le plus grand.",
     angle:
@@ -417,9 +417,9 @@ export const HUBS: Hub[] = [
     slug: "/agence-web-val-d-oise",
     name: "Val-d'Oise",
     code: "95",
-    title: "Agence web dans le Val-d'Oise (95) | Création de site — SmartFixx",
+    title: "Agence web dans le Val-d'Oise (95) — SmartFixx",
     description:
-      "Création de site internet et automatisation dans le Val-d'Oise depuis Asnières-sur-Seine. Zone moins concurrentielle que la petite couronne, à volume de recherche comparable.",
+      "Création de site internet et automatisation dans le Val-d'Oise, depuis Asnières-sur-Seine. Moins concurrentiel que la petite couronne.",
     intro:
       "Le Val-d'Oise est de l'autre côté de la Seine, à vingt minutes. Nous y intervenons surtout sur la frange sud, la plus proche et la plus dense.",
     angle:

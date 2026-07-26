@@ -16,6 +16,7 @@ import { Footer } from "./components/sections/Footer";
 import { LandingPage } from "./components/pages/LandingPage";
 import { LegalNotice, PrivacyPolicy } from "./components/pages/LegalPage";
 import { CityPage, HubPage, ZonesPage } from "./components/pages/CityPage";
+import { NotFoundPage } from "./components/pages/NotFoundPage";
 import { useSmoothScroll } from "./hooks/useSmoothScroll";
 import { useLowPower } from "./hooks/useEnvironment";
 import { routeFor } from "./data/routes";
@@ -101,6 +102,7 @@ export default function App({ prerender = false, pathname }: AppProps) {
         </Suspense>
       )}
 
+      {route.kind === "notFound" && <NotFoundPage />}
       {isHome && <HomePage ready={ready} />}
       {route.path === "/mentions-legales" && <LegalNotice />}
       {route.path === "/politique-de-confidentialite" && <PrivacyPolicy />}

@@ -89,7 +89,7 @@ async function main() {
     );
   }
 
-  const { render, routes, siteUrl } = await import(
+  const { render, routes, notFoundRoute, siteUrl } = await import(
     pathToFileURL(path.join(SERVER_DIR, "entry-server.js")).href
   );
 
@@ -121,6 +121,22 @@ async function main() {
 
     console.log(`  ✓ ${route.path.padEnd(46)} ${(markup.length / 1024).toFixed(0)} kB`);
   }
+
+  // Page d'erreur : écrite à part, hors du sitemap et du maillage interne.
+  // Vercel sert automatiquement dist/404.html avec un code 404 sur toute URL
+  // qui ne correspond à aucun fichier.
+  const notFoundHtml = applyMeta(template, {
+    title: notFoundRoute.title,
+    description: notFoundRoute.description,
+    url: `${base}${notFoundRoute.path}`,
+  })
+    .replace(
+      '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />',
+      '<meta name="robots" content="noindex, follow" />',
+    )
+    .replace(ROOT_MARKER, `<div id="root">${unhideAnimatedContent(render(notFoundRoute.path))}</div>`);
+  await writeFile(path.join(DIST, "404.html"), notFoundHtml);
+  console.log("  ✓ 404.html");
 
   await writeFile(path.join(DIST, "sitemap.xml"), buildSitemap(routes, base, today));
   console.log(`  ✓ sitemap.xml (${routes.length} URL)`);

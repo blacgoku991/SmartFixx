@@ -9,7 +9,7 @@
  * avez réellement des clients ou une présence, et écrivez-lui un vrai texte.
  */
 
-export type PageKind = "home" | "landing" | "legal" | "city" | "hub" | "zones";
+export type PageKind = "home" | "landing" | "legal" | "city" | "hub" | "zones" | "notFound";
 
 export type RouteDef = {
   path: string;
@@ -27,41 +27,41 @@ const STATIC_ROUTES: RouteDef[] = [
   {
     path: "/",
     kind: "home",
-    title: "Agence web à Asnières-sur-Seine (92) — Création de site & automatisation",
+    title: "Agence web à Asnières-sur-Seine — Sites & automatisation",
     description:
-      "SmartFixx, agence web à Asnières-sur-Seine (92600) : création de site internet sur-mesure, refonte complète et automatisation de vos logiciels métiers. Devis ferme, première maquette en 48 h.",
+      "Agence web à Asnières-sur-Seine (92600) : création de site internet sur-mesure, refonte et automatisation de vos logiciels métiers. Maquette en 48 h.",
     priority: 1.0,
   },
   {
     path: "/creation-site-internet-asnieres-sur-seine",
     kind: "landing",
-    title: "Agence web à Asnières-sur-Seine (92600) — Création de site internet",
+    title: "Création de site internet à Asnières-sur-Seine (92600)",
     description:
-      "Agence web à Asnières-sur-Seine : création de site internet sur-mesure pour commerces, artisans et PME du 92. Rendez-vous sur place, site livré en 2 à 3 semaines, devis ferme et gratuit.",
+      "Création de site internet sur-mesure pour les commerces, artisans et PME d'Asnières-sur-Seine. Rendez-vous sur place, livraison en 2 à 3 semaines.",
     priority: 0.9,
   },
   {
     path: "/creation-site-internet-ile-de-france",
     kind: "landing",
-    title: "Création de site internet en Île-de-France | Agence web SmartFixx",
+    title: "Création de site internet en Île-de-France | SmartFixx",
     description:
-      "Création de site internet et refonte en Île-de-France : Hauts-de-Seine, Paris et proche banlieue. Design sur-mesure, SEO local, automatisation métier. Devis ferme sous 3 jours.",
+      "Création et refonte de site internet en Île-de-France : Hauts-de-Seine, Paris, proche banlieue. Design sur-mesure, SEO local, automatisation.",
     priority: 0.9,
   },
   {
     path: "/refonte-site-internet",
     kind: "landing",
-    title: "Refonte de site internet sans perdre son référencement | SmartFixx",
+    title: "Refonte de site internet sans perdre son référencement",
     description:
-      "Refonte de site web menée sans perte de référencement : audit technique et SEO, plan de redirections 301 complet, migration des données, reprise de la Search Console.",
+      "Refonte menée sans perte de référencement : audit technique et SEO, plan de redirections 301, migration des données, reprise de la Search Console.",
     priority: 0.8,
   },
   {
     path: "/automatisation-informatique",
     kind: "landing",
-    title: "Automatisation informatique & interconnexion de logiciels | SmartFixx",
+    title: "Automatisation informatique & interconnexion de logiciels",
     description:
-      "Automatisation des tâches répétitives et interconnexion de vos logiciels métiers, ERP, CRM et tableurs. Fin de la double saisie, rapports générés seuls, alertes automatiques.",
+      "Automatisation des tâches répétitives et interconnexion de vos logiciels métiers, ERP, CRM et tableurs. Fin de la double saisie et des exports manuels.",
     priority: 0.8,
   },
   {
@@ -87,8 +87,8 @@ const STATIC_ROUTES: RouteDef[] = [
 const CITY_ROUTES: RouteDef[] = CITIES.map((city) => ({
   path: `/creation-site-internet-${city.slug}`,
   kind: "city",
-  title: `Création de site internet à ${city.name} (${city.postalCode}) | SmartFixx`,
-  description: `Agence web à ${city.name} (${city.postalCode}) : création de site internet sur-mesure, refonte et automatisation. Basés à Asnières-sur-Seine, ${city.reach}. Devis ferme et gratuit.`,
+  title: `Création de site internet à ${city.name} (${city.postalCode})`,
+  description: `Création de site internet à ${city.name} (${city.postalCode}) : sur-mesure, refonte, automatisation. Basés à Asnières-sur-Seine, ${city.reach}.`,
   priority: 0.8,
 }));
 
@@ -105,15 +105,34 @@ const HUB_ROUTES: RouteDef[] = HUBS.map((hub) => ({
 const ZONES_ROUTE: RouteDef = {
   path: "/zones-desservies",
   kind: "zones",
-  title: "Zones desservies en Île-de-France | Agence web SmartFixx",
+  title: "Zones desservies en Île-de-France | SmartFixx",
   description:
     "Les communes d'Île-de-France où SmartFixx intervient : Hauts-de-Seine, Paris, Seine-Saint-Denis et Val-d'Oise. Une page par commune, avec son tissu économique local.",
   priority: 0.6,
 };
 
+/**
+ * Page d'erreur. Volontairement hors de `ROUTES` : elle ne doit apparaître ni
+ * dans le sitemap, ni dans le maillage interne. Le pré-rendu l'écrit dans
+ * `dist/404.html`, que Vercel sert avec un vrai code 404.
+ */
+export const NOT_FOUND_ROUTE: RouteDef = {
+  path: "/404",
+  kind: "notFound",
+  title: "Page introuvable | SmartFixx",
+  description:
+    "Cette adresse n'existe pas ou a changé. Retrouvez la création de site internet, la refonte et l'automatisation informatique depuis l'accueil.",
+  priority: 0,
+};
+
 export const ROUTES: RouteDef[] = [...STATIC_ROUTES, ZONES_ROUTE, ...HUB_ROUTES, ...CITY_ROUTES];
 
+/**
+ * Une URL inconnue renvoyait auparavant la route de l'accueil : côté navigateur,
+ * une faute de frappe affichait la page d'accueil sans le dire, ce qui empêche
+ * de comprendre qu'on s'est trompé.
+ */
 export const routeFor = (pathname: string): RouteDef => {
   const clean = pathname.replace(/\/+$/, "") || "/";
-  return ROUTES.find((route) => route.path === clean) ?? ROUTES[0];
+  return ROUTES.find((route) => route.path === clean) ?? NOT_FOUND_ROUTE;
 };

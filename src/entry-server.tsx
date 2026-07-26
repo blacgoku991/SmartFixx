@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import App from "./App";
 import { renderMode } from "./lib/renderMode";
-import { ROUTES } from "./data/routes";
+import { NOT_FOUND_ROUTE, ROUTES } from "./data/routes";
 import { site } from "./data/site";
 
 /**
@@ -18,4 +18,5 @@ export function render(pathname: string) {
 }
 
 export const routes = ROUTES;
+export const notFoundRoute = NOT_FOUND_ROUTE;
 export const siteUrl = site.url;
