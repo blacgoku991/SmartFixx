@@ -6,9 +6,13 @@
 
 @layer base {
   :root {
-    --sf-mint: 79 240 212;
-    --sf-violet: 139 92 255;
-    --sf-coral: 255 92 138;
+    --sf-signal: 91 140 255;
+    --sf-pulse: 34 211 238;
+    --sf-ember: 255 184 107;
+    /* Alias conservés le temps de la migration des classes. */
+    --sf-mint: 34 211 238;
+    --sf-violet: 91 140 255;
+    --sf-coral: 255 184 107;
     color-scheme: dark;
   }
 
@@ -29,7 +33,7 @@
   }
 
   ::selection {
-    background: rgb(var(--sf-mint) / 0.28);
+    background: rgb(var(--sf-signal) / 0.32);
     color: #ffffff;
   }
 
@@ -38,12 +42,12 @@
     width: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #04050a;
+    background: #070b18;
   }
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #21d3b6, #6c3bf5);
+    background: linear-gradient(180deg, #22d3ee, #3d6ff0);
     border-radius: 99px;
-    border: 3px solid #04050a;
+    border: 3px solid #070b18;
   }
 
   h1,
@@ -79,14 +83,14 @@
 
   /* Gradient text that stays legible on dark */
   .grad-text {
-    background: linear-gradient(100deg, #ffffff 0%, #b9f7ec 38%, #a985ff 78%);
+    background: linear-gradient(100deg, #ffffff 0%, #bcd4ff 34%, #22d3ee 72%, #5b8cff 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
 
   .grad-accent {
-    background: linear-gradient(100deg, #4ff0d4 0%, #8b5cff 100%);
+    background: linear-gradient(100deg, #22d3ee 0%, #5b8cff 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -112,10 +116,10 @@
   /* Primary CTA */
   .btn-primary {
     @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-6 py-3.5 font-display text-sm font-semibold text-ink-950 transition-transform duration-300 will-change-transform;
-    background: linear-gradient(100deg, #6bf5de 0%, #4ff0d4 40%, #a985ff 100%);
+    background: linear-gradient(100deg, #5be3f7 0%, #22d3ee 38%, #5b8cff 100%);
     box-shadow:
-      0 0 0 1px rgb(255 255 255 / 0.12) inset,
-      0 10px 40px -12px rgb(79 240 212 / 0.55);
+      0 0 0 1px rgb(255 255 255 / 0.14) inset,
+      0 10px 44px -12px rgb(91 140 255 / 0.6);
   }
   .btn-primary:hover {
     transform: translateY(-2px);
@@ -149,7 +153,7 @@
   }
 
   .text-shadow-glow {
-    text-shadow: 0 0 42px rgb(79 240 212 / 0.35);
+    text-shadow: 0 0 46px rgb(91 140 255 / 0.4);
   }
 
   .grid-lines {
@@ -215,4 +219,196 @@
   .marquee-track {
     animation: none !important;
   }
+}
+
+/* ===================================================================== */
+/* MOTION — entièrement en CSS natif, piloté par le défilement.          */
+/*                                                                       */
+/* Aucune de ces animations ne coûte de JavaScript : pas d'observateur,  */
+/* pas de calcul à chaque image, rien sur le fil principal. Elles        */
+/* n'emploient que `transform` et `opacity`, les deux seules propriétés  */
+/* que le compositeur traite sans refaire la mise en page.               */
+/*                                                                       */
+/* Règle qui gouverne tout le fichier : l'état PAR DÉFAUT est l'état     */
+/* FINAL. Un navigateur sans `animation-timeline`, un robot, un lecteur  */
+/* d'écran ou quelqu'un qui a demandé moins d'animations voit une page   */
+/* complète et lisible. L'animation est un supplément, jamais une        */
+/* condition d'affichage — c'est ce qui protège le LCP et l'indexation.  */
+/* ===================================================================== */
+
+@keyframes sf-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 2.2rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sf-rise-soft {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sf-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.965);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sf-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* État par défaut : visible. Voir l'en-tête du bloc. */
+.sf-reveal,
+.sf-reveal-soft,
+.sf-zoom {
+  opacity: 1;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .sf-reveal {
+      animation: sf-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 2% cover 26%;
+    }
+
+    .sf-reveal-soft {
+      animation: sf-rise-soft linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 22%;
+    }
+
+    .sf-zoom {
+      animation: sf-scale-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+
+    /* Décalage en cascade : une seule classe sur le parent suffit. */
+    .sf-stagger > * {
+      animation: sf-rise-soft linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 24%;
+    }
+  }
+}
+
+/* Barre de progression de lecture, collée en haut. Timeline de défilement
+   du document : zéro écouteur d'événement. */
+.sf-progress {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 60;
+  height: 2px;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, #22d3ee, #5b8cff 55%, #ffb86b);
+  opacity: 0;
+}
+
+@supports (animation-timeline: scroll()) {
+  .sf-progress {
+    opacity: 1;
+    animation: sf-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+/* Le signal : un trait de lumière qui traverse une surface. Déplacement en
+   `transform` seul, derrière un masque — rien n'est repeint. */
+.sf-sweep {
+  position: relative;
+  overflow: hidden;
+}
+.sf-sweep::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 42%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(var(--sf-pulse) / 0.16), transparent);
+  transform: translateX(-110%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sf-sweep::after {
+    animation: sweep 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+}
+
+/* Halos de fond qui dérivent très lentement. `filter: blur()` est posé une
+   fois et jamais animé : seul le `transform` bouge. */
+.sf-aurora {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  filter: blur(80px);
+  will-change: transform;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sf-aurora {
+    animation: drift 26s ease-in-out infinite;
+  }
+}
+
+/* Soulignement qui se dessine au survol, et au focus clavier. */
+.sf-underline {
+  position: relative;
+}
+.sf-underline::after {
+  content: "";
+  position: absolute;
+  inset-block-end: -2px;
+  inset-inline-start: 0;
+  height: 1px;
+  width: 0;
+  background: linear-gradient(90deg, #22d3ee, #5b8cff);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sf-underline:hover::after,
+.sf-underline:focus-visible::after {
+  width: 100%;
+}
+
+/* Carte qui se relève au survol. Une seule transition, sur transform. */
+.sf-lift {
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.45s ease,
+    box-shadow 0.45s ease;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .sf-lift:hover {
+    transform: translateY(-4px);
+    border-color: rgb(var(--sf-signal) / 0.4);
+    box-shadow: 0 18px 50px -24px rgb(var(--sf-signal) / 0.55);
+  }
+}
+
+/* Anneau de focus homogène sur tout le site. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid rgb(var(--sf-pulse));
+  outline-offset: 3px;
+  border-radius: 4px;
 }

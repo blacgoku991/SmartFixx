@@ -86,6 +86,10 @@ export default function App({ prerender = false, pathname }: AppProps) {
         </>
       )}
 
+      {/* Barre de progression de lecture — timeline de défilement CSS, aucun
+          écouteur d'événement, aucun calcul par image. */}
+      <div className="sf-progress" aria-hidden="true" />
+
       <Nav isHome={isHome} />
 
       {/*

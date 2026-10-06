@@ -143,10 +143,11 @@ void main() {
 
   float band = clamp(vDisplacement * 0.5 + 0.5, 0.0, 1.0);
 
-  vec3 deep   = vec3(0.005, 0.008, 0.020);
-  vec3 mint   = vec3(0.196, 0.886, 0.792);
-  vec3 violet = vec3(0.400, 0.235, 0.870);
-  vec3 coral  = vec3(1.000, 0.361, 0.541);
+  // Charte « Signal » : nuit indigo, bleu électrique, cyan, et un ambre rare.
+  vec3 deep   = vec3(0.027, 0.043, 0.094);  // #070B18
+  vec3 mint   = vec3(0.133, 0.827, 0.933);  // #22D3EE — cyan
+  vec3 violet = vec3(0.357, 0.549, 1.000);  // #5B8CFF — bleu signal
+  vec3 coral  = vec3(1.000, 0.722, 0.420);  // #FFB86B — ambre
 
   /* Values are linear here — the sRGB conversion below lifts them hard, so the
      body is kept very low and all the energy goes into the rim and the seams. */

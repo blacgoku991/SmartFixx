@@ -36,15 +36,31 @@ export function Hero({ ready }: { ready: boolean }) {
       id="top"
       className="relative flex min-h-[100svh] flex-col overflow-hidden pt-[68px]"
     >
-      {/* Ambient wash sitting between the canvas and the copy */}
+      {/*
+        Décor du hero, en trois couches. Les halos dérivent en `transform` seul —
+        le flou est posé une fois, jamais animé — et aucune de ces couches ne
+        contient de texte : rien ici ne retarde le plus grand rendu.
+      */}
       <div className="pointer-events-none absolute inset-0 -z-[5]">
-        <div className="absolute right-[6%] top-[46%] h-[680px] w-[680px] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(79,240,212,0.09),transparent_62%)] blur-3xl" />
-        <div className="absolute -right-40 top-16 h-[540px] w-[540px] rounded-full bg-[radial-gradient(circle,rgba(139,92,255,0.13),transparent_66%)] blur-3xl" />
+        <div className="sf-aurora right-[4%] top-[40%] h-[620px] w-[620px] -translate-y-1/2 bg-[radial-gradient(circle,rgba(91,140,255,0.22),transparent_64%)]" />
+        <div
+          className="sf-aurora -right-32 top-8 h-[480px] w-[480px] bg-[radial-gradient(circle,rgba(34,211,238,0.16),transparent_66%)]"
+          style={{ animationDelay: "-9s" }}
+        />
+        <div
+          className="sf-aurora -left-28 bottom-0 h-[420px] w-[420px] bg-[radial-gradient(circle,rgba(255,184,107,0.07),transparent_68%)]"
+          style={{ animationDelay: "-17s" }}
+        />
         <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-ink-950 to-transparent" />
       </div>
-      <div className="grid-lines pointer-events-none absolute inset-0 -z-[4] mask-fade-b opacity-[0.55]" />
-      {/* Scrim keeping the headline readable wherever the core drifts */}
-      <div className="pointer-events-none absolute inset-0 -z-[3] bg-[linear-gradient(180deg,rgba(4,5,10,0.5)_0%,rgba(4,5,10,0.68)_45%,rgba(4,5,10,0.86)_100%)] lg:bg-[linear-gradient(100deg,rgba(4,5,10,0.92)_0%,rgba(4,5,10,0.72)_30%,rgba(4,5,10,0.12)_52%,transparent_66%)]" />
+
+      <div className="grid-lines pointer-events-none absolute inset-0 -z-[4] mask-fade-b opacity-[0.45]" />
+
+      {/* Voile qui garde le titre lisible où que dérive le noyau 3D. */}
+      <div className="pointer-events-none absolute inset-0 -z-[3] bg-[linear-gradient(180deg,rgba(7,11,24,0.52)_0%,rgba(7,11,24,0.7)_45%,rgba(7,11,24,0.88)_100%)] lg:bg-[linear-gradient(100deg,rgba(7,11,24,0.94)_0%,rgba(7,11,24,0.74)_30%,rgba(7,11,24,0.14)_52%,transparent_66%)]" />
+
+      {/* Le signal : un trait de lumière qui traverse le haut du hero. */}
+      <div className="sf-sweep pointer-events-none absolute inset-x-0 top-[68px] -z-[2] h-px bg-white/[0.06]" />
 
       <motion.div
         style={{ y: contentY, opacity: contentOpacity }}
