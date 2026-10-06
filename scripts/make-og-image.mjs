@@ -20,10 +20,10 @@ const asDataUri = async (file) =>
   `data:font/woff2;base64,${(await readFile(path.join(FONT_DIR, file))).toString("base64")}`;
 
 const page = async () => {
-  const grotesk600 = await asDataUri("space-grotesk-600-latin.woff2");
-  const grotesk700 = await asDataUri("space-grotesk-700-latin.woff2");
-  const inter400 = await asDataUri("inter-400-latin.woff2");
-  const mono500 = await asDataUri("jetbrains-mono-500-latin.woff2");
+  const grotesk600 = await asDataUri("space-grotesk-var-latin.woff2");
+  const grotesk700 = await asDataUri("space-grotesk-var-latin.woff2");
+  const inter400 = await asDataUri("inter-var-latin.woff2");
+  const mono500 = await asDataUri("jetbrains-mono-var-latin.woff2");
 
   return `<!doctype html>
 <html><head><meta charset="utf-8"><style>

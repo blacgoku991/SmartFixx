@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown, ArrowUpRight, Sparkles } from "lucide-react";
-import { MaskedWords } from "../ui/Reveal";
 import { Magnetic } from "../ui/Magnetic";
 import { Marquee } from "../ui/Marquee";
 import { scrollToSection } from "@/hooks/useSmoothScroll";
@@ -63,26 +62,27 @@ export function Hero({ ready }: { ready: boolean }) {
           </span>
         </motion.div>
 
-        {/* Le slogan porte l'impact, la ligne d'appui porte les mots-clés. */}
+        {/*
+          Le slogan porte l'impact, la ligne d'appui porte les mots-clés.
+
+          Ce bloc est l'élément LCP, donc il est rendu en permanence et sans
+          animation. Il était auparavant conditionné à `ready`, c'est-à-dire à la
+          fin du préchargeur : le HTML pré-rendu peignait bien le titre, puis
+          React l'effaçait à l'hydratation et ne le remettait qu'une fois
+          l'introduction jouée. Le plus grand rendu était donc repoussé de
+          plusieurs secondes — et c'est exactement la mesure sur laquelle Google
+          classe. On fait entrer le décor, jamais le titre.
+        */}
         <h1 className="headline max-w-[16ch] text-[clamp(2.6rem,7.8vw,5.6rem)] leading-[0.95]">
-          {ready && (
-            <>
-              <MaskedWords text="On conçoit," delay={0.1} />
-              <br />
-              <MaskedWords text="on refond," delay={0.24} />
-              <br />
-              <MaskedWords text="on automatise." delay={0.38} wordClassName="grad-text" />
-              <motion.span
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.75, ease: EASE }}
-                className="mt-4 block max-w-[32ch] font-display text-[clamp(1rem,2vw,1.3rem)] font-medium leading-snug tracking-normal text-fog"
-              >
-                Agence web à Asnières-sur-Seine : création de site web, refonte et automatisation —
-                partout en Île-de-France.
-              </motion.span>
-            </>
-          )}
+          On conçoit,
+          <br />
+          on refond,
+          <br />
+          <span className="grad-text">on automatise.</span>
+          <span className="mt-4 block max-w-[32ch] font-display text-[clamp(1rem,2vw,1.3rem)] font-medium leading-snug tracking-normal text-fog">
+            Agence web à Asnières-sur-Seine : création de site web, refonte et automatisation —
+            partout en Île-de-France.
+          </span>
         </h1>
 
         <motion.p
@@ -144,7 +144,11 @@ export function Hero({ ready }: { ready: boolean }) {
           {[
             { value: "48 h", label: "Première maquette" },
             { value: "100 %", label: "Sur-mesure, zéro template" },
-            { value: "≤ 1,5 s", label: "Temps de chargement visé" },
+            /* « ≤ 1,5 s — temps de chargement visé » figurait ici. Un chiffre
+               qu'un prospect vérifie en trente secondes avec PageSpeed, et que
+               le site ne tenait pas. Remplacé par un engagement tenable, déjà
+               annoncé dans `site.responseTime` et dans les e-mails. */
+            { value: "24 h", label: "Réponse à votre demande" },
           ].map((item) => (
             <div key={item.label} className="flex flex-col gap-1">
               <dt className="font-display text-lg font-semibold text-white sm:text-xl">

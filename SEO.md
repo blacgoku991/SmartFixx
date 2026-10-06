@@ -8,7 +8,46 @@ le build de production servi en local.
 
 ---
 
-## Scores
+### Mesure du 6 octobre 2026 — étape 1 de la refonte
+
+Les scores dépendent de la machine qui mesure : un relevé fait dans un autre
+conteneur n'est pas comparable. Les deux colonnes ci-dessous ont été relevées à
+quelques minutes d'écart sur la même machine, avant et après la seule étape 1.
+
+| | Avant | Après |
+| --- | --- | --- |
+| Performance | 57 | **69** |
+| Accessibilité | 96 | **100** |
+| Largest Contentful Paint | 5,7 s | **5,0 s** |
+| First Contentful Paint | 5,3 s | **4,6 s** |
+| Total Blocking Time | 280 ms | **130 ms** |
+| Cumulative Layout Shift | 0,088 | **0** |
+| Poids transféré | 881 Ko | **764 Ko** |
+| Requêtes | 15 | **11** |
+
+Trois causes corrigées :
+
+1. **Le `<h1>` n'était pas rendu tant que l'animation d'introduction n'était pas
+   finie** (`{ready && …}`). Le HTML pré-rendu contenait bien le titre, le
+   navigateur le peignait, puis React l'effaçait à l'hydratation et ne le
+   remettait qu'après le préchargeur. L'élément LCP disparaissait puis revenait,
+   d'où aussi un CLS de 0,088. Le titre est désormais rendu en permanence et sans
+   animation : on fait entrer le décor, jamais le titre.
+2. **Dix fichiers de police pour trois polices.** Les familles sont variables :
+   un fichier porte tout l'axe de graisse, mais l'API Google renvoie la même URL
+   pour chaque graisse demandée et le script les enregistrait sous des noms
+   différents. Le navigateur retéléchargeait donc le même fichier. 345 040 octets
+   ramenés à 101 976, pour un rendu strictement identique.
+3. **Les liens légaux du pied de page** étaient sous la taille de cible tactile
+   exigée par WCAG 2.5.8.
+
+Le LCP reste à 5,0 s, loin de la cible de 2,5 s. Le blocage restant est le bundle
+JavaScript : React et framer-motion sur le chemin critique. C'est l'objet de
+l'étape suivante.
+
+---
+
+## Scores (relevé précédent, autre machine)
 
 | Catégorie | Avant | Après | Cible |
 | --- | --- | --- | --- |

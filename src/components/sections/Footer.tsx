@@ -128,11 +128,20 @@ export function Footer() {
             © {year} {site.legal.company} — Tous droits réservés
           </p>
           <p className="flex flex-wrap justify-center gap-x-3 font-mono text-[10.5px] uppercase tracking-[0.14em] text-fog-faint">
-            <a href="/mentions-legales" className="transition-colors hover:text-fog">
+            {/* `inline-block` et un padding vertical : sans eux la zone cliquable
+                se limite à la hauteur du texte, sous les 24 px que réclame
+                WCAG 2.5.8 pour une cible tactile. */}
+            <a
+              href="/mentions-legales"
+              className="inline-block py-1.5 transition-colors hover:text-fog"
+            >
               Mentions légales
             </a>
             <span aria-hidden="true">·</span>
-            <a href="/politique-de-confidentialite" className="transition-colors hover:text-fog">
+            <a
+              href="/politique-de-confidentialite"
+              className="inline-block py-1.5 transition-colors hover:text-fog"
+            >
               Politique de confidentialité
             </a>
           </p>
