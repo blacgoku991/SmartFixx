@@ -22,7 +22,7 @@ const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH 
 let failures = 0;
 const ok = (m) => console.log("  ✓", m);
 const ko = (m) => { failures++; console.log("  ✗", m); };
-async function open(viewport, path, { consent = "ouvert", reduced = false, theme = "dark", beforeGoto } = {}) {
+async function open(viewport, path, { consent = "ouvert", reduced = false, theme = "dark", beforeGoto, waitUntil = "load" } = {}) {
   const ctx = await browser.newContext({ viewport, reducedMotion: reduced ? "reduce" : "no-preference" });
   await ctx.addInitScript(([c, t]) => {
     try {
@@ -33,7 +33,7 @@ async function open(viewport, path, { consent = "ouvert", reduced = false, theme
   }, [consent, theme]);
   const page = await ctx.newPage();
   if (beforeGoto) await beforeGoto(page);
-  await page.goto(base + path, { waitUntil: "load", timeout: 60000 });
+  await page.goto(base + path, { waitUntil, timeout: 60000 });
   return { ctx, page };
 }
 for (const path of paths) {
@@ -41,7 +41,7 @@ for (const path of paths) {
   if (checks.has("h1")) {
     const { ctx, page } = await open({ width: 390, height: 844 }, path);
     const n = await page.locator("h1").count();
-    n === 1 ? ok("un seul h1") : ko(`h1 = ${n}`);
+    if (n === 1) ok("un seul h1"); else ko(`h1 = ${n}`);
     await ctx.close();
   }
   if (checks.has("overflow")) {
@@ -50,7 +50,7 @@ for (const path of paths) {
       await page.waitForTimeout(600);
       const r = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth,
         culprits: [...document.querySelectorAll("body *")].filter((e) => { const b = e.getBoundingClientRect(); return b.right > document.documentElement.clientWidth + 1 && getComputedStyle(e).position !== "fixed"; }).slice(0, 4).map((e) => e.tagName.toLowerCase() + (e.className && typeof e.className === "string" ? "." + e.className.split(" ").slice(0, 2).join(".") : "")) }));
-      r.sw <= r.cw ? ok(`pas de défilement horizontal à ${width}px`) : ko(`défilement horizontal à ${width}px (${r.sw} > ${r.cw}) : ${r.culprits.join(", ")}`);
+      if (r.sw <= r.cw) ok(`pas de défilement horizontal à ${width}px`); else ko(`défilement horizontal à ${width}px (${r.sw} > ${r.cw}) : ${r.culprits.join(", ")}`);
       await ctx.close();
     }
   }
@@ -80,10 +80,10 @@ for (const path of paths) {
       const r = await page.evaluate(() => new Promise((res) => {
         let last = null;
         new PerformanceObserver((l) => { for (const e of l.getEntries()) last = e; }).observe({ type: "largest-contentful-paint", buffered: true });
-        setTimeout(() => res(last ? { tag: last.element ? last.element.tagName.toLowerCase() : "?", inH1: !!(last.element && last.element.closest("h1")), size: last.size, url: last.url } : null), 300);
+        setTimeout(() => res(last ? { tag: last.element ? last.element.tagName.toLowerCase() + (last.element.className ? "." + String(last.element.className).split(" ")[0] : "") + " « " + (last.element.textContent || "").trim().slice(0, 40) + " »" : "?", inH1: !!(last.element && last.element.closest("h1")), size: last.size, url: last.url } : null), 300);
       }));
       const label = `${viewport.width}×${viewport.height}`;
-      r && r.inH1 ? ok(`${label} : LCP = H1 (${r.size}px²)`) : ko(`${label} : LCP = ${r ? r.tag + " " + (r.url || "") + " " + r.size + "px²" : "aucun"}`);
+      if (r && r.inH1) ok(`${label} : LCP = H1 (${r.size}px²)`); else ko(`${label} : LCP = ${r ? r.tag + " " + (r.url || "") + " " + r.size + "px²" : "aucun"}`);
       await ctx.close();
     }
   }
@@ -93,7 +93,7 @@ for (const path of paths) {
     await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
     await page.waitForTimeout(600);
     const n = await page.evaluate(() => document.getAnimations().map((a) => (a.animationName || a.constructor.name) + "@" + (a.effect?.target?.className || "")));
-    n.length === 0 ? ok("mode réduit : 0 animation après 5 s") : ko(`mode réduit : ${n.length} animation(s) : ${n.slice(0, 5).join(", ")}`);
+    if (n.length === 0) ok("mode réduit : 0 animation après 5 s"); else ko(`mode réduit : ${n.length} animation(s) : ${n.slice(0, 5).join(", ")}`);
     await ctx.close();
   }
   if (checks.has("reveal")) {
@@ -106,18 +106,20 @@ for (const path of paths) {
       const r = await page.evaluate(() => { const all = document.querySelectorAll(".sx-reveal"); const last = all[all.length - 1]; return { n: all.length, op: last ? getComputedStyle(last).opacity : null }; });
       const label = `${viewport.width}×${viewport.height}`;
       if (!r.n) ok(`${label} : aucun .sx-reveal (rien à contrôler)`);
-      else Number(r.op) === 1 ? ok(`${label} : dernier .sx-reveal opacité 1 (${r.n} éléments)`) : ko(`${label} : dernier .sx-reveal opacité ${r.op}`);
+      else if (Number(r.op) === 1) ok(`${label} : dernier .sx-reveal opacité 1 (${r.n} éléments)`); else ko(`${label} : dernier .sx-reveal opacité ${r.op}`);
       await ctx.close();
     }
   }
   if (checks.has("font")) {
     for (const width of [360, 390, 412, 1440]) {
       const held = [];
-      const { ctx, page } = await open({ width, height: 900 }, path, {
+      const opened = await open({ width, height: 900 }, path, {
         consent: "ferme",
+        waitUntil: "domcontentloaded",
         beforeGoto: (p) => p.route(/\.woff2(\?|$)/, (route) => { held.push(route); }),
-      }).catch(async (e) => ({ error: e }));
-      if (!page) { ko(`${width}px : chargement impossible`); continue; }
+      }).catch((e) => ({ error: e }));
+      const { ctx, page } = opened;
+      if (!page) { ko(`${width}px : chargement impossible (${opened.error?.message?.split("\n")[0]})`); continue; }
       const measure = () => page.evaluate(() => { const h = document.querySelector("h1"); if (!h) return null; const n = h.nextElementSibling || h.parentElement?.nextElementSibling; const a = h.getBoundingClientRect(); return { top: a.top + scrollY, h: a.height, next: n ? n.getBoundingClientRect().top + scrollY : null }; });
       await page.waitForTimeout(400);
       const before = await measure();
@@ -131,7 +133,7 @@ for (const path of paths) {
       else {
         const d = Math.max(Math.abs(after.h - before.h), Math.abs((after.next ?? 0) - (before.next ?? 0)));
         const info = `polices bloquées ${held.length}, chargées : ${fonts.join(", ") || "aucune"}`;
-        d <= 1 ? ok(`${width}px : décalage H1 ${d.toFixed(2)} px (${info})`) : ko(`${width}px : décalage H1 ${d.toFixed(2)} px (hauteur ${before.h.toFixed(1)} → ${after.h.toFixed(1)}) (${info})`);
+        if (d <= 1) ok(`${width}px : décalage H1 ${d.toFixed(2)} px (${info})`); else ko(`${width}px : décalage H1 ${d.toFixed(2)} px (hauteur ${before.h.toFixed(1)} → ${after.h.toFixed(1)}) (${info})`);
       }
       await ctx.close();
     }

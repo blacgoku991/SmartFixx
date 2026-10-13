@@ -3,7 +3,8 @@
 //                                       [--save=<fichier.json>] [--base=<fichier.json>]
 // Sources CSS : toutes les .css du dépôt (app, components, vendor) + le dossier --css (par exemple
 // <build VPS>/.next/static, qui contient les utilitaires Tailwind générés).
-// --scope=admin : app/admin, vps/overlay/app/admin, components/admin-*, components/campaign-*,
+// --scope=admin : app/admin, vps/overlay/app/admin, components/admin-*, components/campaign-* (sauf
+//                 campaign-flow et campaign-link, publics),
 //                 components/email-action.tsx et app/email ; --scope=public (défaut) : le reste de app
 //                 et components, hors components/ui.
 // --base : compare à une liste enregistrée (--save) et n'échoue que sur les orphelines NOUVELLES.
@@ -33,7 +34,9 @@ for (const f of cssFiles) {
 }
 // 2. classes citées par les .tsx du périmètre
 const rel = (p) => path.relative(repo, p);
-const isAdmin = (r) => /^app\/admin\//.test(r) || /^vps\/overlay\/app\/admin\//.test(r) || /^components\/(admin-|campaign-)/.test(r) || r === "components/email-action.tsx" || /^app\/email\//.test(r);
+// campaign-flow.tsx (/contact emailing, /tarifs) et campaign-link.tsx sont des composants PUBLICS (lot 8).
+const PUBLIC_CAMPAIGN = new Set(["components/campaign-flow.tsx", "components/campaign-link.tsx"]);
+const isAdmin = (r) => /^app\/admin\//.test(r) || /^vps\/overlay\/app\/admin\//.test(r) || (/^components\/(admin-|campaign-)/.test(r) && !PUBLIC_CAMPAIGN.has(r)) || r === "components/email-action.tsx" || /^app\/email\//.test(r);
 let files = [...walk(path.join(repo, "app"), (p) => p.endsWith(".tsx")), ...walk(path.join(repo, "components"), (p) => p.endsWith(".tsx")), ...walk(path.join(repo, "vps/overlay/app"), (p) => p.endsWith(".tsx"))];
 files = files.filter((p) => { const r = rel(p); if (r.startsWith("components/ui/")) return false; return scope === "admin" ? isAdmin(r) : !isAdmin(r) && !r.startsWith("vps/"); });
 function classExpressions(src) {
