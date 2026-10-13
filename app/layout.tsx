@@ -3,7 +3,7 @@ import "./globals.css";
 import {ThemeControl} from "@/components/theme-control";
 import {AudienceMeasurement} from "@/components/audience-measurement";
 import { JsonLd } from "@/components/json-ld";
-import { organization, SITE_URL } from "@/lib/seo";
+import { organization, SITE_URL, OG_IMAGE } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
     shortcut: "/favicon.ico",
   },
+  /* Hérité par les pages qui ne passent pas encore par pageMeta : chaque page publique a une og:image. */
+  openGraph: { siteName: "SmartFixx", locale: "fr_FR", type: "website", images: [OG_IMAGE] },
+  twitter: { card: "summary_large_image", images: [OG_IMAGE.url] },
 };
 
 export const viewport: Viewport = {
