@@ -1,0 +1,5 @@
+import type { Metadata } from "next";
+export const SITE_URL="https://smartfixx-reach.wgg9cdxhs2.chatgpt.site";
+export function pageMeta(title:string,description:string,path:string):Metadata{return {title,description,alternates:{canonical:path},openGraph:{title,description,url:SITE_URL+path,siteName:"SmartFixx",locale:"fr_FR",type:"website"},twitter:{card:"summary",title,description}};}
+export const organization={"@type":"Organization","@id":`${SITE_URL}/#organization`,name:"SmartFixx",logo:`${SITE_URL}/smartfixx-logo.webp`,url:SITE_URL,email:"contact@smartfixx.fr",legalName:"SmartFixx",identifier:"943047290",address:{"@type":"PostalAddress",streetAddress:"18 avenue Victoria",postalCode:"75001",addressLocality:"Paris",addressCountry:"FR"},areaServed:[{"@type":"Country",name:"France"},{"@type":"AdministrativeArea",name:"Île-de-France"}]};
+export function breadcrumb(items:{name:string;path:string}[]){return {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{name:"Accueil",path:"/"},...items].map((i,index)=>({"@type":"ListItem",position:index+1,name:i.name,item:SITE_URL+i.path}))};}

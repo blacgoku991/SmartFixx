@@ -1,0 +1,1 @@
+ALTER TABLE `campaign_runs` ADD `recipient_count` integer DEFAULT 0 NOT NULL;

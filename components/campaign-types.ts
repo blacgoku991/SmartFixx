@@ -1,0 +1,4 @@
+import type {CampaignActivity} from './campaign-terminal';
+export type CampaignRunView={id:string;name:string;code:string;subject:string;content_json:string;status:string;updated_at:number;created_at:number;scheduled_at:number|null;control_email:string;control_every:number;control_cursor:number;total?:number;accepted?:number;errors?:number;requests?:number};
+export type CampaignTargetView={id:string;email:string;name:string;company:string;status:string;is_test:number;control_milestone:number;attempts:number;last_error:string;smtp_diagnostic:string;started_at:number|null;accepted_at:number|null;first_open_at:number|null;first_click_at:number|null;interested_at:number|null;unsubscribed_at:number|null};
+export type CampaignDetail={campaign:CampaignRunView;targets:CampaignTargetView[];activity:CampaignActivity[];counts:Record<string,number>;total:number;page:number};

@@ -1,0 +1,16 @@
+'use client';
+import {useEffect,useRef,useState} from 'react';
+import {usePathname} from 'next/navigation';
+import Link from 'next/link';
+import {BarChart3,X} from 'lucide-react';
+import {measuredPaths} from '@/lib/analytics-config';
+const key='smartfixx-statistics-preference-v1';
+type Choice='yes'|'no'|null;
+export function AudienceMeasurement(){const path=usePathname();const[choice,setChoice]=useState<Choice>(null),[ready,setReady]=useState(false),[open,setOpen]=useState(false);const lastView=useRef('');
+ useEffect(()=>{try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(saved&&Date.now()-saved.at<180*86400000&&(saved.value==='yes'||saved.value==='no')){setChoice(saved.value);}else setOpen(true);}catch{setOpen(true)}setReady(true);const show=()=>setOpen(true);window.addEventListener('smartfixx-privacy',show);return()=>window.removeEventListener('smartfixx-privacy',show);},[]);
+ function choose(value:'yes'|'no'){setChoice(value);setOpen(false);try{localStorage.setItem(key,JSON.stringify({value,at:Date.now()}));}catch{/* Preference remains active for this page. */}}
+ useEffect(()=>{if(!ready||choice!=='yes'||!measuredPaths.includes(path))return;const send=(event:string,service='none')=>{void fetch('/api/analytics',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({consent:true,path,event,service}),keepalive:true}).catch(()=>{});};if(lastView.current!==path){send('view');lastView.current=path;}let formStarted=false;const click=(ev:MouseEvent)=>{const target=ev.target instanceof Element?ev.target.closest<HTMLElement>('[data-analytics],a[href]'):null;if(!target)return;const kind=target.dataset.analytics;const href=target.getAttribute('href');if(kind==='service')send('service',target.dataset.service||'none');else if(kind==='contact'||href?.startsWith('/contact')||href?.startsWith('/diagnostic'))send('contact',target.dataset.service||'none');};const focus=(ev:FocusEvent)=>{if(!formStarted&&ev.target instanceof Element&&ev.target.closest('.project-form,.contact-form-card form')){formStarted=true;send('form_start');}};document.addEventListener('click',click);document.addEventListener('focusin',focus);return()=>{document.removeEventListener('click',click);document.removeEventListener('focusin',focus);};},[path,choice,ready]);
+ if(!ready||!open||(path.startsWith('/admin')||path.startsWith('/email/')))return null;
+ return <aside className="privacy-choice" aria-label="Préférences de statistiques"><div className="privacy-choice-heading"><BarChart3 size={21}/><strong>Nous aider à améliorer le site ?</strong>{choice&&<button onClick={()=>setOpen(false)} aria-label="Fermer les préférences"><X size={18}/></button>}</div><p>Avec votre accord, nous comptons les pages consultées et les clics utiles, sans identifiant de visiteur ni contenu de formulaire. <Link href="/confidentialite">En savoir plus</Link>.</p><div className="privacy-choice-buttons"><button onClick={()=>choose('no')}>Refuser</button><button onClick={()=>choose('yes')}>Accepter</button></div></aside>;
+}
+export function PrivacyPreferences(){return <button className="privacy-settings" onClick={()=>window.dispatchEvent(new Event('smartfixx-privacy'))}>Préférences de statistiques</button>}

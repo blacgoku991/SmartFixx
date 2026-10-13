@@ -1,0 +1,27 @@
+name: smartfixx-web
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    init: true
+    ports:
+      - "127.0.0.1:3100:3000"
+    volumes:
+      - /opt/smartfixx-vps/data:/data
+    environment:
+      NODE_ENV: production
+      SMARTFIXX_DATA_DIR: /data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    stop_grace_period: 100s
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

@@ -1,0 +1,5 @@
+'use client';
+import {useEffect,useState} from 'react';
+import {Moon,Sun} from 'lucide-react';
+import {Switch} from './ui/switch';
+export function ThemeControl(){const[theme,setTheme]=useState<'dark'|'light'>('dark');useEffect(()=>{const apply=()=>setTheme(document.documentElement.dataset.theme==='light'?'light':'dark');apply();const sync=(e:StorageEvent)=>{if(e.key==='smartfixx-theme'&&(e.newValue==='dark'||e.newValue==='light')){document.documentElement.dataset.theme=e.newValue;apply()}};window.addEventListener('storage',sync);return()=>window.removeEventListener('storage',sync)},[]);function change(dark:boolean){const value=dark?'dark':'light';document.documentElement.dataset.theme=value;setTheme(value);try{localStorage.setItem('smartfixx-theme',value)}catch{}}return <div className="theme-control" role="group" aria-label="Apparence du site"><Sun size={16} aria-hidden="true"/><span>Clair</span><Switch checked={theme==='dark'} onCheckedChange={change} aria-label="Activer le mode sombre"/><Moon size={16} aria-hidden="true"/><span>Sombre</span></div>}

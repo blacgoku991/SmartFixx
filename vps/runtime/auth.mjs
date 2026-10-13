@@ -1,0 +1,14 @@
+import {randomBytes,scrypt as scryptCallback,timingSafeEqual,createHash} from 'node:crypto';
+import {promisify} from 'node:util';
+import {sqlite} from './database.mjs';
+const scrypt=promisify(scryptCallback),options={N:131072,r:8,p:1,maxmem:192*1024*1024};
+export const sessionCookie='__Host-smartfixx-session';
+export const digest=value=>createHash('sha256').update(value).digest('hex');
+export async function passwordHash(password){if(typeof password!=='string'||password.length<16||password.length>256)throw new Error('Choisissez un mot de passe de 16 à 256 caractères.');const salt=randomBytes(16);const hash=await scrypt(password,salt,64,options);return 'scrypt-v1.'+salt.toString('base64url')+'.'+hash.toString('base64url')}
+export async function passwordMatches(password,encoded){try{const [version,salt,key]=encoded.split('.');if(version!=='scrypt-v1'||password.length>256)return false;const expected=Buffer.from(key,'base64url');const actual=await scrypt(password,Buffer.from(salt,'base64url'),64,options);return expected.length===64&&timingSafeEqual(expected,actual)}catch{return false}}
+export function currentOwner(){return sqlite().prepare("SELECT id,email,password_hash FROM vps_owner WHERE id='owner'").get()||null}
+export async function setOwner(email,password){if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>254)throw new Error('Adresse administrateur invalide.');const hash=await passwordHash(password),db=sqlite();db.exec('BEGIN IMMEDIATE');try{db.prepare("INSERT INTO vps_owner VALUES ('owner',?,?,?) ON CONFLICT(id) DO UPDATE SET email=excluded.email,password_hash=excluded.password_hash").run(email.trim().toLowerCase(),hash,Date.now());db.exec('DELETE FROM vps_sessions;');db.exec('COMMIT')}catch(e){db.exec('ROLLBACK');throw e}}
+export function startSession(){const token=randomBytes(32).toString('base64url'),db=sqlite(),expires=Date.now()+8*3600000;db.prepare('DELETE FROM vps_sessions WHERE expires_at<?').run(Date.now());db.prepare('INSERT INTO vps_sessions VALUES (?,?)').run(digest(token),expires);return {token,expires}}
+export function sessionOwner(token){if(typeof token!=='string'||!/^[\w-]{43}$/.test(token))return null;const session=sqlite().prepare('SELECT expires_at FROM vps_sessions WHERE token_hash=? AND expires_at>?').get(digest(token),Date.now());const owner=session?currentOwner():null;return owner?{id:'vps-owner',email:owner.email,fullName:'Mohamed',displayName:'Mohamed'}:null}
+export function endSession(token){if(token)sqlite().prepare('DELETE FROM vps_sessions WHERE token_hash=?').run(digest(token))}
+export function rateLimit(key,max,windowMs){const db=sqlite(),now=Date.now(),bucket=Math.floor(now/windowMs),id=digest(key+':'+bucket);db.prepare('DELETE FROM request_limits WHERE expires_at<?').run(now);return !!db.prepare('INSERT INTO request_limits(key,count,expires_at) VALUES (?,1,?) ON CONFLICT(key) DO UPDATE SET count=count+1 WHERE count<? RETURNING count').get(id,(bucket+1)*windowMs,max)}

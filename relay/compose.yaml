@@ -1,0 +1,19 @@
+services:
+  smartfixx-relay:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      SMARTFIXX_DATA_DIR: /data
+    volumes:
+      - smartfixx-receipts:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 100s
+volumes:
+  smartfixx-receipts:

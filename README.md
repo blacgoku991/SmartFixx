@@ -1,208 +1,69 @@
-# SmartFixx
+# SmartFixx — site, administration et campagnes emailing
 
-Site vitrine de **SmartFixx** — création de sites web, refonte complète et
-automatisation de logiciels métiers.
+Ce dépôt contient la version complète créée avec ChatGPT : site public, demandes de devis, panel propriétaire, statistiques, campagnes emailing, éditeur HTML, suivi et désinscription, relais SMTP et adaptation VPS.
 
-Une page unique, sombre, avec une scène WebGL en fond de hero (shaders GLSL
-écrits à la main), des révélations au scroll et un diagramme d'automatisation
-animé.
+Le contenu de `main` remplace l'ancien site React/Vite travaillé par Claude, à la demande du propriétaire du 13 octobre 2026. La version précédente reste dans l'historique et dans la branche `backup/avant-transfert-chatgpt-20261013`.
 
----
+## Pour reprendre avec Claude
 
-## Démarrer
+Lire d'abord [CLAUDE.md](CLAUDE.md), puis :
 
-```bash
-npm install
-npm run dev        # http://localhost:5173
-```
+- [Brief du design et de la VSL](docs/BRIEF_DESIGN_VSL.md)
+- [Priorités SEO et acquisition](docs/SEO_ADS.md)
+- [État du transfert et de la production](docs/TRANSFERT.md)
 
-| Script              | Effet                                            |
-| ------------------- | ------------------------------------------------ |
-| `npm run dev`       | Serveur de développement Vite                    |
-| `npm run build`     | Typecheck, build, puis pré-rendu des 24 pages     |
-| `npm run build:spa` | Build sans pré-rendu (dépannage)                  |
-| `npm run preview`   | Sert le build de production localement           |
-| `npm run typecheck` | Vérification TypeScript stricte, sans émission   |
+Partir de `main`, dans une nouvelle branche. L'ancienne branche `claude/site-ect-repo-setup-2ddopb` appartient à l'ancien site et ne doit pas servir de base.
 
-## Stack
+## Deux environnements, une source applicative
 
-- **Vite 5** + **React 18** + **TypeScript** (mode strict)
-- **Tailwind CSS 3** — jetons de design dans `tailwind.config.ts`
-- **three.js** / **@react-three/fiber** / **@react-three/postprocessing** — scène du hero
-- **framer-motion** — animations d'interface et effets liés au scroll
-- **lenis** — défilement inertiel
+La racine est la source historique Sites : React 19, TypeScript, App Router via Vinext, Cloudflare D1 et authentification propriétaire via Sites. Elle n'est pas une application Vite statique à déployer telle quelle sur Vercel.
 
-## Structure
+`vps/prepare.py` produit la variante Next.js autonome pour le VPS : SQLite persistante, authentification locale, nonce CSP, Docker, Nginx et URL `https://smartfixx.fr`. Les écrans se modifient dans `app/`, `components/` et `lib/` à la racine ; les différences d'hébergement se trouvent dans `vps/overlay/` et `vps/runtime/`.
 
-```
-src/
-  components/
-    three/          Scène WebGL — shaders GLSL, core, particules, caméra
-    ui/             Primitives réutilisables (Reveal, TiltCard, Magnetic, Marquee…)
-    sections/       Une section de page par fichier
-    Nav.tsx  Cursor.tsx  Preloader.tsx
-  hooks/            Défilement inertiel, media queries, détection de matériel modeste
-  data/site.ts      Coordonnées, listes du formulaire  ← à personnaliser
-  fonts.css         Généré — ne pas éditer à la main
-public/fonts/       Polices auto-hébergées (woff2)
-scripts/            Utilitaires hors build
-```
+### Préparer la variante VPS pour travailler localement
 
-> **Le site en ligne n'est pas encore celui-ci.** `smartfixx.fr` sert un autre
-> site : Google affiche un titre différent de celui que produit ce dépôt. Voir
-> [DEPLOIEMENT.md](./DEPLOIEMENT.md) pour la mise en ligne et le plan de
-> référencement classé par impact.
-
-## Architecture SEO
-
-Le site est **pré-rendu au build** : `npm run build` génère un vrai fichier HTML
-statique par page, contenu et données structurées inclus. Les robots n'ont pas
-besoin d'exécuter du JavaScript, et three.js part dans un chunk asynchrone que
-le premier affichage n'attend pas.
-
-**24 pages**, organisées en trois niveaux :
-
-| Niveau | URL | Cible |
-| --- | --- | --- |
-| Accueil | `/` | Marque + intention large, ancrée Asnières |
-| Prestation | `/creation-site-internet-asnieres-sur-seine` | Requête locale principale |
-| Prestation | `/creation-site-internet-ile-de-france` | Requête régionale |
-| Prestation | `/refonte-site-internet` | Refonte sans perte de référencement |
-| Prestation | `/automatisation-informatique` | Automatisation / interconnexion |
-| Département | `/agence-web-hauts-de-seine`, `-paris`, `-seine-saint-denis`, `-val-d-oise` | « agence web + département » |
-| Commune | `/creation-site-internet-<ville>` × 12 | « création site internet + ville » |
-| Index | `/zones-desservies` | Maillage de toutes les communes |
-| Légal | `/mentions-legales`, `/politique-de-confidentialite` | Obligations + confiance |
-
-Communes couvertes : Clichy, Levallois-Perret, Courbevoie, Colombes,
-Bois-Colombes, Gennevilliers, Nanterre, Boulogne-Billancourt, Neuilly-sur-Seine,
-Issy-les-Moulineaux, Saint-Ouen-sur-Seine, Argenteuil.
-
-### Les pages locales sont volontairement discrètes
-
-Elles servent au référencement, pas à la navigation. Un visiteur qui arrive sur
-l'accueil ne voit **aucun nom de commune** : ni dans le menu, ni dans le pied de
-page, qui ne porte qu'un lien « Zones d'intervention ». Les pages ville
-n'existent que pour les visiteurs venus de Google sur « création site internet +
-leur ville ».
-
-Ce qu'il ne faut **pas** faire pour aller plus loin :
-
-- **Servir un contenu différent aux robots et aux visiteurs** (cloaking). C'est
-  la violation que Google sanctionne par une action manuelle, et elle porte sur
-  le domaine entier, pas sur les pages fautives.
-- **Mettre les pages en `noindex`** : elles disparaîtraient de Google, ce qui
-  supprime la seule raison de leur existence.
-- **Les retirer de tout lien interne.** Une page orpheline est explorée
-  rarement et mal classée. Le sitemap ne suffit pas : Google suit les liens.
-
-L'index `/zones-desservies` est le compromis : un seul lien discret dans le pied
-de page, qui donne à Google un chemin vers les 12 communes. Contrôle intégré au
-build — aucune page ville ne doit être orpheline.
-
-Le texte des pages précise systématiquement que la liste n'est pas limitative et
-que l'intervention couvre toute l'Île-de-France, plus la France à distance : rien
-ne doit suggérer une activité restreinte à ces communes.
-
-### Ajouter une commune
-
-Une entrée dans `src/data/cities.ts` suffit : la route, le titre, la
-description, le sitemap et le maillage se génèrent tout seuls.
-
-**Mais il faut écrire le contenu.** Chaque commune a quatre champs de texte qui
-doivent lui être propres : `fabric` (tissu économique), `searchAngle` (comment
-les recherches s'y comportent), `opportunity` (l'angle local concret) et `faq`
-(une question spécifique). Compter ~20 minutes de rédaction par ville.
-
-Google déclasse les « pages satellites » — les pages locales identiques où seul
-le nom de la ville change. Le recouvrement textuel entre les pages actuelles est
-mesuré à **35 % en moyenne** (nav et pied de page compris), ce qui est sain. Si
-vous ajoutez des villes en dupliquant le texte, ce chiffre monte et l'ensemble
-du réseau se fait déclasser, pas seulement les nouvelles pages.
-
-Vérifier après ajout :
+Utiliser Node 24 et Python 3. Le dossier de sortie doit être nouveau et extérieur au dépôt :
 
 ```bash
-npm run build   # échoue si une page rend moins de 3 000 caractères
+python3 vps/prepare.py ../smartfixx-vps-dev
+cd ../smartfixx-vps-dev
+npm ci
+npx next dev --hostname 127.0.0.1
 ```
 
-N'ajoutez une commune que si vous y avez réellement des clients ou une présence.
+Cette copie sert à prévisualiser. Reporter les changements dans les sources racines ou les overlays correspondants, puis régénérer la copie. Elle utilise une base locale vierge ; les identifiants et données du VPS ne sont pas dans GitHub. Ne pas connecter le relais de production à une copie de développement.
 
-Données structurées produites : `LocalBusiness` (adresse, coordonnées GPS,
-horaires, zones desservies), `Service` rattaché à la `City` sur chaque page
-commune, `FAQPage` (12 questions sur l'accueil + une question locale par
-commune), `BreadcrumbList` à trois niveaux, `WebSite`, `WebPage`.
+La variante VPS impose l'origine `https://smartfixx.fr` aux écritures. Pour les tests des formulaires/authentification, employer les tests HTTP fournis (qui envoient cette origine), ou un environnement de préproduction HTTPS configuré pour ce domaine. Une prévisualisation locale du design n'est pas une validation du formulaire.
 
-### Ce qui reste à faire hors du code
-
-Le référencement local ne se gagne pas uniquement dans le HTML. Dans le
-classement de la carte Google, **8 des 10 premiers facteurs viennent de la fiche
-Google Business Profile**, et les avis pèsent environ 17 %. Par ordre d'impact :
-
-1. **Créer et vérifier la fiche Google Business Profile** — catégorie
-   « Concepteur de sites Web », adresse exacte, horaires, photos, description.
-   Sans elle, aucune visibilité sur les recherches « près de moi ».
-2. **Collecter des avis Google** régulièrement, et y répondre.
-3. **Renseigner `src/data/site.ts`** : SIREN, adresse précise, téléphone,
-   coordonnées GPS du siège. La cohérence nom / adresse / téléphone entre le
-   site, la fiche et les annuaires est un signal direct.
-4. **S'inscrire dans les annuaires locaux** (Pages Jaunes, annuaires du 92).
-5. **Soumettre le sitemap** dans la Google Search Console.
-6. **Publier régulièrement** : chaque page utile de plus élargit la surface de
-   captation.
-
-## À personnaliser avant la mise en ligne
-
-1. **`src/data/site.ts`** — e-mail, téléphone, SIREN, adresse exacte,
-   coordonnées GPS, liens réseaux sociaux. Le bloc téléphone reste masqué tant
-   que `phone` est vide. `url` alimente canonical, Open Graph et sitemap.
-2. **`src/components/sections/Pricing.tsx`** — les montants sont des points de
-   départ indicatifs, alignez-les sur votre grille réelle.
-3. **`src/components/sections/Work.tsx`** — les trois projets décrivent des
-   formats types. Remplacez-les par vos références réelles dès que possible.
-4. **`index.html`** — `<link rel="canonical">` et l'URL Open Graph pointent vers
-   `https://smartfixx.fr/`.
-5. **Mentions légales et confidentialité** — les pages existent ; complétez les
-   champs marqués « à compléter » (hébergeur, médiateur, SIREN).
-6. **`public/robots.txt`** et `scripts/prerender.mjs` reprennent `site.url` :
-   changez le domaine à un seul endroit.
-
-### Formulaire de contact
-
-Sans back-end, l'envoi compose un e-mail pré-rempli dans le client du visiteur
-(`mailto:`). Pour un envoi direct, remplacez `window.location.href` dans
-`src/components/sections/Contact.tsx` par un appel à votre endpoint (Formspree,
-Resend, fonction serverless…).
-
-## Polices
-
-Les polices sont auto-hébergées : aucune requête vers un tiers au chargement,
-donc rien à déclarer côté RGPD, et une passe de latence en moins.
-
-Pour les régénérer (après un changement de graisse ou de famille) :
+### Vérifier la variante VPS
 
 ```bash
-node scripts/fetch-fonts.mjs
+# Depuis la copie générée
+npm run build
+# Depuis le dépôt, en adaptant le chemin absolu
+SMARTFIXX_TEST_BUILD=/chemin/absolu/smartfixx-vps-dev node --test vps/tests/http.test.mjs
+node --test vps/tests/runtime.test.mjs
+python3 -m unittest discover -s vps/tests -p '*_test.py'
 ```
 
-Le script télécharge les woff2 dans `public/fonts/` et réécrit `src/fonts.css`.
+Les tests HTTP emploient une base temporaire et un compte fictif. Ils vérifient les pages, l'accès administrateur, le formulaire et la persistance des campagnes sans envoyer d'emails.
 
-## Performance et accessibilité
+## Repères
 
-- La scène WebGL réduit son nombre de particules, sa résolution et coupe le
-  post-processing sur mobile, en `prefers-reduced-motion` et sur les machines
-  modestes (peu de cœurs ou peu de mémoire).
-- Le canvas cesse complètement de rendre une fois le hero dépassé.
-- `prefers-reduced-motion` désactive aussi le défilement inertiel, le curseur
-  personnalisé et les animations en boucle.
-- Contrastes tenus sur fond sombre, navigation au clavier préservée, libellés
-  ARIA sur les contrôles sans texte.
+| Dossier | Rôle |
+| --- | --- |
+| `app/`, `components/` | Pages, design, panel, formulaires |
+| `lib/` | Services, SEO, sécurité, campagnes, templates |
+| `drizzle/` | Migrations de la base |
+| `public/` | Logo, illustrations et téléchargements existants |
+| `relay/` | Agent SMTP indépendant, reçu d'envoi persistant |
+| `vps/` | Adaptation Node/SQLite, Docker, installation et tests |
+| `tests/` | Tests de la variante Sites et du contenu emailing |
 
-## Déploiement
+## Mise en ligne
 
-Site statique — `npm run build` puis publiez `dist/`. Chaque page a son propre
-`index.html` dans un dossier : aucune règle de réécriture n'est nécessaire, et
-il ne faut **pas** activer de repli SPA vers `/index.html` (cela servirait
-l'accueil sur toutes les URL et casserait le référencement).
-`vercel.json` et `netlify.toml` sont déjà configurés (build, dossier de sortie,
-cache long sur les polices et les assets versionnés).
+Ce transfert GitHub ne met pas à jour le VPS. Les déploiements automatiques Vercel sont désactivés par `vercel.json`, car cette source nécessite la bonne adaptation serveur. Les réactiver seulement après avoir choisi et vérifié la cible d'hébergement.
+
+Lire `vps/LISEZ-MOI.md` pour une nouvelle installation. Pour le VPS existant, ne pas relancer l'installation initiale : préserver la base, les secrets, le port réellement utilisé et les reçus du relais. Les archives déjà présentes dans `public/downloads` sont celles de la version de septembre, pas un mécanisme automatique de mise à jour des prochains changements.
+
+Aucun mot de passe, fichier `.env` de production, base clients ou compte SMTP n'est inclus. La validation technique de septembre est documentée dans `docs/TRANSFERT.md` ; elle ne constitue pas un contrôle du serveur actuel.

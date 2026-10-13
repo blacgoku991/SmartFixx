@@ -1,0 +1,17 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {build} from 'esbuild';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {createRequire} from 'node:module';
+const dir=mkdtempSync(join(tmpdir(),'smartfixx-mail-'));
+await build({entryPoints:['lib/email-template.ts','lib/email-destination.ts','lib/campaign-sending-config.ts'],outdir:dir,bundle:true,platform:'node',format:'cjs',outExtension:{'.js':'.cjs'},logLevel:'silent'});
+const require=createRequire(import.meta.url),{emailTemplate,emailText}=require(join(dir,'email-template.cjs')),{emailDestination}=require(join(dir,'email-destination.cjs')),{contentSchema}=require(join(dir,'campaign-sending-config.cjs'));
+const options={style:'blocks',base:'https://smartfixx.fr',headline:'Les solutions de votre entreprise',intro:'Découvrez nos solutions pour votre activité.',stopUrl:'https://smartfixx.fr/email/stop?token=signed',serviceUrls:{emailing:'https://smartfixx.fr/api/email/click?token=signed&service=emailing'}};
+test('new model has service links, SmartFixx signature, protected footer and no pixel by default',()=>{const html=emailTemplate(options);assert.match(html,/href="https:\/\/smartfixx.fr\/api\/email\/click\?token=signed&amp;service=emailing"/);assert.match(html,/href="https:\/\/smartfixx.fr\/cybersecurite"/);assert.match(html,/Arrêter la prospection/);assert.doesNotMatch(html,/Mohamed|<img/);assert.match(emailText(options),/service=emailing/);assert.doesNotMatch(emailText(options),/Mohamed/)});
+test('custom HTML removes active markup, external resources and unapproved links while escaping personalization',()=>{const html=emailTemplate({...options,headline:'<img src=x onerror=alert(1)>',customHtml:'<script>alert(1)</script><style>body{display:none}</style><img src="https://tracker.invalid"><form><input></form><p style="background-image:url(https://tracker.invalid);position:fixed;color:#123456">{{titre}}</p><a href="javascript:alert(1)">Bad</a><a href="https://tracker.invalid">Tracker</a><a href="{{lien_emailing}}">Good</a>'});assert.doesNotMatch(html,/<script|<style|<img|<form|<input|javascript:|tracker.invalid|position:fixed|background-image/);assert.match(html,/&lt;img/);assert.match(html,/color:#123456/);assert.match(html,/Arrêter la prospection/);assert.match(html,/service=emailing/)});
+test('service destinations reject open redirects and retain campaign attribution',()=>{assert.match(emailDestination('campagne_test','emailing'),/\/prospection-emailing\?utm_source=smartfixx/);assert.match(emailDestination('campagne_test','https://evil.invalid'),/\/services\?/);assert.match(emailDestination('campagne_test','__proto__'),/\/services\?/)});
+test('schema accepts legacy content unchanged and bounds editable HTML',()=>{const old={headline:'Une offre pour votre entreprise',intro:'Une proposition de services pour votre entreprise.',cta:'Découvrir',style:'designed'};assert.deepEqual(contentSchema.parse(old),old);assert.equal(contentSchema.safeParse({...old,style:'blocks',customHtml:'x'.repeat(60001)}).success,false)});
+test('legacy campaigns keep original rendering and measurement remains opt-in',()=>{assert.match(emailTemplate({...options,style:'designed'}),/Mohamed/);assert.match(emailTemplate({...options,pixelUrl:'https://smartfixx.fr/pixel?token=one'}),/<img src="https:\/\/smartfixx.fr\/pixel\?token=one"/)});
+process.on('exit',()=>rmSync(dir,{recursive:true,force:true}));

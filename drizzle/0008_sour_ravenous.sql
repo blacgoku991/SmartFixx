@@ -1,0 +1,1 @@
+CREATE INDEX `idx_quote_requests_campaign_expires` ON `quote_requests` (`campaign`,`expires_at`);
