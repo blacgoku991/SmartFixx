@@ -1,7 +1,57 @@
 import Link from "@/components/campaign-link";
-import {PrivacyPreferences} from "./audience-measurement";
-import { ArrowUpRight } from "lucide-react";
+import { PrivacyPreferences } from "./audience-measurement";
+import { Cartouche } from "@/components/sx/cartouche";
+import { MotionToggle } from "@/components/sx/motion-gate";
+import { SITE_IDENTITY, mailHref, telHref } from "@/lib/site-identity";
+/* Brand : aussi utilisée par le panel et la page email (classes .brand, .brand-logo, .brand-product du
+   contrat legacy). Le nom accessible contient tout le texte visible (label-content-name-mismatch). */
 export function Brand() {
-  return <Link href="/" className="brand" aria-label="SmartFixx, accueil"><img className="brand-logo" src="/smartfixx-logo.webp" width="56" height="56" alt=""/><span>smartfixx<span className="brand-product">digital studio</span></span></Link>;
+  return (
+    <Link href="/" className="brand sx-brand" aria-label="SmartFixx par Mohamed, accueil">
+      <img className="brand-logo" src="/smartfixx-logo.webp" width="40" height="40" alt="" />
+      <span className="sx-brand-text"><span className="sx-brand-name">SmartFixx</span><span className="brand-product">par Mohamed</span></span>
+    </Link>
+  );
 }
-export function Footer() {return <footer className="site-footer unified-footer"><div className="container unified-footer-grid"><div><Brand/><p>Créer. Automatiser. Protéger.<br/>Rencontrer vos prochains clients.</p><a href="mailto:contact@smartfixx.fr">contact@smartfixx.fr</a></div><div><span className="footer-label">EXPERTISES</span><Link href="/creation-site-internet">Création de site</Link><Link href="/refonte-site-internet">Refonte de site</Link><Link href="/developpement-sur-mesure">Développement sur mesure</Link><Link href="/automatisation-informatique">Automatisation</Link><Link href="/cybersecurite">Cybersécurité</Link><Link href="/referencement-seo">Référencement SEO</Link></div><div><span className="footer-label">PROSPECTION REACH</span><Link href="/prospection-emailing">Prospection emailing</Link><Link href="/solutions">Fichier & data ciblée</Link><Link href="/tarifs">Tarifs emailing</Link><Link href="/methode">Méthode emailing</Link><Link href="/garanties">Garanties emailing</Link></div><div><span className="footer-label">AVANÇONS ENSEMBLE</span><Link href="/contact">Décrire mon projet</Link><Link href="/diagnostic">Faire le point</Link><Link href="/agence-web-ile-de-france">Île-de-France</Link><Link href="/agence-web-france">France, à distance</Link><Link href="/conseils">Guides & conseils</Link></div></div><div className="container footer-bottom"><span>© {new Date().getFullYear()} SmartFixx</span><div><Link href="/mentions-legales">Mentions légales</Link><Link href="/confidentialite">Confidentialité</Link><PrivacyPreferences/><Link href="/admin">Espace admin ↗</Link></div></div></footer>;}
+const columns: { title: string; links: [string, string][] }[] = [
+  { title: "Création & refonte", links: [["Création de site internet", "/creation-site-internet"], ["Refonte de site internet", "/refonte-site-internet"], ["Création de site à Asnières-sur-Seine", "/creation-site-internet-asnieres-sur-seine"], ["Île-de-France", "/agence-web-ile-de-france"], ["France, à distance", "/agence-web-france"]] },
+  { title: "Prestations", links: [["Développement sur mesure", "/developpement-sur-mesure"], ["Automatisation", "/automatisation-informatique"], ["Sécurité web", "/cybersecurite"], ["Référencement SEO", "/referencement-seo"], ["Prospection emailing", "/prospection-emailing"], ["Toutes les prestations", "/services"]] },
+  { title: "Conseils", links: [["Tous les conseils", "/conseils"], ["Préparer la refonte de son site", "/conseils/preparer-refonte-site-internet"], ["Automatiser le suivi des demandes", "/conseils/automatiser-suivi-demandes-clients"], ["Préparer une campagne d’emailing B2B", "/conseils/preparer-campagne-emailing-b2b"]] },
+];
+/* Pied de page public (SiteFooter). Plus aucun lien /admin. */
+export function Footer() {
+  return (
+    <footer className="sx-footer">
+      <div className="sx-container">
+        <div className="sx-footer-top">
+          <div className="sx-footer-contact">
+            <Brand />
+            <p>Mohamed — SmartFixx<br /><a href={telHref} className="sx-tabular">{SITE_IDENTITY.PHONE_DISPLAY}</a><br /><a href={mailHref}>{SITE_IDENTITY.EMAIL}</a></p>
+            <p><span className="sx-nowrap">Asnières-sur-Seine</span> · Hauts-de-Seine · Île-de-France · à distance</p>
+          </div>
+          <div className="sx-footer-cols">
+            {columns.map((col) => (
+              <nav key={col.title} aria-label={col.title}>
+                <h2>{col.title}</h2>
+                <ul>{col.links.map(([label, href]) => <li key={href}><Link href={href}>{label}</Link></li>)}</ul>
+              </nav>
+            ))}
+            <nav aria-label="Légal">
+              <h2>Légal</h2>
+              <ul>
+                <li><Link href="/mentions-legales">Mentions légales</Link></li>
+                <li><Link href="/confidentialite">Confidentialité</Link></li>
+                <li><PrivacyPreferences /></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <Cartouche variant="footer" />
+        <div className="sx-footer-bottom">
+          <span>© {new Date().getFullYear()} {SITE_IDENTITY.LEGAL}</span>
+          <MotionToggle />
+        </div>
+      </div>
+    </footer>
+  );
+}

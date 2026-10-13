@@ -224,6 +224,7 @@
   .sx-main{display:block;outline:none}
   .sx-section{position:relative;padding-block:var(--sx-section-y);background:var(--sx-bg)}
   .sx-section--surface{background:var(--sx-surface)}
+  .sx-section>.sx-ambient~*{position:relative}
   .sx-section--night{background:radial-gradient(120% 80% at 80% 0%,var(--sx-glow),transparent 60%),var(--sx-bg);overflow:clip}
   .sx-section-head{display:grid;gap:var(--sx-space-4);max-width:var(--sx-measure);margin-bottom:var(--sx-space-7)}
   .sx-section-head>h2{font-size:var(--sx-step-3)}
@@ -248,11 +249,17 @@
   .sx-hero{position:relative;isolation:isolate;overflow:clip;padding-block:var(--sx-space-6) var(--sx-space-7);background:var(--sx-bg)}
   .sx-hero-grid{position:relative;z-index:1;display:grid;gap:var(--sx-space-7);align-items:center}
   .sx-hero-copy{min-width:0}
-  .sx-h1{margin:0;font-size:var(--sx-step-5)}
-  .sx-h1-tagline{display:block;margin-top:.35em;font-family:var(--sx-font-text);font-stretch:100%;font-weight:400;font-size:clamp(1.125rem,1rem + .9vw,1.75rem);line-height:1.25;letter-spacing:0;color:var(--sx-text-muted)}
+  /* H1 en deux parties dans un même bloc : le corps du H1 est à la taille du sous-titre (strut réduit), le
+     titre principal est un span en ligne à step-5 ; un bloc vide en ligne ménage l'écart avant le sous-titre. */
+  .sx-h1{margin:0;font-size:clamp(1.125rem,1rem + .9vw,1.75rem);line-height:1.25;letter-spacing:0}
+  .sx-h1-main{font-size:var(--sx-step-5);line-height:var(--sx-leading-h1);letter-spacing:var(--sx-tracking-title)}
+  .sx-h1:has(.sx-h1-tagline) .sx-h1-main::after{content:'';display:inline-block;width:0;height:1.28em;vertical-align:top}
+  .sx-h1-tagline{font-family:var(--sx-font-text);font-stretch:100%;font-weight:400;letter-spacing:0;color:var(--sx-text-muted)}
+  .sx-h1-tagline::before{content:'\A';white-space:pre}
   .sx-hero .sx-lead{margin:var(--sx-space-4) 0 0}
   .sx-hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sx-space-3);margin-top:var(--sx-space-5)}
-  .sx-hero-proofs{margin-top:var(--sx-space-5)}
+  @media (max-width:479.98px){.sx-hero-actions .sx-btn{flex:1 0 auto;padding-inline:20px}}
+  .sx-hero .sx-hero-proofs{margin-top:var(--sx-space-5)}
   .sx-hero-backdrop{position:absolute;inset:auto 0 0 0;z-index:0;pointer-events:none}
   .sx-hero-aside{min-width:0}
   @media (max-width:767.98px){html[data-consent='pending'] .sx-hero{padding-bottom:calc(var(--sx-space-5) + var(--sx-consent-reserve))}}
@@ -292,6 +299,7 @@
   .sx-phone-icon{display:grid;place-items:center;flex:none;width:44px;height:44px;border:1px solid var(--sx-line-strong);border-radius:50%;color:var(--sx-text)}
   .sx-phone-icon svg{width:18px;height:18px}
   .sx-phone--compact{padding:0;min-height:44px}
+  @media (max-width:479.98px){.sx-phone--compact-sm{padding:0}.sx-phone--compact-sm .sx-phone-number{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}}
 
   /* --- Preuves --- */
   .sx-proofs{display:grid;gap:10px;margin:0;padding:0;list-style:none}
@@ -362,13 +370,14 @@
   /* --- Réalisations --- */
   .sx-works{display:grid;gap:var(--sx-space-5)}
   .sx-work{display:grid;gap:var(--sx-space-5);padding:var(--sx-space-5);border:1px solid var(--sx-line);border-radius:var(--sx-radius-lg);background:var(--sx-surface)}
+  .sx-work>div:first-child{display:grid;gap:var(--sx-space-3);align-content:start}
   .sx-work h3{margin:0;font-size:var(--sx-step-2)}
   .sx-work p{margin:0;color:var(--sx-text-muted)}
   .sx-work-meta{display:flex;flex-wrap:wrap;gap:8px}
   .sx-chip{display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:2px 10px;border-radius:var(--sx-radius-pill);font-size:12px;font-weight:650;line-height:1.2;color:var(--sx-text);background:color-mix(in srgb,var(--sx-text-muted) var(--sx-chip-tint-neutral),var(--sx-surface))}
   .sx-chip--signal{color:var(--sx-signal-text);background:color-mix(in srgb,var(--sx-signal) var(--sx-chip-tint),var(--sx-surface))}
   .sx-chip--accent{color:var(--sx-accent);background:color-mix(in srgb,var(--sx-accent) var(--sx-chip-tint),var(--sx-surface))}
-  .sx-mini{display:grid;gap:8px;padding:14px;height:100%;color:var(--sx-text);background:var(--sx-surface-2)}
+  .sx-mini{display:grid;align-content:start;gap:8px;padding:14px;height:100%;color:var(--sx-text);background:var(--sx-surface-2)}
   .sx-mini-row{display:grid;grid-template-columns:1.4fr 1fr auto;gap:8px;align-items:center;padding:8px 10px;border-radius:8px;background:var(--sx-surface);font-size:12px;line-height:1.3}
   .sx-mini-row b{font-weight:650}
   .sx-mini-row span{color:var(--sx-text-muted)}
@@ -396,14 +405,16 @@
   .sx-menu-button svg{width:22px;height:22px}
   .sx-nav,.sx-header-cta,.sx-header-phone{display:none}
   .sx-menu{position:fixed;inset:var(--sx-header-h) 0 auto 0;margin:0;width:100%;max-height:calc(100dvh - var(--sx-header-h));overflow:auto;padding:var(--sx-space-4) var(--sx-gutter) var(--sx-space-6);border:0;border-bottom:1px solid var(--sx-line);background:var(--sx-surface);color:var(--sx-text);box-shadow:var(--sx-shadow-2)}
-  .sx-menu:not(:popover-open):not(.is-open){display:none}
+  .sx-menu{display:none}
+  .sx-menu.is-open{display:block}
+  .sx-menu:popover-open{display:block}
   .sx-menu ul{display:grid;margin:0;padding:0;list-style:none}
   .sx-menu a{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:6px 0;border-bottom:1px solid var(--sx-line);color:var(--sx-text);font-weight:600;text-decoration:none}
   .sx-menu a[aria-current='page']{color:var(--sx-signal-text)}
   .sx-menu-group{margin-top:var(--sx-space-4);font-size:var(--sx-step--1);font-weight:650;letter-spacing:var(--sx-tracking-eyebrow);text-transform:uppercase;color:var(--sx-text-muted)}
   .sx-menu-foot{display:grid;gap:var(--sx-space-3);margin-top:var(--sx-space-5)}
-  @media (min-width:768px){.sx-header-phone{display:inline-flex}.sx-header-phone-compact{display:none}}
-  @media (min-width:1024px){
+  @media (min-width:768px) and (max-width:1179.98px),(min-width:1600px){.sx-header-phone{display:inline-flex}.sx-header-phone-compact{display:none}}
+  @media (min-width:1180px){
     .sx-nav{display:flex;align-items:center;margin-right:auto}
     .sx-header .sx-brand{margin-right:var(--sx-space-5)}
     .sx-nav>ul{display:flex;align-items:center;gap:2px;margin:0;padding:0;list-style:none}
@@ -423,7 +434,7 @@
   }
 
   /* --- Marque (export Brand, aussi utilisé par le panel) --- */
-  .sx-brand{display:inline-flex;align-items:center;gap:10px;min-height:44px;color:var(--sx-text);text-decoration:none}
+  .sx-brand{display:inline-flex;flex:none;align-items:center;gap:10px;min-height:44px;color:var(--sx-text);text-decoration:none;white-space:nowrap}
   .sx-brand .brand-logo{width:40px;height:40px;border-radius:10px;flex:none}
   .sx-brand-text{display:grid;line-height:1.05}
   .sx-brand-name{font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:1.25rem;letter-spacing:-.01em}
@@ -450,7 +461,7 @@
   @media (min-width:768px){.sx-mobile-bar{display:none!important}}
 
   /* --- Consentement (AudienceMeasurement) : barre basse ≤ 120 px sur mobile, carte de 380 px sur ordinateur --- */
-  .sx-consent{position:fixed;left:0;right:0;bottom:0;z-index:var(--sx-z-consent);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 10px;padding:10px var(--sx-gutter) calc(10px + env(safe-area-inset-bottom));background:var(--sx-surface-2);color:var(--sx-text);border-top:1px solid var(--sx-line-strong);box-shadow:0 -16px 40px -24px rgba(0,0,0,.6)}
+  .sx-consent{position:fixed;left:0;right:0;bottom:0;z-index:var(--sx-z-consent);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 10px;padding:8px var(--sx-gutter) calc(8px + env(safe-area-inset-bottom));background:var(--sx-surface-2);color:var(--sx-text);border-top:1px solid var(--sx-line-strong);box-shadow:0 -16px 40px -24px rgba(0,0,0,.6)}
   .sx-consent-title{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0;font-family:var(--sx-font-text);font-stretch:100%;font-size:.9375rem;font-weight:700;letter-spacing:0;line-height:1.2}
   .sx-consent-text{grid-column:1/-1;margin:0;font-size:12.5px;line-height:1.35;color:var(--sx-text-muted)}
   .sx-consent-text a{color:var(--sx-text);text-decoration:underline;text-underline-offset:2px}
@@ -474,7 +485,7 @@
   .theme-control:not(:has(:focus-visible)){outline:none}
   /* Pages publiques : dans l'emplacement réservé à droite de l'en-tête */
   html:has(.sx-header){--sx-theme-slot-w:52px}
-  html:has(.sx-header) .theme-control{top:calc((var(--sx-header-h) - 44px) / 2);bottom:auto;right:max(var(--sx-gutter),calc((100% - var(--sx-container)) / 2));z-index:calc(var(--sx-z-header) + 1);width:var(--sx-theme-slot-w);padding:0;border:0;background:transparent;box-shadow:none}
+  html:has(.sx-header) .theme-control{top:calc((var(--sx-header-h) - 44px) / 2);bottom:auto;right:max(var(--sx-gutter),calc((100% - 1440px) / 2));z-index:calc(var(--sx-z-header) + 1);width:var(--sx-theme-slot-w);padding:0;border:0;background:transparent;box-shadow:none}
   html:has(.sx-header) .theme-control svg{display:none}
   html:has(.sx-header) .theme-control span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
   @media (min-width:768px){
@@ -530,16 +541,21 @@
 @keyframes sx-spin{to{transform:rotate(360deg)}}
 @keyframes sx-reveal{from{opacity:0;transform:translate3d(0,28px,0)}to{opacity:1;transform:none}}
 @keyframes sx-word{from{opacity:0;transform:translate3d(0,.45em,0)}to{opacity:1;transform:none}}
-@keyframes sx-parallax{from{transform:translate3d(0,var(--sx-depth,40px),0)}to{transform:translate3d(0,calc(var(--sx-depth,40px) * -1),0)}}
-@keyframes sx-drift{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(var(--sx-drift-x,6%),var(--sx-drift-y,-4%),0) scale(1.08)}100%{transform:translate3d(calc(var(--sx-drift-x,6%) * -.6),calc(var(--sx-drift-y,-4%) * -.5),0) scale(.96)}}
+/* Aucune var() dans les images clés : Chrome ne composite pas une animation dont les images clés
+   référencent des propriétés personnalisées (elle repasserait sur le fil principal). */
+@keyframes sx-parallax{from{transform:translate3d(0,40px,0)}to{transform:translate3d(0,-40px,0)}}
+@keyframes sx-parallax-deep{from{transform:translate3d(0,90px,0)}to{transform:translate3d(0,-90px,0)}}
+@keyframes sx-drift{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(6%,-4%,0) scale(1.08)}100%{transform:translate3d(-4%,2%,0) scale(.96)}}
+@keyframes sx-drift-alt{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-7%,3%,0) scale(1.06)}100%{transform:translate3d(5%,-3%,0) scale(.97)}}
 @keyframes sx-twinkle{0%,100%{opacity:0}12%,58%{opacity:.9}70%{opacity:.25}}
 @keyframes sx-sheen{0%,72%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
 @media (prefers-reduced-motion:no-preference){
   /* Ambiance continue : seulement quand MotionGate a posé data-motion=on, et suspendue hors écran
      (MotionGate pose data-sx-visible sur chaque [data-sx-ambient] visible). */
   html[data-motion='on'] [data-sx-ambient] .sx-glow{animation:sx-drift var(--sx-drift-dur,22s) var(--sx-ease-inout) infinite alternate}
-  html[data-motion='on'] [data-sx-ambient] .sx-win:not(.is-lit){animation:sx-twinkle var(--sx-twinkle-dur,9s) linear infinite;animation-delay:var(--sx-delay,0s)}
-  html[data-motion='on'] [data-sx-ambient].sx-sheen::after,html[data-motion='on'] [data-sx-ambient] .sx-sheen::after{animation:sx-sheen 9s var(--sx-ease-inout) infinite;animation-delay:var(--sx-delay,1.5s)}
+  html[data-motion='on'] [data-sx-ambient] .sx-glow--alt{animation-name:sx-drift-alt}
+  html[data-motion='on'] [data-sx-ambient] .sx-win:not(.is-lit){animation:sx-twinkle var(--sx-twinkle-dur,18s) linear infinite;animation-delay:var(--sx-delay,0s)}
+  html[data-motion='on'] [data-sx-ambient].sx-sheen::after,html[data-motion='on'] [data-sx-ambient] .sx-sheen::after{animation:sx-sheen 11s var(--sx-ease-inout) infinite;animation-delay:var(--sx-delay,-2s)}
   html[data-motion='on'] [data-sx-ambient]:not([data-sx-visible]),html[data-motion='on'] [data-sx-ambient]:not([data-sx-visible]) *,html[data-motion='on'] [data-sx-ambient]:not([data-sx-visible])::after,html[data-motion='on'] [data-sx-ambient]:not([data-sx-visible]) *::after{animation-play-state:paused!important}
   html[data-motion-paused] [data-sx-ambient],html[data-motion-paused] [data-sx-ambient] *,html[data-motion-paused] [data-sx-ambient]::after,html[data-motion-paused] [data-sx-ambient] *::after{animation-play-state:paused!important}
   /* Défilement : révélations (R6), titres cinétiques (R7), parallaxe lente. Visibles par défaut. */
@@ -547,5 +563,6 @@
     html[data-motion='on']:not([data-motion-paused]) .sx-reveal{animation:sx-reveal linear both;animation-timeline:view();animation-range:entry 0% entry 100%}
     html[data-motion='on']:not([data-motion-paused]) .sx-kinetic .sx-kw{animation:sx-word linear both;animation-timeline:view();animation-range:entry calc(var(--i,0) * 8%) entry calc(60% + var(--i,0) * 8%)}
     html[data-motion='on']:not([data-motion-paused]) .sx-parallax{animation:sx-parallax linear both;animation-timeline:view();animation-range:cover}
+    html[data-motion='on']:not([data-motion-paused]) .sx-parallax--deep{animation-name:sx-parallax-deep}
   }
 }
