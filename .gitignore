@@ -46,3 +46,7 @@ __pycache__/
 # Local runtime values
 .dev.vars*
 !.env.example
+
+# Outillage de recette (scripts/qa) : dépendances et sorties locales, jamais versionnées
+scripts/qa/node_modules/
+scripts/qa/out/
