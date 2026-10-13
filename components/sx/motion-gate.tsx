@@ -45,27 +45,30 @@ export function MotionGate() {
     mo.observe(document.body, { childList: true, subtree: true });
     return () => { cancelled = true; mq.removeEventListener("change", onChange); io.disconnect(); mo.disconnect(); window.removeEventListener("load", idle); };
   }, []);
-  return <MotionToggle variant="floating" />;
+  return null;
 }
 /* Contrôle global « Mettre en pause les animations » / « Relancer les animations » (WCAG 2.2.2) :
-   44 px au moins, clavier, choix mémorisé. Visible seulement quand html[data-motion=on]. Variante
-   floating : en bas à gauche à partir de 768 px ; variante inline : menu mobile et pied de page. */
+   44 px au moins, clavier, choix mémorisé. Visible seulement quand html[data-motion=on].
+   - icon : icône seule de 44 × 44 dans l'en-tête, à toutes les largeurs (tôt dans l'ordre du clavier) ;
+   - inline : libellé en toutes lettres, dans le menu mobile et le pied de page.
+   Sémantique unique : le libellé (visible ou aria-label) dit l'action, sans aria-pressed. */
 function subscribePaused(cb: () => void) {
   const mo = new MutationObserver(cb);
   mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-motion-paused"] });
   return () => mo.disconnect();
 }
-export function MotionToggle({ variant = "inline" }: { variant?: "inline" | "floating" }) {
+export function MotionToggle({ variant = "inline" }: { variant?: "inline" | "icon" }) {
   const paused = useSyncExternalStore(subscribePaused, () => document.documentElement.hasAttribute("data-motion-paused"), () => false);
   function toggle() {
     const next = !paused;
     document.documentElement.toggleAttribute("data-motion-paused", next);
     try { if (next) localStorage.setItem(PAUSE_KEY, "1"); else localStorage.removeItem(PAUSE_KEY); } catch {}
   }
+  const label = paused ? "Relancer les animations" : "Mettre en pause les animations";
   return (
-    <button type="button" className={`sx-motion-toggle sx-motion-toggle--${variant}`} onClick={toggle} aria-pressed={paused}>
+    <button type="button" className={`sx-motion-toggle sx-motion-toggle--${variant}`} onClick={toggle} title={variant === "icon" ? label : undefined}>
       {paused ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
-      <span>{paused ? "Relancer les animations" : "Mettre en pause les animations"}</span>
+      <span>{label}</span>
     </button>
   );
 }

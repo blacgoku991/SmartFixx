@@ -6,9 +6,10 @@ import Link from "@/components/campaign-link";
 import { Brand } from "@/components/brand";
 import { ButtonLink, PhoneLink } from "@/components/sx/actions";
 import { MotionToggle } from "@/components/sx/motion-gate";
-/* En-tête public. Mobile (60 px) : marque « par Mohamed », téléphone compact, menu, emplacement de 44 px
-   réservé au ThemeControl (rendu par le layout, positionné en fixed dans .sx-theme-slot). Ordinateur
-   (72 px) : navigation, sous-menu Prestations, téléphone en toutes lettres, CTA « Parler de mon projet ».
+/* En-tête public. Mobile (60 px) : marque « par Mohamed », téléphone compact, pause des animations,
+   menu, emplacement réservé au ThemeControl (rendu par le layout, positionné en fixed dans
+   .sx-theme-slot). Navigation complète à partir de 1380 px (sous-menu Prestations), menu en dessous ;
+   téléphone en toutes lettres de 768 à 1379 px ; CTA « Parler de mon projet » à partir de 1024 px.
    Le menu mobile est un panneau natif (attribut popover), sans Radix ; repli JS (.is-open) si le
    navigateur ne connaît pas popover. Le sous-menu est un <details>. */
 const prestations: [string, string][] = [
@@ -76,6 +77,7 @@ export function SiteHeader() {
           <PhoneLink compact className="sx-header-phone-compact" />
           <PhoneLink className="sx-header-phone" />
           <ButtonLink variant="cta" href="/contact" className="sx-header-cta">Parler de mon projet</ButtonLink>
+          <MotionToggle variant="icon" />
           <button type="button" className="sx-menu-button" popoverTarget="sx-menu" aria-controls="sx-menu" aria-label="Ouvrir le menu" onClick={toggleFallback}><Menu aria-hidden="true" /></button>
           <span className="sx-theme-slot" aria-hidden="true" />
         </div>

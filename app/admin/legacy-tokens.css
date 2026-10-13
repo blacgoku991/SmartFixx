@@ -7,3 +7,11 @@
 :root[data-theme="light"]{color-scheme:light;--chart-1:#315ce8;--chart-2:#4374d6;--chart-3:#6d87bb;--chart-4:#557196;--chart-5:#294b88}
 :root[data-theme="dark"]{color-scheme:dark}
 :root[data-theme="light"] .brand-logo-image{filter:none}:root[data-theme="light"] .camp-app{color-scheme:light}:root[data-theme="dark"] .camp-app{color-scheme:dark}
+/* Hors couche, chargé seulement par les routes admin et email : l'indicateur de focus clavier bat
+   l'utilitaire outline-none des composants shadcn (Select, Tabs…), comme le :focus-visible hors couche de
+   la base 6d95248. Non limité à .studio-admin : les volets et listes rendus en portail dans <body> sont
+   couverts aussi (WCAG 2.4.7). */
+:focus-visible{outline:3px solid var(--sx-focus);outline-offset:3px}
+/* Transition : les intertitres du panel (h2, h3) restent en police de texte ; seul le H1 d'écran est en
+   SFX Display, en attendant la refonte du panel aux jetons --sx- (lots 5 et 6). */
+:where(.studio-admin,.admin-app,.camp-app,.email-action-card,[data-slot=sheet-content],[data-slot=dialog-content],[data-slot=alert-dialog-content]) :is(h2,h3){font-family:var(--sx-font-text);font-stretch:normal;letter-spacing:normal}

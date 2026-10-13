@@ -12,7 +12,7 @@ export { FaqList } from "./faq-list";
 export { KineticHeading } from "./kinetic-heading";
 export { Media, type MediaBase } from "./media";
 export { DemoFrame } from "./demo-frame";
-export { Glow, Skyline } from "./ambient";
+export { Glow, Skyline, SignalCard } from "./ambient";
 export { Realisations } from "./realisations";
 export { ScenePlayer } from "./scene-player"; // client
 export { StateLoading, StateEmpty, StateError } from "./states"; // client

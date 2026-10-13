@@ -3,12 +3,25 @@ import { DemoFrame } from "./demo-frame";
 /* Réalisations (serveur) : uniquement les entrées published:true de lib/realisations.ts. Sans capture, la
    carte montre une maquette en DOM étiquetée « Démonstration » ; jamais de cadre vide ni d'emplacement
    réservé visible. Rien n'est rendu s'il n'y a aucune entrée publiée. */
+const CHIP: Record<string, string> = { Nouvelle: "sx-chip sx-chip--signal", "En cours": "sx-chip sx-chip--accent", "Devis envoyé": "sx-chip sx-chip--violet", Archivée: "sx-chip" };
 function RequestsBoard() {
-  const rows = [["Démonstration Dupont", "Refonte", "Nouvelle"], ["Démonstration Martin", "Création", "En cours"], ["Démonstration Leroy", "Création", "Devis envoyé"]];
+  // Données fictives, étiquetées « Démonstration » (jamais de vrai client). 5 lignes à partir de 480 px, 3 en dessous.
+  const rows = [
+    ["SF-3A91C2E0", "Démonstration Dupont", "Refonte", "09:42", "Nouvelle"],
+    ["SF-7B20D415", "Démonstration Martin", "Création", "hier", "En cours"],
+    ["SF-1C84E9A7", "Démonstration Leroy", "Création", "lun.", "Devis envoyé"],
+    ["SF-58F3A0B2", "Démonstration Bernard", "Automatisation", "12/10", "En cours"],
+    ["SF-0D6E7C93", "Démonstration Petit", "Refonte", "08/10", "Archivée"],
+  ];
   return (
     <div className="sx-mini">
       <div className="sx-mini-head"><span>Demandes reçues</span><span className="sx-chip sx-chip--signal">1 nouvelle</span></div>
-      {rows.map(([n, s, st]) => <div className="sx-mini-row" key={n}><b>{n}</b><span>{s}</span><span className={st === "Nouvelle" ? "sx-chip sx-chip--signal" : "sx-chip"}>{st}</span></div>)}
+      <div className="sx-mini-stats"><span><b>1</b>à traiter</span><span><b>2</b>en cours</span><span><b>1</b>devis envoyé</span></div>
+      {rows.map(([ref, n, s, t, st]) => (
+        <div className={st === "Nouvelle" ? "sx-mini-row is-new" : "sx-mini-row"} key={ref}>
+          <span className="sx-mini-ref">{ref}</span><b>{n}</b><span>{s}</span><span>{t}</span><span className={CHIP[st]}>{st}</span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -30,7 +43,7 @@ export function Realisations({ items, headingLevel = 3 }: { items?: Realisation[
           {r.images?.length ? (
             <img src={r.images[0].src} alt={r.images[0].alt} width={r.images[0].width} height={r.images[0].height} loading="lazy" decoding="async" />
           ) : r.mockup === "requests-board" ? (
-            <DemoFrame url="smartfixx.fr/admin" description="Maquette fictive du tableau de suivi : trois demandes de démonstration et leur statut.">
+            <DemoFrame url="smartfixx.fr/admin" description="Maquette fictive du tableau de suivi : cinq demandes de démonstration avec leur référence, leur type, leur date et leur statut.">
               <RequestsBoard />
             </DemoFrame>
           ) : null}

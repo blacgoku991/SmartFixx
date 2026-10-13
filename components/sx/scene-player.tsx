@@ -14,8 +14,8 @@ export function ScenePlayer({ label, description, duration = 7200, replayOnRetur
   const remaining = useRef(duration);
   const started = useRef(0);
   const allowed = () => document.documentElement.dataset.motion === "on" && !document.documentElement.hasAttribute("data-motion-paused");
-  function play() {
-    const el = root.current; if (!el || !allowed()) return;
+  function play(force = false) {
+    const el = root.current; if (!el || (!allowed() && !(force && document.documentElement.dataset.motion === "on"))) return;
     el.classList.remove("is-playing", "is-paused");
     void el.offsetWidth; // redémarre les animations CSS
     el.classList.add("is-playing");
@@ -24,6 +24,7 @@ export function ScenePlayer({ label, description, duration = 7200, replayOnRetur
     timer.current = window.setTimeout(() => setState("done"), remaining.current);
     setState("playing");
   }
+  function replay() { play(true); }
   function pause() {
     root.current?.classList.add("is-paused");
     window.clearTimeout(timer.current);
@@ -49,8 +50,18 @@ export function ScenePlayer({ label, description, duration = 7200, replayOnRetur
     const start = () => io.observe(el);
     let mo: MutationObserver | undefined;
     if (html.dataset.motion) start(); else { mo = new MutationObserver(() => { if (html.dataset.motion) { mo?.disconnect(); start(); } }); mo.observe(html, { attributes: true, attributeFilter: ["data-motion"] }); }
-    // Pause globale : fige la scène en cours.
-    const pmo = new MutationObserver(() => { if (html.hasAttribute("data-motion-paused") && el.classList.contains("is-playing") && !el.classList.contains("is-paused")) pause(); });
+    // Pause globale : fige la scène en cours ; « Relancer les animations » reprend une scène figée par elle
+    // (pas une scène mise en pause par son propre bouton). Pendant la pause globale, le bouton de la scène
+    // reste utilisable : c'est un choix explicite de l'utilisateur.
+    let pausedByGlobal = false;
+    const pmo = new MutationObserver(() => {
+      if (html.hasAttribute("data-motion-paused")) {
+        if (el.classList.contains("is-playing") && !el.classList.contains("is-paused")) { pausedByGlobal = true; pause(); }
+      } else if (pausedByGlobal) {
+        pausedByGlobal = false;
+        if (el.classList.contains("is-paused")) resume();
+      }
+    });
     pmo.observe(html, { attributes: true, attributeFilter: ["data-motion-paused"] });
     return () => { io.disconnect(); mo?.disconnect(); pmo.disconnect(); window.clearTimeout(timer.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,7 +72,7 @@ export function ScenePlayer({ label, description, duration = 7200, replayOnRetur
       <div className="sx-scene-stage" aria-hidden="true">{children}</div>
       <div className="sx-scene-bar">
         <p className="sx-scene-caption">{label}{description ? <span className="sr-only"> {description}</span> : null}</p>
-        <button type="button" className="sx-scene-toggle" onClick={() => (playing ? pause() : state === "paused" ? resume() : play())}>
+        <button type="button" className="sx-scene-toggle" onClick={() => (playing ? pause() : state === "paused" ? resume() : replay())}>
           {playing ? <Pause aria-hidden="true" /> : <RotateCcw aria-hidden="true" />}
           <span>{playing ? "Pause" : state === "paused" ? "Reprendre" : "Rejouer"}</span>
         </button>
