@@ -43,19 +43,53 @@ Le suivi Google Ads n'est pas encore branché ou validé par ce transfert GitHub
 - Exemples de départ : « devis création site internet », « création site vitrine », « création site internet Asnières », « refonte site internet ».
 - Exclusions à examiner : emploi, recrutement, stage, alternance, formation, cours, tutoriel, gratuit. Les appliquer avec discernement selon les recherches réelles.
 - Envoyer chaque groupe vers une page cohérente et un formulaire testé.
-- Définir le budget total et les dates avec le propriétaire. Ne pas activer plusieurs réseaux et canaux à la fois avec un petit budget.
+- Le propriétaire a fixé l'enveloppe du premier test dans la discussion. Reporter ce plafond dans le compte, avec des dates de début et de fin sur 30 jours. Garder une seule campagne Search ; désactiver l'extension Display et les partenaires du Réseau de Recherche pour isoler ce premier test.
+- À la création, privilégier le budget total de campagne si l'option est disponible pour Search dans le compte. Ce plafond porte sur les coûts publicitaires ; vérifier les éventuels frais et taxes pour respecter l'enveloppe réellement disponible. Un budget quotidien moyen n'est pas un plafond global sur 30 jours glissants. Si l'option totale n'est pas disponible, définir le mécanisme de limitation avant toute diffusion ; ne pas remplacer silencieusement le plafond par une simple moyenne quotidienne.
+- Le montant et les dates définitifs restent dans le compte et la discussion du propriétaire. Aucun paramètre publicitaire n'est configuré par ce fichier.
 
 La stratégie d'enchères sera choisie après accès aux données du compte et vérification des conversions. Aucun CPC, volume de clics ou nombre de ventes n'est garanti. Une campagne au clic doit être jugée sur les demandes qualifiées et les clients, pas seulement sur le trafic.
 
-### Textes de travail pour les annonces
+### Annonces préparées pour saisie
 
-Création : « Création de site professionnel » ; « Votre projet web avec SmartFixx » ; « Demandez votre devis ».
+Textes proposés, pas encore publiés. Titres vérifiés à 30 caractères maximum et descriptions à 90, espaces compris. Valider que les pages finales présentent réellement ces prestations avant diffusion. Aucune promesse de résultat, de délai ou de tarif non confirmé.
 
-Refonte : « Modernisez votre site internet » ; « Un site adapté au mobile » ; « Présentez-nous votre projet ».
+#### Création
 
-Description de travail : « Création et refonte de sites pour entreprises. Design, mobile et prise de contact. »
+Page cible prévue : https://smartfixx.fr/creation-site-internet — à vérifier sur la version réellement en ligne.
 
-Adapter aux limites des annonces, aux services effectivement inclus et à la page d'arrivée. Le prix et les délais restent à renseigner après validation.
+Titres :
+
+- Création de site professionnel
+- Votre site avec SmartFixx
+- Un site pour votre entreprise
+- Mettez vos services en avant
+- Un site adapté au mobile
+- Demandez votre devis
+
+Descriptions :
+
+- Présentez vos services avec un site clair, adapté au mobile. Parlez-nous de votre projet.
+- Un site pour votre entreprise. Design, services et formulaire de contact.
+
+#### Refonte
+
+Page cible prévue : https://smartfixx.fr/refonte-site-internet — à vérifier sur la version réellement en ligne.
+
+Titres :
+
+- Modernisez votre site internet
+- Refonte de site avec SmartFixx
+- Votre site manque de clarté ?
+- Valorisez vos services
+- Un site adapté au mobile
+- Présentez-nous votre projet
+
+Descriptions :
+
+- Votre site mérite une nouvelle version ? Décrivez votre besoin et demandez votre devis.
+- Repensez le design et le parcours de contact. Une refonte adaptée à votre entreprise.
+
+Une annonce responsive par groupe suffit pour constituer le brouillon de ce petit test ; les variantes pourront être préparées ensuite à partir des résultats. Ne pas confondre une note de qualité des composants avec un résultat commercial. La VSL peut enrichir la page mais n'est pas nécessaire pour préparer ces annonces textuelles.
 
 ## Décider à partir des résultats
 
@@ -70,6 +104,9 @@ Contrôler le suivi avant de conclure que les annonces ne convertissent pas. Éc
 - Canoniques : https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls
 - Conversions principales et secondaires : https://support.google.com/google-ads/answer/11461796?hl=fr
 - Ciblage géographique : https://support.google.com/google-ads/answer/1722038?hl=fr
+- Budgets totaux de campagne : https://support.google.com/google-ads/answer/10486938?hl=fr
+- Budgets quotidiens et limites : https://support.google.com/google-ads/answer/6385083?hl=fr
+- Formats des annonces responsives Search : https://support.google.com/google-ads/answer/7684791?hl=fr
 - Configuration Git Vercel du transfert : https://vercel.com/docs/project-configuration/git-configuration
 
-Aucune campagne payante n'a été créée ou lancée dans le cadre du transfert. Le lancement exige le compte Google Ads accessible, les conversions vérifiées, les annonces finalisées et le budget explicitement choisi par le propriétaire.
+Aucune campagne payante n'a été créée ou lancée dans le cadre du transfert. Le lancement exige le compte Google Ads accessible, les conversions vérifiées, les annonces finalisées et le plafond choisi par le propriétaire correctement configuré.
