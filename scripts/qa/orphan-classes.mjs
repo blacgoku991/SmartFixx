@@ -8,6 +8,9 @@
 //                 components/email-action.tsx et app/email ; --scope=public (défaut) : le reste de app
 //                 et components, hors components/ui.
 // --base : compare à une liste enregistrée (--save) et n'échoue que sur les orphelines NOUVELLES.
+//   Référence versionnée du périmètre admin sur la base 6d95248 : scripts/qa/baselines/orphans-admin-6d95248.json
+//   (régénération : git archive 6d95248 → dossier, rebuild-vps.sh de ce dossier, puis
+//    node scripts/qa/orphan-classes.mjs <dossier> --scope=admin --css=<build>/.next/static --save=<fichier>).
 import { readdirSync, readFileSync, statSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
 const argv = process.argv.slice(2);

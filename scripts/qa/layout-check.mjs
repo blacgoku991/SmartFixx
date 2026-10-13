@@ -1,7 +1,14 @@
 // Contrôles de mise en page et de mouvement sur une variante servie.
-//   node scripts/qa/layout-check.mjs <baseURL> /chemin1 /chemin2 … [--checks=overflow,cta,lcp,h1,reduced,reveal,font]
-// Par défaut, tous les contrôles. Code de sortie 1 au premier écart constaté (tous sont listés).
-//  overflow : aucun défilement horizontal à 360, 390, 412, 768 et 1440 px de large ;
+//   node scripts/qa/layout-check.mjs <baseURL> /chemin1 /chemin2 … [--checks=overflow,header,menu,theme,cta,lcp,h1,reduced,reveal,font]
+// Par défaut, tous les contrôles. Code de sortie 1 si un écart est constaté (tous sont listés).
+//  overflow : aucun défilement horizontal à 360, 390, 412, 768, 1024, 1180, 1280, 1366, 1440 et 1600 px ;
+//  header   : aux mêmes largeurs (thèmes sombre et clair), .sx-header-inner ne déborde pas
+//             (scrollWidth ≤ clientWidth) et aucun point d'un lien ou bouton visible de l'en-tête n'est
+//             recouvert par le ThemeControl fixe (elementFromPoint sur une grille de 5 × 3 points) ;
+//  menu     : menu mobile ouvert à 390 × 844, deux thèmes : contraste calculé ≥ 4,5 pour chaque .sx-btn,
+//             numéro de téléphone et contrôle des animations visibles du menu (couleur du texte sur le premier fond opaque) ;
+//  theme    : interrupteur du ThemeControl à 390 et 1440, deux états : curseur visible (pas de
+//             clip-path), contenu dans la piste, piste ≥ 44 × 26, zone de clic ≥ 44 px de haut ;
 //  cta      : le bas des CTA du hero ([data-sx-hero] .sx-hero-actions) est au-dessus du haut du
 //             consentement ([data-sx-consent]) à 360 × 640, 390 × 664, 412 × 823 et 1440 × 900,
 //             consentement ouvert, et visible dans le premier écran ;
@@ -16,7 +23,17 @@ const argv = process.argv.slice(2);
 const base = argv[0]?.replace(/\/$/, "");
 const paths = argv.slice(1).filter((a) => !a.startsWith("--"));
 const checksArg = argv.find((a) => a.startsWith("--checks="));
-const checks = new Set((checksArg ? checksArg.slice(9) : "overflow,cta,lcp,h1,reduced,reveal,font").split(","));
+const checks = new Set((checksArg ? checksArg.slice(9) : "overflow,header,menu,theme,cta,lcp,h1,reduced,reveal,font").split(","));
+const WIDTHS = [360, 390, 412, 768, 1024, 1180, 1280, 1366, 1440, 1600];
+// Contraste WCAG d'un élément : couleur du texte sur le premier fond opaque de ses ancêtres.
+const contrastOf = (sel) => [...document.querySelectorAll(sel)].filter((e) => e.getBoundingClientRect().height > 0 && getComputedStyle(e).visibility !== "hidden").map((e) => {
+  const rgb = (c) => (c.match(/[\d.]+/g) || []).map(Number);
+  const lum = ([r, g, b]) => [r, g, b].map((v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }).reduce((s, v, i) => s + v * [0.2126, 0.7152, 0.0722][i], 0);
+  let bg = null; for (let n = e; n; n = n.parentElement) { const c = rgb(getComputedStyle(n).backgroundColor); if (c.length >= 3 && (c.length < 4 || c[3] > 0.9)) { bg = c; break; } }
+  bg = bg || rgb(getComputedStyle(document.body).backgroundColor);
+  const fg = rgb(getComputedStyle(e).color); const [x, y] = [lum(fg), lum(bg)].sort((p, q) => q - p);
+  return { label: (e.textContent || e.getAttribute("aria-label") || "").trim().slice(0, 30), ratio: +((x + 0.05) / (y + 0.05)).toFixed(2) };
+});
 if (!base || !paths.length) { console.error("usage : layout-check.mjs <base> /chemin… [--checks=…]"); process.exit(2); }
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || "/opt/pw-browsers/chromium" });
 let failures = 0;
@@ -45,12 +62,82 @@ for (const path of paths) {
     await ctx.close();
   }
   if (checks.has("overflow")) {
-    for (const width of [360, 390, 412, 768, 1440]) {
+    for (const width of WIDTHS) {
       const { ctx, page } = await open({ width, height: 900 }, path);
       await page.waitForTimeout(600);
       const r = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth,
         culprits: [...document.querySelectorAll("body *")].filter((e) => { const b = e.getBoundingClientRect(); return b.right > document.documentElement.clientWidth + 1 && getComputedStyle(e).position !== "fixed"; }).slice(0, 4).map((e) => e.tagName.toLowerCase() + (e.className && typeof e.className === "string" ? "." + e.className.split(" ").slice(0, 2).join(".") : "")) }));
       if (r.sw <= r.cw) ok(`pas de défilement horizontal à ${width}px`); else ko(`défilement horizontal à ${width}px (${r.sw} > ${r.cw}) : ${r.culprits.join(", ")}`);
+      await ctx.close();
+    }
+  }
+  if (checks.has("header")) {
+    for (const theme of ["dark", "light"]) {
+      const { ctx, page } = await open({ width: 1440, height: 900 }, path, { consent: "ferme", theme });
+      await page.waitForTimeout(400);
+      const bad = [];
+      for (const width of WIDTHS) {
+        await page.setViewportSize({ width, height: 900 });
+        await page.waitForTimeout(150);
+        const r = await page.evaluate(() => {
+          const inner = document.querySelector(".sx-header-inner"); const tc = document.querySelector(".theme-control");
+          if (!inner) return { missing: true };
+          const vis = [...inner.querySelectorAll("a,button,summary")].filter((e) => { const b = e.getBoundingClientRect(); return b.width > 0 && b.height > 0 && getComputedStyle(e).visibility !== "hidden"; });
+          const covered = [];
+          for (const e of vis) {
+            const b = e.getBoundingClientRect(); let hit = 0;
+            for (const fx of [0.1, 0.3, 0.5, 0.7, 0.9]) for (const fy of [0.25, 0.5, 0.75]) {
+              const x = b.left + b.width * fx, y = b.top + b.height * fy;
+              if (x < 0 || x >= innerWidth) { hit++; continue; }
+              const at = document.elementFromPoint(x, y);
+              if (at && tc && tc.contains(at)) hit++;
+            }
+            if (hit) covered.push(`${(e.textContent || e.getAttribute("aria-label") || e.tagName).trim().slice(0, 24)} (${hit}/15)`);
+          }
+          return { overflow: inner.scrollWidth > inner.clientWidth + 1 ? `${inner.scrollWidth} > ${inner.clientWidth}` : "", covered };
+        });
+        if (r.missing) { bad.push(`${width}px : pas de .sx-header-inner`); break; }
+        if (r.overflow || r.covered.length) bad.push(`${width}px : ${r.overflow ? "en-tête déborde " + r.overflow + " ; " : ""}${r.covered.length ? "recouverts par le ThemeControl ou hors écran : " + r.covered.join(", ") : ""}`);
+      }
+      if (bad.length) bad.forEach((b) => ko(`en-tête (${theme}) ${b}`)); else ok(`en-tête (${theme}) : ni débordement ni recouvrement de ${WIDTHS[0]} à ${WIDTHS[WIDTHS.length - 1]} px`);
+      await ctx.close();
+    }
+  }
+  if (checks.has("menu")) {
+    for (const theme of ["dark", "light"]) {
+      const { ctx, page } = await open({ width: 390, height: 844 }, path, { consent: "ferme", theme });
+      const btn = page.locator(".sx-menu-button");
+      if (!(await btn.count())) { ko(`menu (${theme}) : pas de bouton .sx-menu-button`); await ctx.close(); continue; }
+      await btn.click(); await page.waitForTimeout(400);
+      const r = await page.evaluate(contrastOf, ".sx-menu .sx-btn, .sx-menu .sx-phone-number, .sx-menu .sx-motion-toggle");
+      const low = r.filter((x) => x.ratio < 4.5);
+      if (!r.length) ko(`menu (${theme}) : aucun .sx-btn visible dans le menu ouvert`);
+      else if (low.length) ko(`menu (${theme}) : contraste insuffisant ${low.map((x) => `« ${x.label} » ${x.ratio}:1`).join(", ")}`);
+      else ok(`menu (${theme}) : ${r.length} bouton(s), contraste min ${Math.min(...r.map((x) => x.ratio))}:1`);
+      await ctx.close();
+    }
+  }
+  if (checks.has("theme")) {
+    for (const width of [390, 1440]) {
+      const { ctx, page } = await open({ width, height: 900 }, path, { consent: "ferme", theme: "dark" });
+      await page.waitForTimeout(300);
+      for (const step of ["sombre", "clair"]) {
+        const r = await page.evaluate(() => {
+          const th = document.querySelector(".theme-control [data-slot=switch-thumb]"); if (!th) return null;
+          const sw = th.closest("[data-slot=switch]"); const t = th.getBoundingClientRect(), s = sw.getBoundingClientRect(); const cs = getComputedStyle(th);
+          const hit = getComputedStyle(sw, "::after"); const hitH = hit.content !== "none" && hit.position === "absolute" ? s.height - parseFloat(hit.top) - parseFloat(hit.bottom) : s.height;
+          return { clip: cs.clipPath, pos: cs.position, vis: cs.visibility, w: t.width, inside: t.left >= s.left - 0.5 && t.right <= s.right + 0.5 && t.top >= s.top - 0.5 && t.bottom <= s.bottom + 0.5, track: [Math.round(s.width), Math.round(s.height)], hitH: Math.round(hitH), state: sw.getAttribute("data-state") };
+        });
+        const label = `${width}px, ${step}`;
+        if (!r) { ko(`interrupteur (${label}) : introuvable`); break; }
+        const errs = [];
+        if (r.clip !== "none" || r.pos === "absolute" || r.vis === "hidden" || r.w < 10) errs.push(`curseur masqué (clip ${r.clip}, position ${r.pos})`);
+        if (!r.inside) errs.push("curseur hors de la piste");
+        if (r.track[0] < 44 || r.track[1] < 26) errs.push(`piste ${r.track.join(" × ")}`);
+        if (r.hitH < 44) errs.push(`zone de clic ${r.hitH} px de haut`);
+        if (errs.length) ko(`interrupteur (${label}, ${r.state}) : ${errs.join(" ; ")}`); else ok(`interrupteur (${label}, ${r.state}) : curseur visible dans la piste ${r.track.join(" × ")}, clic ${r.hitH} px`);
+        if (step === "sombre") { await page.locator(".theme-control [data-slot=switch]").click(); await page.waitForTimeout(250); }
+      }
       await ctx.close();
     }
   }

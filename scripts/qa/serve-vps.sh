@@ -4,7 +4,8 @@
 # Compte : owner@example.test / test-local-owner-password-32-characters (données fictives uniquement).
 # Les écritures (formulaire, panel) exigent l'en-tête Origin https://smartfixx.fr.
 set -euo pipefail
-BUILD=${1:-/home/user/smartfixx-vps-dev}; PORT=${2:-3190}
+BUILD=${1:?build (dossier produit par rebuild-vps.sh)}; PORT=${2:?port}
+[ -f "$BUILD/.smartfixx-qa-build" ] || [ -f "$BUILD/runtime/cli.mjs" ] || { echo "$BUILD ne ressemble pas à une variante VPS construite." >&2; exit 2; }
 DATA=$(mktemp -d /tmp/smartfixx-data-XXXX)
 export SMARTFIXX_DATA_DIR=$DATA NEXT_TELEMETRY_DISABLED=1
 cd "$BUILD"

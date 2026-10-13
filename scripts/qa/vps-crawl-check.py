@@ -8,10 +8,14 @@ analysable, aucun lien /admin dans le HTML public, chaîne smartfixx-theme, cont
 « Activer le mode sombre », en-têtes nosniff et CSP frame-ancestors 'none'.
 Vérifie aussi : sitemap en https://smartfixx.fr, robots (Disallow /admin, sitemap smartfixx.fr),
 404 réelle pour une URL inconnue, médias exigés par les tests et par les emails déjà envoyés.
---og-404-ok : tolère que l'image og:image réponde 404 (avant la livraison de /og-image.png par le lot 7)."""
+Icônes : chaque <link rel="icon" | "apple-touch-icon" | "shortcut icon"> déclarée doit répondre 200.
+--og-404-ok : tolère que l'image og:image réponde 404 (avant la livraison de /og-image.png par le lot 7).
+--icons-404-ok : tolère que les icônes déclarées par le layout répondent 404 (/icon-192.png,
+  /apple-touch-icon.png, /favicon.ico : livrées par le lot 7) ; chaque tolérance produit une note."""
 import sys, re, json, urllib.request, urllib.error
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 OG_404_OK = "--og-404-ok" in sys.argv
+ICONS_404_OK = "--icons-404-ok" in sys.argv
 B = args[0].rstrip("/")
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, *a, **k): return None
@@ -65,6 +69,16 @@ for p in paths + extra:
                 if OG_404_OK: notes.append(f"{op_path} → {og_checked[op_path]} (toléré : --og-404-ok)")
                 else: f.append(f"og:image {op_path} → {og_checked[op_path]}")
         if re.search(r'href="/admin[/"?#]', t): f.append("lien /admin dans le HTML public")
+        for tag in re.findall(r'<link\b[^>]*>', t):
+            rel = re.search(r'rel="([^"]+)"', tag); href = re.search(r'href="([^"]+)"', tag)
+            if not rel or not href or rel.group(1) not in ("icon", "apple-touch-icon", "shortcut icon"): continue
+            ip = href.group(1).replace("https://smartfixx.fr", "").split("?")[0]
+            if not ip.startswith("/"): continue
+            if ip not in og_checked:
+                st, _, _ = get(ip); og_checked[ip] = st
+            if og_checked[ip] != 200:
+                if ICONS_404_OK: notes.append(f"icône {ip} → {og_checked[ip]} (toléré : --icons-404-ok, livrée au lot 7)")
+                else: f.append(f"icône {ip} → {og_checked[ip]}")
     for needle in ("smartfixx-theme", "Apparence du site", "Activer le mode sombre"):
         if needle not in t: f.append(f"« {needle} » absent")
     if f: ko(f"{p} : " + "; ".join(f))

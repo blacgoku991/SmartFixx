@@ -1,0 +1,24 @@
+{
+ "camp-contacts": [
+  "components/campaign-import.tsx"
+ ],
+ "chart-card": [
+  "components/admin-analytics.tsx"
+ ],
+ "ok": [
+  "components/admin-smtp-settings.tsx"
+ ],
+ "prepare": [
+  "components/admin-campaigns.tsx"
+ ],
+ "present": [
+  "components/admin-smtp-settings.tsx"
+ ],
+ "results": [
+  "components/admin-campaigns.tsx"
+ ],
+ "status-": [
+  "components/admin-analytics.tsx",
+  "components/admin-dashboard.tsx"
+ ]
+}
