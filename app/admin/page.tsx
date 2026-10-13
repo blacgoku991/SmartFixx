@@ -5,6 +5,7 @@ import { Brand } from "@/components/brand";
 import { getAdmin } from "@/lib/admin-auth";
 import { getChatGPTUser, chatGPTSignInPath, chatGPTSignOutPath } from "@/app/chatgpt-auth";
 import { AdminWorkspace } from "@/components/admin-workspace";
+import "./legacy-tokens.css";
 import "./admin.css";
 import "./workspace.css";
 import "./sending.css";

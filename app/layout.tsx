@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import "./redesign.css";
-import "./multipage.css";
-import "./unified.css";
-import "./studio.css";
-import "./theme-tokens.css";
 import {ThemeControl} from "@/components/theme-control";
 import {AudienceMeasurement} from "@/components/audience-measurement";
 import { JsonLd } from "@/components/json-ld";

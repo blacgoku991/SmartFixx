@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {Brand} from '@/components/brand';
 import {EmailAction} from '@/components/email-action';
 import {resolveEmailToken,isSuppressed} from '@/lib/email-campaign';
-import './email-action.css';
+import '../../../admin/legacy-tokens.css';import './email-action.css';
 export const dynamic='force-dynamic';
 export const metadata:Metadata={title:'Votre échange avec SmartFixx',robots:{index:false,follow:false},referrer:'no-referrer'};
 export default async function EmailPage({params}:{params:Promise<{action:string;token:string}>}){const{action,token}=await params;if(action==='interest'){let campaign;try{campaign=(await resolveEmailToken(token,'interest'))?.campaign}catch{}redirect(emailDestination(campaign))}let valid=false,done=false,unavailable=false;try{if(action==='stop'||action==='preferences'){const r=await resolveEmailToken(token,action,true);if(r){valid=true;done=action==='preferences'?!!r.tracking_revoked_at:await isSuppressed(r.email)}}}catch{unavailable=true}
