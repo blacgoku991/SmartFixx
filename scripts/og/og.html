@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Image de partage SmartFixx (gabarit)</title>
+<!-- Gabarit de /og-image.png (1200 × 630), capturé par scripts/og/render.mjs. Les jetons --sx- sont injectés
+     depuis app/globals.css (bloc sombre) à la place du commentaire TOKENS : aucune couleur en dur hors du
+     décor de la ville, qui reprend les valeurs du socle. -->
+<style>
+@font-face{font-family:'SFX Display';src:url('__FONT__') format('woff2');font-weight:700;font-stretch:92%}
+:root{/*TOKENS*/}
+*{box-sizing:border-box;margin:0}
+html,body{width:1200px;height:630px;overflow:hidden}
+body{position:relative;background:var(--sx-sodium),var(--sx-sky);color:var(--sx-text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.glow{position:absolute;width:760px;height:760px;right:-260px;top:-360px;border-radius:50%;background:radial-gradient(closest-side,rgba(142,162,255,.20),transparent)}
+.copy{position:absolute;left:72px;top:62px;width:760px}
+.eyebrow{display:flex;align-items:center;gap:14px;font-size:24px;color:var(--sx-text-muted);letter-spacing:.01em}
+.dot{width:12px;height:12px;border-radius:3px;background:var(--sx-signal);box-shadow:0 0 14px 3px rgba(255,182,72,.45)}
+h1{margin-top:26px;font-family:'SFX Display',sans-serif;font-weight:700;font-stretch:92%;font-size:78px;line-height:.98;letter-spacing:-.012em}
+.kw{background:linear-gradient(var(--sx-signal),var(--sx-signal)) 0 92%/100% .11em no-repeat;padding-bottom:.04em}
+.sub{margin-top:26px;font-size:28px;line-height:1.35;color:var(--sx-text-muted)}
+.sign{position:absolute;left:72px;bottom:40px;display:flex;align-items:center;gap:16px;font-size:26px;color:var(--sx-text);z-index:3}
+.sign img{width:52px;height:52px}
+.sign b{font-family:'SFX Display',sans-serif;font-stretch:92%;font-size:30px;letter-spacing:-.01em}
+.sign span{color:var(--sx-text-muted)}
+/* Ville : deux plans de façades, fenêtres éteintes en grille, quelques fenêtres allumées. */
+.city{position:absolute;left:0;right:0;bottom:0;height:300px}
+.plane{position:absolute;left:0;right:0;bottom:0;height:100%;display:flex;align-items:flex-end;gap:6px;padding:0 0 0 560px}
+.far{opacity:.9}
+.b{position:relative;flex:1 1 0;border-radius:3px 3px 0 0}
+.far .b{background:var(--sx-facade-far)}
+.near .b{background:var(--sx-facade-near);box-shadow:inset 0 2px 0 var(--sx-rim)}
+.b::before{content:'';position:absolute;inset:14px 10px 10px;background:repeating-linear-gradient(90deg,transparent 0 10px,currentColor 10px 17px),repeating-linear-gradient(to top,transparent 0 13px,currentColor 13px 22px),var(--sx-window-off)}
+.far .b{color:var(--sx-facade-far)}
+.near .b{color:var(--sx-facade-near)}
+.w{position:absolute;width:10px;height:13px;border-radius:1px;background:var(--sx-window-on);opacity:.85;box-shadow:0 0 12px 2px rgba(255,182,72,.45)}
+.w.sig{width:18px;height:24px;opacity:1;box-shadow:0 0 22px 6px rgba(255,182,72,.6)}
+.ground{position:absolute;left:0;right:0;bottom:0;height:10px;background:var(--sx-facade-near)}
+
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="copy">
+  <p class="eyebrow"><span class="dot"></span>SmartFixx · Asnières-sur-Seine &amp; Île-de-France</p>
+  <h1>Création et refonte de <span class="kw">site&nbsp;internet</span></h1>
+  <p class="sub">Un site professionnel, adapté au mobile,<br>conçu et suivi par un seul interlocuteur.</p>
+</div>
+<div class="city" id="city"></div>
+<p class="sign"><img src="__ICON__" alt=""><b>par Mohamed</b><span>· smartfixx.fr</span></p>
+<script>
+// Ville déterministe (aucun aléatoire) : hauteurs et fenêtres allumées fixes.
+const H=[62,88,48,74,96,56,80,66,90,44,70,58];
+const city=document.getElementById('city');
+for(const [cls,count,scale,shift] of [['far',14,.92,3],['near',10,1,0]]){
+  const plane=document.createElement('div');plane.className='plane '+cls;
+  for(let i=0;i<count;i++){
+    const b=document.createElement('div');b.className='b';
+    b.style.height=Math.min(100,H[(i*5+shift)%H.length]*scale)+'%';
+    b.style.flexGrow=String(1+((i*7+shift)%4)*.18);
+    if(cls==='near'&&i!==6){
+      const lits=[[(i*3)%4,(i+1)%5],[(i+2)%4,(i*2+3)%6]];
+      for(const [c,r] of lits){const w=document.createElement('i');w.className='w';w.style.left=(10+c*17)+'px';w.style.bottom=(10+r*22)+'px';b.appendChild(w)}
+    }
+    // Fenêtre signal : « la demande qui s'allume », seule sur sa façade.
+    if(cls==='near'&&i===6){const w=document.createElement('i');w.className='w sig';w.style.left='27px';w.style.bottom='98px';b.appendChild(w)}
+    plane.appendChild(b);
+  }
+  city.appendChild(plane);
+}
+const g=document.createElement('div');g.className='ground';city.appendChild(g);
+</script>
+</body>
+</html>
