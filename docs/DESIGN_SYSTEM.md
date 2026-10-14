@@ -194,7 +194,9 @@ Règles R1 à R12 du plan, inchangées, sauf l'amendement ci-dessous.
   `entry 0% entry 100%` : avec la plage du plan, un bloc plus haut qu'un tiers d'écran restait lu à 35-78 %
   d'opacité (contraste du texte atténué jusqu'à 2,0:1). Un bloc est opaque dès que son haut est à 220 px
   au-dessus du bas de l'écran ; `layout-check --checks=reveal` l'exige pour CHAQUE `.sx-reveal` dont le haut
-  atteint la mi-hauteur (390 × 844 et 1440 × 900).
+  atteint la mi-hauteur (390 × 844 et 1440 × 900). La règle des 900 px est contrôlée par
+  `layout-check --checks=reveal900` (actif par défaut) : page en haut, à 390 × 844 et 1440 × 900, aucun
+  `.sx-reveal`, `.sx-kinetic .sx-kw` ni `.sx-parallax` dont le haut (`top + scrollY`) est sous 900 px.
 - R7 : `KineticHeading` réservé aux H2 de chapitre (accueil, création, refonte), un par écran.
 - R8 : survol translateY(-1px), flèche 3 px, appui scale(.98), 120–180 ms, focus 3 px décalé de 3 px.
 - R9 : bascule de thème sans transition (`html.sx-theme-switching`), fondu `startViewTransition` seulement
@@ -268,21 +270,21 @@ Serveur sauf mention. Props gelées (des props facultatives peuvent seulement s'
 | `Container` | `size?: 'default'\|'narrow'\|'wide'`, `as?`, `className?` | 1240 / 820 / 1440 px. |
 | `Eyebrow` | `dot?`, `className?` | Point ambre facultatif, aligné sur la première ligne ; le texte est un seul élément (contenu mixte, `<Place>` compris, en ligne). |
 | `SectionHead` | `eyebrow?`, `title`, `text?`, `id?`, `level?: 2\|3` | En-tête de section. |
-| `PageHero` | `eyebrow?`, `eyebrowDot?` (true), `title`, `tagline?`, `lead?`, `proofs?: string[]`, `actions?`, `aside?`, `breadcrumbs?: {name,path}[]`, `backdrop?`, `id?` (`hero-titre`), `className?`, `tone?: 'auto'\|'night'` (auto) | Fond : ciel `--sx-sky` + halo `--sx-sodium` (nuit en sombre, aube en clair ; `tone="night"` : nuit dans les deux thèmes). Avec une ville, le bas du hero réserve `--sx-skyline-h` + 16 px : aucun texte sur les façades. `backdrop` couvre tout le hero (`inset: 0`, `overflow: clip`). | Un seul `<h1><span class="sx-h1-main">{title}</span> <span class="sx-h1-tagline">{tagline}</span></h1>` : vraie espace, les deux parties en ligne (un seul candidat LCP). Ordre du DOM : surtitre, H1, chapeau, actions (`.sx-hero-actions`), preuves, aside. `data-sx-hero`. Réserve `--sx-consent-reserve` sous 768 px tant que `data-consent=pending`. `backdrop` = décor plein cadre (motif nocturne), aria-hidden + `data-sx-ambient`. |
+| `PageHero` | `eyebrow?`, `eyebrowShort?` (surtitre affiché sous 480 px à la place d'`eyebrow`), `eyebrowDot?` (true), `title`, `tagline?`, `lead?`, `proofs?: string[]`, `actions?`, `aside?`, `breadcrumbs?: {name,path}[]`, `backdrop?`, `id?` (`hero-titre`), `className?`, `tone?: 'auto'\|'night'` (auto) | Fond : ciel `--sx-sky` + halo `--sx-sodium` (nuit en sombre, aube en clair ; `tone="night"` : nuit dans les deux thèmes). Avec une ville, le bas du hero réserve `--sx-skyline-h` + 16 px : aucun texte sur les façades. `backdrop` couvre tout le hero (`inset: 0`, `overflow: clip`). | Un seul `<h1><span class="sx-h1-main">{title}</span> <span class="sx-h1-tagline">{tagline}</span></h1>` : vraie espace, les deux parties en ligne (un seul candidat LCP). Ordre du DOM : surtitre, H1, chapeau, actions (`.sx-hero-actions`), preuves, aside. `data-sx-hero`. Réserve `--sx-consent-reserve` sous 768 px tant que `data-consent=pending`. `backdrop` = décor plein cadre (motif nocturne), aria-hidden + `data-sx-ambient`. **Anti-veuve** : la dernière espace du titre devient insécable si les deux derniers mots tiennent en 16 caractères (chaîne, ou dernier enfant d'un fragment ou d'un élément) ; une espace placée ENTRE deux nœuds (« Création de <span>site</span> ») n'est pas traitée : le lot lie lui-même ses deux derniers mots par U+00A0. Budget de lignes du hero mobile : voir plus bas. |
 | `Breadcrumbs` | `items: {name,path}[]` (SANS l'accueil, ajouté en tête ; le dernier = page courante) | Fil visible + JSON-LD BreadcrumbList identique (via `breadcrumb()` de lib/seo). Serveur uniquement. |
 | `ButtonLink` | `variant?: 'cta'\|'primary'\|'ghost'`, `href`, `icon?: 'arrow'\|'phone'\|'none'\|ReactNode`, `size?: 'md'\|'lg'` (48/52 px), `className?`, + attributs de lien | Passe par CampaignLink (utm_campaign propagé). `data-analytics="contact"` automatique vers /contact, /diagnostic, #demande. |
 | `PhoneLink` | `compact?: boolean\|'sm'`, `label?`, `className?` | `tel:+33618745180`, « 06 18 74 51 80 ». `compact` : icône seule, aria-label « Appeler Mohamed au … ». `'sm'` : icône seule sous 480 px — à utiliser dans le hero mobile pour garder CTA et appel sur une ligne. |
-| `CtaBand` | `title`, `text?`, `primaryHref?` (/contact), `primaryLabel?` (« Parler de mon projet »), `id?`, `phone?` (true), `skyline?` (true) | Remplace NextStep (alias conservé). Toujours nocturne (portée nuit) : ciel, sodium, ville. La réserve basse suit `--sx-skyline-h` : aucun texte ni CTA sur les façades. |
+| `CtaBand` | `title`, `text?`, `primaryHref?` (/contact), `primaryLabel?` (« Parler de mon projet »), `id?`, `phone?` (true), `skyline?` (true) | Remplace NextStep (alias conservé). Toujours nocturne (portée nuit) : ciel, sodium, ville (graine 5, distincte de celle du hero). La réserve basse suit `--sx-skyline-h` : aucun texte ni CTA sur les façades. |
 | `ProofList` | `items: string[]`, `className?` | Chaque élément = UN span de texte ; puce « fenêtre allumée » ambre (`sx-proof-mark`, aria-hidden), plus de coche verte. |
 | `Place` | `children: string` | Nom de lieu insécable (U+2011, espaces insécables, `sx-nowrap`). Serveur ou client. |
-| `Cartouche` | `variant?: 'band'\|'footer'\|'compact'` | SmartFixx SASU, SIREN, siège Paris 1er, Interlocuteur Mohamed, « Je travaille depuis Asnières-sur-Seine (92) », téléphone, email. |
+| `Cartouche` | `variant?: 'band'\|'footer'\|'compact'` | SmartFixx SASU, SIREN, siège Paris 1er, Interlocuteur Mohamed, « Je travaille depuis Asnières-sur-Seine (92) », téléphone, email. Téléphone et email : cibles de 44 px de haut (leurs lignes grandissent ; aucune zone ne se recouvre, de 360 à 1440 px). |
 | `FaqList` | `items: {q, a: ReactNode}[]` | `<details>` natifs, sans JSON-LD FAQPage. |
 | `KineticHeading` | `as?: 'h2'\|'h3'`, `children: string`, `id?` | Mots en inline-block, vraies espaces. |
 | `Media` | `src`, `base?: 'studio-web'\|'studio-automation'\|'studio-security'\|'mail-sculpture'`, `sizes?`, `maxWidth?` (480), `alt`, `width`, `height`, `loading?` (lazy), `sheen?` | AVIF + WebP 240/480/768/1024 depuis `public/media/studio/`, original en `src`. Largeur affichée bornée à `maxWidth` (`--sx-media-max`) ; le `sizes` par défaut en découle. `layout-check --checks=media` exige un fichier ≥ 0,8 × largeur rendue × DPR (390 en DPR 3, 1440 en DPR 1 et 2). Jamais dans un hero. |
 | `DemoFrame` | `kind?: 'browser'\|'phone'`, `url?`, `label?` (« Démonstration »), `description?`, `ratio?`, `children` | La barre du cadre est la `figcaption` : l'étiquette y est un élément flex (jamais sur l'URL) ; en `phone`, pastille en haut à droite. Contenu aria-hidden, `contain: layout paint`, largeur ≤ 880 px. Aucun texte < 12 px. |
 | `Realisations` | `items?`, `headingLevel?: 2\|3` | Entrées `published` de lib/realisations ; carte texte + maquette DOM sans capture (tableau de suivi : compteurs, 5 demandes de démonstration avec référence, type, date et statut ; 3 demandes en 4/3 sous 480 px) ; rien si aucune entrée. |
 | `Glow` | `tone?: 'blue'\|'amber'`, `size?`, `top/left/right/bottom?`, `alt?`, `duration?` | Lueur d'ambiance, à placer dans un conteneur `data-sx-ambient`. Ambre : jamais derrière un CTA. |
-| `Skyline` | `seed?`, `buildings?` (11), `signal?`, `depth?` (true), `height?`, `className?` | Ville en profondeur (ciel, plan lointain, plan proche, deux gabarits de fenêtres, étages allumés, environ 10 % de lumière) et silhouette locale (immeubles de rapport à toit mansardé, cheminées, portes-fenêtres 1:2, balcons filants ; pavillons à deux pans), fenêtres qui s'allument ; `signal` = la fenêtre ambre du geste signature ; parallaxe des deux plans au défilement. Dans un hero, le bas du hero lui réserve sa hauteur. |
+| `Skyline` | `seed?`, `buildings?` (11), `signal?`, `depth?` (true), `height?`, `className?` | Ville en profondeur (ciel, plan lointain, plan proche, deux gabarits de fenêtres, étages allumés, environ 10 % de lumière) et silhouette locale (immeubles de rapport à toit mansardé, cheminées, portes-fenêtres 1:2, balcons filants ; pavillons à deux pans), fenêtres qui s'allument ; `signal` = la fenêtre ambre du geste signature ; parallaxe des deux plans au défilement. Dans un hero, le bas du hero lui réserve sa hauteur. Graines : chaque graine donne une ville différente (aucune paire identique de 0 à 11) ; les graines impaires lisent la suite de hauteurs avec un autre pas. Hero : graine 0 (défaut) ; CtaBand : 5 ; un lot qui pose une troisième ville choisit une autre graine. |
 | `SignalCard` | `title?`, `reference?`, `meta?`, `top/left/right/bottom?`, `className?` | Carte « Nouvelle demande » (démonstration) immobile au-dessus de la ville, dans un conteneur `data-sx-ambient` ; ≥ 768 px ; jamais sur les CTA ni le H1. |
 | `ScenePlayer` (client) | `label`, `description?`, `duration?` (≤ 7200), `replayOnReturn?`, `className?`, `children` | Pose `.is-playing` (R3/R4) ; état final rendu par le serveur ; Pause/Reprendre/Rejouer hors aria-hidden ; `data-state`. |
 | `StateLoading` (client) | `rows?`, `label?`, `rowHeight?` | `role=status`, `aria-busy`, squelettes à taille réservée. |
@@ -293,16 +295,52 @@ Serveur sauf mention. Props gelées (des props facultatives peuvent seulement s'
 | `MobileCtaBar` (client) | — | Monté par PublicShell (voir plan). |
 
 Consentement : « Refuser » et « Accepter » strictement égaux (taille, graisse, couleurs ; recommandation CNIL
-2020). ThemeControl : repère `region` nommé « Apparence du site » ; piste indigo et curseur ambre en mode
+2020). ThemeControl : repère `region` nommé « Apparence du site » ; interrupteur natif (`button role="switch"`,
+`aria-checked`, `data-slot="switch"` et `data-state`, sans radix-ui ni tailwind-merge dans le JS public) ; piste indigo et curseur ambre en mode
 sombre (le bleu plein reste au panel) ; hors pages publiques, icônes seules sous 768 px.
 
-Interface globale : `SiteHeader` (components/site-header.tsx, client : navigation complète à partir de
-1380 px, menu en dessous ; téléphone en toutes lettres de 768 à 1379 px, en icône ailleurs, masqué sous
-360 px ; CTA à partir de 1024 px ; pause des animations ; emplacement du thème), `Brand` et `Footer`
+Interface globale : `SiteHeader` (components/site-header.tsx, client ; paliers mesurés au tour 3, voir
+« En-tête » ci-dessous ; pause des animations ; emplacement du thème), `Brand` et `Footer`
 (components/brand.tsx), `ThemeControl` (rendu par le layout, fixé dans `.sx-theme-slot` de l'en-tête public,
 dans la barre du panel quand `html.sx-admin` — position réglable par le panel via `--sx-admin-theme-top`,
 `--sx-admin-theme-right`, `--sx-admin-theme-left` posées sur `html.sx-admin` —, flottant ailleurs),
 `AudienceMeasurement` (consentement).
+
+### En-tête : paliers (tour 3)
+
+| Largeur | Navigation | Menu | Téléphone | CTA | Thème |
+| --- | --- | --- | --- | --- | --- |
+| < 360 px | — | oui | masqué | — | interrupteur (44 px) |
+| 360-767 px | — | oui | icône | — | interrupteur (44 px) |
+| 768-1023 px | — | oui | en toutes lettres | — | interrupteur (52 px) |
+| 1024-1179 px | — | oui | en toutes lettres | oui | interrupteur (52 px) |
+| 1180-1419 px | Création de site, Refonte, Prestations ▾ | oui (tous les liens) | icône | oui | interrupteur (52 px) |
+| 1420-1519 px | + Asnières & Île-de-France | oui | icône | oui | interrupteur (52 px) |
+| ≥ 1520 px | complète (+ Conseils) | non | icône | oui | soleil, interrupteur, lune (96 px) |
+
+Le conteneur large est plafonné à 1 440 px dès 1 520 px : la place ne grandit plus. Espace libre minimal
+mesuré entre la navigation et les actions, bouton de pause affiché, police DejaVu (Linux, parmi les plus
+larges) : 58 px à 1 180, 65 px à 1 420, 76 px à 1 520. Le numéro en toutes lettres (+158 px) ne tient pas à
+côté de la navigation complète. `layout-check --checks=header` balaie 42 largeurs (dont 1024 à 1600 px par
+pas de 20 px), deux thèmes, bouton de pause forcé : ni débordement, ni chevauchement, ni libellé tronqué,
+ni recouvrement par le ThemeControl, et la navigation attendue à chaque palier. Écart au plan : navigation
+complète à 1 520 px et non 1 180 ; à 1 380 px (réglage du tour 1), elle chevauchait déjà les actions.
+
+### Budget de lignes du hero mobile
+
+À 360 × 640, consentement ouvert, le CTA du hero doit rester au moins 16 px au-dessus du consentement
+(`layout-check --checks=cta`, 360 × 640, 390 × 664, 412 × 823). Budget à 360 px :
+
+| Élément | Lignes au plus | Coût d'une ligne |
+| --- | --- | --- |
+| Surtitre | 1 (utiliser `eyebrowShort` sous 480 px, ex. « Mohamed · Asnières (92) ») | 22 px |
+| H1 (`title`) | 3 | 39 px |
+| Sous-titre (`tagline`) | 2 | 22 px |
+| Chapeau (`lead`) | 3 | 25 px |
+
+Une ligne de H1 coûte presque deux lignes de texte. Mesure de référence (page jetable, textes de l'accueil
+du plan, surtitre court) : surtitre 1, H1 2, sous-titre 3, chapeau 4 lignes, marge de 34 px ; le budget
+ci-dessus donne environ 42 px. Sans surtitre court, l'accueil et la page Asnières tombaient à 10 et 8 px.
 
 Attributs posés sur `<html>` : `data-theme`, `data-consent` (`pending|set`, par le script du layout avant
 le premier rendu), `data-consent-open`, `data-motion` (`on|off`), `data-motion-paused`, et la variable
@@ -341,6 +379,13 @@ référence, seulement avec consentement et sur un chemin mesuré.
   `/apple-touch-icon.png`, `/favicon.ico` répondent 404 jusque-là (ce n'est pas une régression ;
   `vps-crawl-check.py --og-404-ok --icons-404-ok` les tolère avec une note). `/favicon.svg` répond 200.
 - Données : `seoTitle`, `seoDescription` dans services, locations, guides ; `related: ServiceId[]` dans services.
+- `lib/measured-paths.ts` (tour 3) : chemins mesurés et identifiants de service, SANS contenu éditorial ;
+  seul module que les composants clients rendus partout (AudienceMeasurement) importent pour la mesure.
+  Ses listes recopient les slugs de services, locations et guides et les clés de `serviceLabels` ;
+  `tests/measured-paths.test.mjs` vérifie l'égalité. **Un lot qui ajoute, renomme ou retire une page de
+  service, de ville ou de conseil met ce fichier à jour dans le même commit** (exception assumée au gel :
+  sinon le test de la racine échoue). Ne jamais importer lib/services, lib/locations, lib/guides ni
+  lib/analytics-config depuis un composant client présent sur toutes les pages.
 - `'lead'` dans `analyticsEvents`.
 
 ## 7. Chaînes protégées (vps/prepare.py strict)
@@ -377,6 +422,11 @@ référence, seulement avec consentement et sur un chemin mesuré.
 | Page jetable, layout-check | — | 0 écart : pas de défilement horizontal (360–1600, dont 1024, 1180, 1280, 1366), en-tête sans débordement ni recouvrement (deux thèmes), menu mobile ≥ 10,9:1, interrupteur de thème contenu dans sa piste et atteint à la 2e tabulation, CTA au-dessus du consentement aux 4 formats, LCP = H1 (390 et 1440), 0 animation en mode réduit, chaque `.sx-reveal` opaque à mi-hauteur, aucune icône comprimée, images `.sx-media` nettes en DPR 1 à 3, décalage du H1 0 px ; axe-core : 0 violation (8 configurations) |
 | Coût d'animation (motion-cost par défaut : `--settle=2500`, médiane de 3 passes, CPU × 4) | — | ambiance du hero 10,2 ms/s après le 2e tour (ville locale, halo de la fenêtre signal qui respire ; 4,4 ms/s avant), défilement complet (`--scroll`) : +38,6 ms/s (+11 %) à 390 px, +70,2 ms/s (+25 %) à 1 440 px contre la pause globale, LayoutCount +1 ; scène de la page jetable 14,9 ms/s (passes de 6 à 15 : fenêtre courte, bruitée), reflet 4 à 6 ms/s, bandeau 1 à 6 ms/s ; LayoutCount 0 partout |
 | Lint (copie racine) | 27 erreurs, 87 avertissements | 26 erreurs |
+| JS transféré par page (tour 3, Playwright, gzip -9 des scripts chargés) | /mentions-legales 162 855 o, / 177 025 o | /mentions-legales 139 826 o, / 162 306 o : lib/measured-paths (plus de services, locations ni guides dans le JS client, environ 11 Ko gzip) et interrupteur natif (plus de radix-ui ni tailwind-merge, environ 11,5 Ko gzip) |
+| Lighthouse mobile (tour 3, médiane de 3) | /mentions-legales : perf 96, JS 164 Ko, LCP 2,57 s, TBT 118 ms ; / : perf 89, JS 179 Ko, LCP 3,55 s | /mentions-legales : perf 98, JS 141 Ko, LCP 2,21 s, TBT 64 ms ; / : perf 90, JS 164 Ko, LCP 3,39 s (accueil non migré : LCP = image studio, composant de services de l'ancienne page) |
+| En-tête (tour 3) | navigation absente de 1024 à 1379 px, chevauchement dès 1384 px | navigation courte dès 1180 px, complète dès 1520 ; 42 largeurs × 2 thèmes sans débordement, chevauchement, troncature ni recouvrement ; espace libre minimal 58 px |
+| Élément LCP du hero (tour 3) | grain du fond (tuile 180 × 180 = 32 400 px²) à 360 et 390 px sur un titre court | H1 à 360, 390 et 1440 px (tuile de 64 px) |
+| Tests de la racine | 41/43 | 42/44 (nouveau : tests/measured-paths.test.mjs), toujours les 2 seuls échecs connus |
 
 Variante Sites (vinext) : toutes les feuilles, panel compris, sont concaténées en un seul fichier servi
 partout ; ce n'est pas la cible de production (VPS), mais les règles de lot doivent rester préfixées.
