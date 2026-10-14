@@ -23,14 +23,12 @@ function HeroBackdrop() {
   return (
     <>
       <Glow tone="blue" size={760} top="-320px" right="-220px" />
-      <span className="lc-wide"><Glow tone="amber" alt size={460} top="14%" right="4%" duration={28} /></span>
       <span className="lc-wide"><SignalCard right="5%" bottom="calc(var(--sx-skyline-h) + 20px)" reference="SF-92A60C1E" meta="Création · Asnières · démonstration" /></span>
       <div className="lc-bank"><Skyline seed={3} signal height="var(--lc-city-h)" /></div>
       <div className="lc-seine">
         {REFLETS.map((r, i) => <i key={i} className={`lc-reflet lc-reflet--${r.w} lc-r${i + 1}`} style={{ left: r.left }} />)}
         <i className="lc-reflet lc-reflet--signal" />
         <i className="lc-ripple lc-ripple--a" />
-        <i className="lc-ripple lc-ripple--b" />
       </div>
     </>
   );

@@ -61,7 +61,7 @@ export function IleDeFrancePage() {
         <Container>
           <SectionHead eyebrow="Zone d’intervention" id="communes-titre" title="Communes où j’interviens" />
           <p className="lc-zone-text">
-            Je travaille depuis <Commune>Asnières-sur-Seine</Commune> et j’interviens dans les communes suivantes : {listFr(communes)}.
+            J’interviens à <Commune>Asnières-sur-Seine</Commune>, où je travaille, et dans les communes suivantes : {listFr(communes.filter((c) => c !== "Asnières-sur-Seine"))}.
             Plus largement, je me déplace dans quatre départements : {listFr(departments)}.
           </p>
         </Container>

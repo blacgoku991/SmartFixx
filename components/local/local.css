@@ -23,7 +23,6 @@
 .lc-reflet--signal{left:calc(47.8% - 7px);width:14px;background:linear-gradient(180deg,rgba(255,182,72,.95),rgba(255,182,72,0));opacity:.85}
 .lc-ripple{position:absolute;left:-30%;width:55%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,226,186,.32),transparent)}
 .lc-ripple--a{top:32%}
-.lc-ripple--b{top:68%;left:10%;width:40%}
 
 /* France : ciel nocturne piqué de fenêtres lointaines (bleutées : l'ambre reste aux CTA et au signal). */
 .lc-stars{position:absolute;inset:0 0 18% 0}
@@ -76,11 +75,10 @@
 .lc-neighbours i{flex:none;width:7px;height:10px;border-radius:1px;background:var(--sx-window-on);box-shadow:0 0 8px 1px rgba(255,182,72,.45)}
 .lc-more{margin:0;color:var(--sx-text-muted)}
 
-.lc-schema{min-width:0}
 .lc-map{position:relative;aspect-ratio:82/100;border:1px solid var(--sx-edge);border-radius:var(--sx-radius-xl);background:radial-gradient(55% 45% at 38% 47%,color-mix(in srgb,var(--sx-signal) 13%,transparent),transparent 72%),repeating-linear-gradient(0deg,transparent 0 31px,rgba(142,162,255,.055) 31px 32px),repeating-linear-gradient(90deg,transparent 0 31px,rgba(142,162,255,.055) 31px 32px),linear-gradient(180deg,var(--sx-surface),color-mix(in srgb,var(--sx-surface) 55%,var(--sx-bg)));box-shadow:var(--sx-shadow-2);overflow:clip;contain:layout paint}
 @media (min-width:560px){.lc-map{aspect-ratio:1}}
 @media (min-width:1024px){.lc-map{aspect-ratio:20/19}}
-.lc-map-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.lc-map-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 .lc-map-river{fill:none;stroke:color-mix(in srgb,var(--sx-accent) 30%,transparent);stroke-width:34px;stroke-linecap:round;stroke-linejoin:round}
 .lc-map-river-core{fill:none;stroke:color-mix(in srgb,var(--sx-accent) 75%,#fff);stroke-width:2px;stroke-dasharray:3 9;stroke-linecap:round;opacity:.55}
 .lc-map-link{stroke:color-mix(in srgb,var(--sx-window-on) 55%,transparent);stroke-width:1.25px;stroke-dasharray:3 6}
@@ -96,23 +94,16 @@
 .lc-pin--home .lc-pin-name{padding:6px 14px;border-color:color-mix(in srgb,var(--sx-signal) 55%,transparent);background:var(--sx-surface-2);font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-size:1.0625rem;font-weight:700;letter-spacing:var(--sx-tracking-title)}
 .lc-pin-ring{position:absolute;left:50%;top:11px;width:56px;height:56px;margin:-28px 0 0 -28px;border:1px solid color-mix(in srgb,var(--sx-signal) 60%,transparent);border-radius:50%;opacity:.35;transform:scale(1.2)}
 
-/* Scène jouée une fois (ScenePlayer pose .is-playing) : la Seine, puis Asnières, puis chaque repère et son
-   lien. Délais par classe (aucune variable par élément) ; l'état final est l'état rendu par le serveur. */
+/* Apparition des repères liée au défilement (voir seine-schema.tsx) : ligne de temps de vue nommée sur la
+   carte, plages décalées et terminées quand la carte est entièrement entrée à l'écran (aucun repère
+   translucide en zone de lecture). Règles dans le bloc MOUVEMENT. */
+.lc-map-layer{position:absolute;inset:0}
+.lc-schema{margin:0;min-width:0}
+.lc-schema-caption{margin-top:var(--sx-space-3);color:var(--sx-text-muted);font-size:var(--sx-step--1)}
 @keyframes lc-fade{from{opacity:0}to{opacity:1}}
-@keyframes lc-pop{from{opacity:0;transform:translate3d(0,8px,0) scale(.9)}to{opacity:1;transform:none}}
-@keyframes lc-ring{0%{opacity:.9;transform:scale(.5)}100%{opacity:0;transform:scale(2.4)}}
-.lc-schema.is-playing .lc-map-river,.lc-schema.is-playing .lc-map-river-core,.lc-schema.is-playing .lc-map-seine{animation:lc-fade .9s var(--sx-ease-out) both}
-.lc-schema.is-playing .lc-pin{animation:lc-pop .55s var(--sx-ease-out) both}
-.lc-schema.is-playing .lc-map-link{animation:lc-fade .5s linear both}
-.lc-schema.is-playing .lc-pin-ring{animation:lc-ring 1.5s var(--sx-ease-out) 1.1s 2 backwards}
-.lc-schema.is-playing .lc-pin--home{animation-delay:.5s}
-.lc-schema.is-playing .lc-d1{animation-delay:1.4s}
-.lc-schema.is-playing .lc-d2{animation-delay:1.75s}
-.lc-schema.is-playing .lc-d3{animation-delay:2.1s}
-.lc-schema.is-playing .lc-d4{animation-delay:2.45s}
-.lc-schema.is-playing .lc-d5{animation-delay:2.8s}
-.lc-schema.is-playing .lc-d6{animation-delay:3.15s}
-.lc-schema.is-playing .lc-d7{animation-delay:3.5s}
+@keyframes lc-pop{from{opacity:0;transform:translate3d(0,10px,0) scale(.9)}to{opacity:1;transform:none}}
+@keyframes lc-ring{from{opacity:.9;transform:scale(.4)}to{opacity:.35;transform:scale(1.2)}}
+@keyframes lc-wave{from{opacity:0;transform:translate3d(0,8px,0)}to{opacity:1;transform:none}}
 
 /* ===================================================== ASNIÈRES : EXEMPLES */
 .lc-examples{display:grid;gap:var(--sx-space-5)}
@@ -229,16 +220,12 @@
 @keyframes lc-relay{0%{transform:translate3d(0,0,0);opacity:0}4%{opacity:1}36%{opacity:1}40%{transform:translate3d(100%,0,0);opacity:0}100%{transform:translate3d(100%,0,0);opacity:0}}
 @media (prefers-reduced-motion:no-preference){
   /* Ambiance : reflets qui tremblent dans la Seine, vaguelettes, fenêtres lointaines du ciel. */
-  html[data-motion='on'] [data-sx-ambient] .lc-reflet{animation:lc-shimmer 19s var(--sx-ease-inout) infinite alternate;animation-delay:-4s}
-  html[data-motion='on'] [data-sx-ambient] .lc-r2{animation-duration:23s;animation-delay:-11s}
-  html[data-motion='on'] [data-sx-ambient] .lc-r3{animation-duration:17s;animation-delay:-6s}
-  html[data-motion='on'] [data-sx-ambient] .lc-r4{animation-duration:26s;animation-delay:-15s}
+  /* Coût mesuré (motion-cost, 1 440 px) : seuls trois reflets et la fenêtre signal tremblent ; les autres
+     restent fixes. */
+  html[data-motion='on'] [data-sx-ambient] .lc-r2,html[data-motion='on'] [data-sx-ambient] .lc-r5,html[data-motion='on'] [data-sx-ambient] .lc-reflet--signal{animation:lc-shimmer 23s var(--sx-ease-inout) infinite alternate;animation-delay:-11s}
   html[data-motion='on'] [data-sx-ambient] .lc-r5{animation-duration:21s;animation-delay:-2s}
-  html[data-motion='on'] [data-sx-ambient] .lc-r6{animation-duration:24s;animation-delay:-9s}
-  html[data-motion='on'] [data-sx-ambient] .lc-r7{animation-duration:18s;animation-delay:-13s}
-  html[data-motion='on'] [data-sx-ambient] .lc-reflet--signal{animation-duration:9s;animation-delay:-3s}
-  html[data-motion='on'] [data-sx-ambient] .lc-ripple{animation:lc-drift 28s linear infinite;animation-delay:-9s}
-  html[data-motion='on'] [data-sx-ambient] .lc-ripple--b{animation-duration:36s;animation-delay:-21s}
+  html[data-motion='on'] [data-sx-ambient] .lc-reflet--signal{animation-duration:17s;animation-delay:-6s}
+  html[data-motion='on'] [data-sx-ambient] .lc-ripple{animation:lc-drift 32s linear infinite;animation-delay:-9s}
   html[data-motion='on'] [data-sx-ambient] .lc-star{animation:lc-twinkle 22s linear infinite;animation-delay:-5s}
   html[data-motion='on'] [data-sx-ambient] .lc-s2{animation-duration:27s;animation-delay:-14s}
   html[data-motion='on'] [data-sx-ambient] .lc-s3{animation-duration:31s;animation-delay:-8s}
@@ -249,5 +236,11 @@
     html[data-motion='on']:not([data-motion-paused]) .lc-win i{animation:lc-light linear both;animation-timeline:view();animation-range:entry 30% cover 40%}
     html[data-motion='on']:not([data-motion-paused]) .lc-band-row--a{animation:lc-slide-a linear both;animation-timeline:view();animation-range:cover}
     html[data-motion='on']:not([data-motion-paused]) .lc-band-row--b{animation:lc-slide-b linear both;animation-timeline:view();animation-range:cover}
+    html[data-motion='on']:not([data-motion-paused]) .lc-map{view-timeline-name:--lc-map}
+    html[data-motion='on']:not([data-motion-paused]) .lc-map-layer--river{animation:lc-fade linear both;animation-timeline:--lc-map;animation-range:entry 0% entry 40%}
+    html[data-motion='on']:not([data-motion-paused]) .lc-pin--home{animation:lc-pop linear both;animation-timeline:--lc-map;animation-range:entry 20% entry 55%}
+    html[data-motion='on']:not([data-motion-paused]) .lc-pin-ring{animation:lc-ring linear both;animation-timeline:--lc-map;animation-range:entry 30% entry 75%}
+    html[data-motion='on']:not([data-motion-paused]) .lc-map-wave--1{animation:lc-wave linear both;animation-timeline:--lc-map;animation-range:entry 45% entry 80%}
+    html[data-motion='on']:not([data-motion-paused]) .lc-map-wave--2{animation:lc-wave linear both;animation-timeline:--lc-map;animation-range:entry 65% entry 100%}
   }
 }
