@@ -27,3 +27,7 @@
 html :is(.admin-heading,.admin-login-card,.camp-header,.sending-header,.workspace-heading,.email-action-card) h1{letter-spacing:var(--sx-tracking-title)}
 /* H1 sans style propre (/admin/transfert-vps, /admin/logout) : à l'échelle des titres, pas du texte courant. */
 :is(main.section)>h1{font-size:var(--sx-step-3)}
+/* Page STOP / préférences (destinataires externes) : le bouton du contrat legacy hérite du corps de texte
+   (16,14 px à 390 px) et « Confirmer : stop prospection » passait sur deux lignes ; 15 px comme l'ancien CSS
+   (une ligne à 390 et 412 px). À reprendre à la refonte des pages email (lot 6). */
+.email-action-card .button{font-size:.9375rem}

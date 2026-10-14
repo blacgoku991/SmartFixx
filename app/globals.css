@@ -304,6 +304,8 @@
   .sx-h1-tagline{font-family:var(--sx-font-text);font-stretch:100%;font-weight:400;letter-spacing:0;color:var(--sx-text-muted)}
   .sx-h1-tagline::before{content:'\A';white-space:pre}
   .sx-hero .sx-lead{margin:var(--sx-space-4) 0 0}
+  .sx-eyebrow-short{display:none}
+  @media (max-width:479.98px){.sx-eyebrow-long{display:none}.sx-eyebrow-short{display:inline}}
   .sx-hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sx-space-3);margin-top:var(--sx-space-5)}
   @media (max-width:479.98px){.sx-hero-actions .sx-btn{flex:1 0 auto;padding-inline:20px}}
   .sx-hero .sx-hero-proofs{margin-top:var(--sx-space-5)}
@@ -365,7 +367,11 @@
   .sx-cartouche div{display:flex;gap:6px;align-items:baseline}
   .sx-cartouche dt{color:var(--sx-text-faint)}
   .sx-cartouche dd{margin:0;color:var(--sx-text)}
-  .sx-cartouche a{color:var(--sx-text);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  /* Téléphone et email : cible de 44 px de haut (garde-fou 20). Les lignes qui les portent grandissent
+     (min-height plutôt qu'un débord négatif : empilées sous 412 px, deux zones de 44 px au pas de 26 px
+     se recouvraient). */
+  .sx-cartouche a{display:inline-flex;align-items:center;min-height:44px;color:var(--sx-text);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  .sx-cartouche div:has(>dd>a){align-items:center}
   .sx-cartouche--band{position:relative;padding-block:var(--sx-space-5);border-block:1px solid var(--sx-line);background:var(--sx-surface)}
   .sx-cartouche--band::before{content:'';position:absolute;left:0;top:-1px;width:min(220px,40%);height:2px;background:var(--sx-signal)}
   .sx-cartouche--compact dl{display:grid;gap:6px}

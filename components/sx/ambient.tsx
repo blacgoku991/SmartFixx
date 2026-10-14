@@ -29,7 +29,12 @@ function plan(count: number, seed: number, near: boolean, signalAt?: number): Bu
   return Array.from({ length: count }, (_, i) => {
     // Silhouette locale, déterministe : la fenêtre signal reste sur une tour (son halo déborde du bâtiment).
     const kind: Kind = i === signalAt ? "tower" : near && (i + seed) % 6 === 4 ? "pavillon" : (i + seed) % (near ? 4 : 3) === 1 ? "mansard" : "tower";
-    const k = (i * (near ? 1 : 7) + seed * 5 + (near ? 0 : 3)) % HEIGHTS.length;
+    // Multiplicateur de graine premier avec 15 (4, et non 5 : deux graines distantes de 3 donnaient la même
+    // ville) et pas de lecture propre aux graines impaires (4 et 2 au lieu de 1 et 7, tous premiers avec 15) :
+    // sinon chaque ville proche serait une fenêtre décalée, ou un miroir, de la même suite de hauteurs.
+    // Le hero (graine 0) et le CtaBand (graine 5) n'ont ainsi ni la même silhouette, ni sa symétrique.
+    const stride = near ? (seed % 2 ? 4 : 1) : (seed % 2 ? 2 : 7);
+    const k = (i * stride + seed * 4 + (near ? 0 : 3)) % HEIGHTS.length;
     const v = (i * 7 + seed) % 5;
     // Délais NÉGATIFS (départ en cours de cycle) et cycles longs : un délai positif réveille le fil
     // principal (mesuré en CDP, motion-cost.mjs).
