@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import CampaignLink from "@/components/campaign-link";
-import { PublicShell, PageHero, Section, Container, SectionHead, ButtonLink, PhoneLink, Skyline, Glow, Place } from "@/components/sx";
+import { PublicShell, PageHero, Section, Container, SectionHead, ButtonLink, PhoneLink, Skyline, Place } from "@/components/sx";
 import { SITE_IDENTITY, telHref } from "@/lib/site-identity";
 
-/* Page 404 (lot 7). Rendue côté serveur dans PublicShell : l'en-tête, les liens utiles et le pied sont dans
+/* Page 404 (lot 7). Chapeau d'une ligne : le H1 (deux lignes courtes) doit rester le plus grand bloc de texte,
+   donc le candidat LCP (layout-check). Rendue côté serveur dans PublicShell : l'en-tête, les liens utiles et le pied sont dans
    le HTML initial, avec le statut 404 et noindex. Aucune redirection : une ancienne URL qui a un vrai
    équivalent est redirigée par lib/legacy-redirects.ts, les autres arrivent ici.
    Moment signature : « la fenêtre restée éteinte ». Une façade nocturne dont les fenêtres allumées dessinent
@@ -12,7 +13,8 @@ import { SITE_IDENTITY, telHref } from "@/lib/site-identity";
    pris au clavier (règle du socle [data-sx-hero]:has(.sx-btn--cta…) .sx-win--signal). Quelques fenêtres
    s'allument et s'éteignent (sx-twinkle du socle : opacité seule, data-motion=on, délais négatifs, cycles
    ≥ 20 s, suspendues hors écran et en pause). Les cartes de liens « s'allument » au survol (opacité et
-   transform seulement). Aucune feuille de lot : utilitaires Tailwind (app/ est scanné) et classes du socle. */
+   transform seulement). Pas de Glow : la façade éclaire déjà le ciel, et le coût de l'ambiance du hero
+   (motion-cost) doit rester sous 20 ms/s. Aucune feuille de lot : utilitaires Tailwind (app/ est scanné) et classes du socle. */
 export const metadata: Metadata = {
   title: { absolute: "Page introuvable | SmartFixx" },
   description: "Cette adresse n’existe pas ou a changé. Retrouvez la création de site internet, la refonte, la page Asnières-sur-Seine ou demandez un devis.",
@@ -28,7 +30,8 @@ const DIGIT_0 = ["111", "101", "101", "101", "111"];
 const DIGITS = [DIGIT_4, DIGIT_0, DIGIT_4];
 const SIGNAL = { r: 6, c: 6 };
 /* Fenêtres d'ambiance hors chiffres : [étage, colonne, délai négatif (s), durée (s)]. */
-const TWINKLE: [number, number, number, number][] = [[0, 2, -3.4, 23], [0, 9, -11.8, 29], [3, 4, -7.1, 26], [6, 1, -15.2, 31], [6, 11, -5.6, 24], [2, 12, -19.3, 27]];
+/* Trois seulement, cycles ≥ 28 s : coût mesuré par motion-cost (chaque itération réveille le fil principal). */
+const TWINKLE: [number, number, number, number][] = [[0, 9, -11.8, 29], [3, 4, -7.1, 34], [6, 11, -19.6, 31]];
 function lit(r: number, c: number) {
   if (r < 1 || r > 5) return false;
   const d = Math.floor((c - 1) / 4); const x = (c - 1) % 4;
@@ -77,14 +80,14 @@ export default function NotFound() {
         tone="night"
         eyebrow="Erreur 404"
         title="Cette page est introuvable"
-        lead={<>L’adresse demandée n’existe pas ou a changé. Le reste du site est bien allumé{"\u202F"}: choisissez une page plus bas, ou appelez-moi.</>}
+        lead="L’adresse demandée n’existe pas ou a changé."
         actions={<><ButtonLink href="/contact" size="lg">Demandez votre devis</ButtonLink><PhoneLink compact="sm" /></>}
         aside={<Facade />}
-        backdrop={<><Glow tone="blue" size={560} top="-18%" right="-12%" duration={26} /><Skyline seed={8} buildings={12} /></>}
+        backdrop={<Skyline seed={8} />}
       />
       <Section tone="surface" labelledBy="nf-pages">
         <Container>
-          <SectionHead id="nf-pages" eyebrow="Pour reprendre le fil" title="Les pages qui répondent" text={<>Choisissez la page la plus proche de votre recherche. Une question{"\u202F"}? Je réponds au <a href={telHref} className="sx-tabular">{SITE_IDENTITY.PHONE_DISPLAY}</a>.</>} />
+          <SectionHead id="nf-pages" eyebrow="Pour reprendre le fil" title="Les pages qui répondent" text={<>Le reste du site, lui, est bien allumé. Choisissez la page la plus proche de votre recherche. Une question{"\u202F"}? Je réponds au <a href={telHref} className="sx-tabular">{SITE_IDENTITY.PHONE_DISPLAY}</a>.</>} />
           <ul className="mt-[var(--sx-space-6)] grid list-none gap-[var(--sx-space-4)] p-0 sm:grid-cols-2 lg:grid-cols-3">
             {LINKS.map((l) => (
               <li key={l.href} className="min-w-0">
