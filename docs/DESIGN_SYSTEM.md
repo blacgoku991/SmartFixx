@@ -58,8 +58,44 @@ Règles :
 
 ## 2. Jetons
 
-Le bloc de jetons est dans `app/globals.css`, tel que défini par le plan ; sombre par défaut
-(`<html data-theme="dark">` rendu par le serveur), clair sous `:root[data-theme='light']`.
+Le bloc de jetons est dans `app/globals.css` ; sombre par défaut (`<html data-theme="dark">` rendu par le
+serveur), clair sous `:root[data-theme='light']`. Il part du bloc du plan (`systeme-design.md`), avec les
+écarts ci-dessous, tous voulus et passés par `contrast.py` (0 échec dans les deux thèmes).
+
+Deux blocs `:root` : le premier, `:root,[data-sx-tone='night']`, ne contient QUE les couleurs et le pont
+shadcn ; le second, `:root`, la typographie, les espaces, les formes, la pile et le mouvement. La **portée
+nuit** `[data-sx-tone='night']` redéclare les couleurs sombres sur un élément (et y recalcule `color`) :
+`CtaBand` (toujours), `Section tone="night"`, `PageHero tone="night"`. La nuit reste la nuit dans les deux
+thèmes ; en clair, la page part de l'aube (hero) et finit sur la ville de nuit (bandeau d'appel).
+
+### Écarts au plan
+
+| Jeton | Plan | Socle | Raison | Ratio vérifié (contrast.py) |
+| --- | --- | --- | --- | --- |
+| `--sx-surface` (sombre) | #0D1426 | #0E1730 | hiérarchie des fonds lisible (cartes trop proches du fond) | text-muted 8,4:1 |
+| `--sx-surface-2` (sombre) | #131D35 | #172242 | idem | text-muted 7,69:1, text-faint 5,55:1, line-strong 3,81:1 |
+| `--sx-surface-3` (sombre) | #1B2846 | #1F2D54 | idem | text 11,99:1, text-muted 6,62:1 |
+| `--sx-line` (sombre) | #1E2B49 | #24335C | séparateurs visibles sur les nouveaux fonds (décor) | — |
+| `--sx-danger` (sombre) | #FF8A8A | #FF9696 | marge sur surface-3 | 9,40:1 sur bg, 6,44:1 sur surface-3 |
+| `--sx-tracking-title` | -0,025 em | -0,018 em (82 %), -0,012 em (92 %, ≥ 768 px) | les glyphes condensés se touchaient | — |
+| `--sx-facade` | #0A1022 | `--sx-facade-far` #0E1838 / `--sx-facade-near` #121D42 (`--sx-facade` = alias du plan proche) | ville en deux plans | décor |
+| `--sx-horizon` (sombre) | halo bleu | halo sodium ambre puis bleu | ciel de ville éclairée | décor |
+| `--sx-bg` (clair) | #F5F7FC | #EEF2FA | cartes blanches détachées du fond | text-muted ≥ 6,1:1 sur tous les fonds |
+| `--sx-surface-2`/`-3` (clair) | #EDF0F8 / #E1E6F3 | #E7ECF7 / #DCE3F2 | idem | text-muted 6,59:1 / 6,06:1, text-faint 4,86:1 |
+| `--sx-line` (clair) | #D9DEEA | #D3DAEA | idem (décor) | — |
+| `--sx-danger` (clair) | #B42318 | #A51E14 | marge sur surface-3 | 6,69:1 sur bg, 5,84:1 sur surface-3 |
+| `--sx-window-off` (clair) | rgba(44,71,217,.06) | rgba(255,214,160,.10) | fenêtres éteintes sur façades encrées de l'aube | décor |
+| façades (clair) | — | far #46527A, near #1B2846, `--sx-rim` ambré | concept « aube » : silhouettes encre sur ciel pêche | décor |
+| `--sx-step-5` (H1) | max 5,25 rem (84 px dès 1 330 px) | `clamp(2.5rem,1.5rem + 4.6vw,6rem)` | H1 plus présent sur grand écran (89 px à 1 440) | — |
+
+Ajouts du socle (absents du plan) : `--sx-sky-top/-mid/-low` et `--sx-sky` (ciel du hero et du bandeau :
+nuit → indigo → violet sodium ; en clair, aube → pêche), `--sx-sodium` (halo ambre de l'éclairage public à la
+ligne des toits), `--sx-indigo` #2A2370 (seconde température « nuit » : piste de l'interrupteur, lueur des
+sections nocturnes ; texte 14,3:1 dessus), `--sx-step-6` et `--sx-leading-display` (énoncé « display »),
+`--sx-radius-window` 12 px (CTA, boutons, contrôles de l'en-tête), `--sx-skyline-h`
+(`clamp(120px,20vw,300px)`), `--sx-window-warm`, `--sx-rim`, `--sx-grain`, `--sx-edge`.
+Ciel contrôlé : texte, text-muted, accent et signal-text ≥ 5,3:1 sur chaque arrêt dans les deux thèmes ;
+CTA, focus et line-strong ≥ 3,36:1.
 
 | Rôle | Jeton |
 | --- | --- |
@@ -70,10 +106,11 @@ Le bloc de jetons est dans `app/globals.css`, tel que défini par le plan ; somb
 | Conversion | `--sx-cta`, `--sx-cta-hover`, `--sx-on-cta`, `--sx-cta-icon` |
 | Signal ambre | `--sx-signal` (décor), `--sx-signal-text` (texte ambre lisible) |
 | États | `--sx-success`, `--sx-warning`, `--sx-danger`, `--sx-violet`, `--sx-neutral` (toujours avec icône + texte) |
+| Ciel (décor) | `--sx-sky` (arrêts `--sx-sky-top`, `--sx-sky-mid`, `--sx-sky-low`), `--sx-sodium`, `--sx-indigo` |
 | Ville nocturne (décor) | `--sx-facade-far`, `--sx-facade-near` (`--sx-facade` = alias du plan proche), `--sx-rim` (liseré de toit, cobalt des objets chrome), `--sx-horizon` (ciel ; « aube » ambrée en clair), `--sx-window-off`, `--sx-window-on`, `--sx-window-warm` (étages allumés), `--sx-glow`, `--sx-grain` (texture SVG statique, data-URI) |
-| Typo | `--sx-font-display`, `--sx-font-text`, `--sx-font-mono`, `--sx-step--1` … `--sx-step-5` |
+| Typo | `--sx-font-display`, `--sx-font-text`, `--sx-font-mono`, `--sx-step--1` … `--sx-step-6`, `--sx-leading-display` |
 | Espaces | `--sx-space-1` … `--sx-space-10`, `--sx-section-y`, `--sx-gutter`, `--sx-container` (1240), `--sx-measure` |
-| Formes | `--sx-radius-sm/md/lg/xl/pill`, `--sx-shadow-1/2` |
+| Formes | `--sx-radius-sm/md/lg/xl/pill`, `--sx-radius-window` (12 px : boutons, CTA, contrôles), `--sx-shadow-1/2`, `--sx-skyline-h` |
 | Pile | `--sx-z-raised` 10, `--sx-z-header` 100, `--sx-z-sticky` 200, `--sx-z-float` 300, `--sx-z-consent` 400, `--sx-z-overlay` 500, `--sx-z-toast` 600, `--sx-z-skip` 700 |
 | Flottants | `--sx-header-h` (60/72), `--sx-consent-reserve` (122 px sous 768), `--sx-float-h` (posé par JS) |
 | Mouvement | `--sx-dur-fast/base/slow/scene`, `--sx-ease-out`, `--sx-ease-inout` |
@@ -83,8 +120,8 @@ Pastilles : `color-mix(in srgb, <couleur> var(--sx-chip-tint), var(--sx-surface)
 `sx-chip--success`). Statuts : Nouvelle = signal, En cours = accent, Devis envoyé = violet, Archivée = neutre. Le pont shadcn (`--background`, `--primary`, `--chart-*`…) pointe
 sur ces jetons ; `dark:` suit `data-theme`, pas l'OS.
 
-**Toute nouvelle couleur passe par `python3 scripts/qa/contrast.py`** (138 paires, 0 échec dans les deux
-thèmes au lot 0 ; texte ≥ 4,5:1, contrôles ≥ 3:1). contrast.py ne contrôle que des jetons : les
+**Toute nouvelle couleur passe par `python3 scripts/qa/contrast.py`** (182 paires, 0 échec dans les deux
+thèmes au lot 0, ciel compris ; texte ≥ 4,5:1, contrôles ≥ 3:1). contrast.py ne contrôle que des jetons : les
 combinaisons réelles (menu mobile ouvert…) sont contrôlées par `layout-check.mjs --checks=menu`.
 
 Pile (z-index) : les surcouches Radix du panel et des formulaires (Sheet, Dialog, AlertDialog : overlay et
@@ -96,27 +133,33 @@ au-dessus de l'en-tête, du ThemeControl (300 ou 101) et du consentement (400).
 
 - Titres : **SFX Display** (Bricolage Grotesque, OFL 1.1), graisse 700, opsz 96, deux instances statiques :
   `public/fonts/sfx-display-82.v1.woff2` (sous 768 px) et `sfx-display-92.v1.woff2` (à partir de 768 px),
-  18,0 Ko chacune (plafond 24 Ko), cmap complète des 211 points de code exigés (U+00A0, U+202F, flèches
-  ← → ↗ comprises). Un appareil ne télécharge qu'une face (`font-stretch` par face). Construction :
+  17,9 et 18,1 Ko (plafond 24 Ko), cmap complète des 213 points de code exigés (U+00A0, U+202F, U+2010,
+  U+2011 trait d'union insécable, flèches ← → ↗ comprises). Un appareil ne télécharge qu'une face (`font-stretch` par face). Construction :
   `scripts/qa/fonts/build-sfx-display.py` ; licence : `public/fonts/OFL-bricolage-grotesque.txt`.
 - Texte : police système (`--sx-font-text`), chiffres tabulaires (`sx-tabular`) pour téléphone, références,
   dates.
 - Replis calés : famille « SFX Display Fallback » (Arial Bold et ses équivalents métriques Liberation Sans
   et Arimo ; Roboto reçoit les mêmes réglages, approximation). Décalage du H1 mesuré au chargement de la
   police : 0,00 px à 360, 390, 412 et 1440 px (layout-check, police bloquée puis libérée).
-- Échelle : H1 `step-5` / .98 ; H2 `step-3` ; H2 de chapitre `step-4` ; H3 `step-2` ; chapeau `step-1` /
-  1.45 ; corps `step-0` / 1.55 ; jamais sous 12 px. Interdit : animer `font-stretch` ou
+- Échelle : H1 `step-5` / .98 ; énoncé « display » `step-6` / .88 (classe `sx-display` : H2 de chapitre
+  d'exception, chiffre-clé ; 52 px à 390, 144 px au plus) ; H2 `step-3` ; H2 de chapitre `step-4` ; H3
+  `step-2` ; chapeau `step-1` / 1.45 ; corps `step-0` / 1.55 ; jamais sous 12 px. Interdit : animer `font-stretch` ou
   `font-variation-settings`.
 - Composition : espace fine insécable avant « ; : ! ? » et dans « », téléphone en espaces insécables
-  (`SITE_IDENTITY.PHONE_DISPLAY`), noms de lieux en `sx-nowrap`, mot-clé souligné ambre : `sx-keyword`.
+  (`SITE_IDENTITY.PHONE_DISPLAY`), mot-clé souligné ambre : `sx-keyword`. **Noms de lieux insécables** :
+  `<Place>Asnières-sur-Seine</Place>` (components/sx/place.tsx : traits d'union U+2011, espaces insécables,
+  `white-space: nowrap`) ou, dans une chaîne, `nb(SITE_IDENTITY.WORK_CITY)` (lib/site-identity.ts). Le
+  U+2011 est dans SFX Display : un titre ne retombe pas sur la police de repli.
 - Approche des titres : -0,018 em à 82 % (sous 768 px), -0,012 em à 92 % (`--sx-tracking-title`) : les
   glyphes ne se touchent plus à 1440 px.
 - Surtitre (`Eyebrow`) en casse de phrase avec le point ambre, sans capitales espacées. Les petites
   étiquettes de rubrique (pied de page, groupes du menu) restent en capitales.
 - Seconde voix sans seconde police : les chiffres tabulaires du titrage servent d'éléments graphiques
   (`sx-figure` pour un délai ou un nombre, `sx-ref` pour une référence SF-…).
-- Panel, connexion et pages email (transition, `app/admin/legacy-tokens.css`) : h2 et h3 en police de
-  texte ; seul le H1 d'écran est en SFX Display, jusqu'à la refonte du panel (lots 5 et 6).
+- Panel, connexion et pages email (transition, `app/admin/legacy-tokens.css`) : texte en **Arial** (largeurs
+  fixes du panel calées sur Arial : avec la pile système, le tableau des demandes débordait en 1 280-1 440 px),
+  h2 et h3 en police de texte ; seul le H1 d'écran est en SFX Display, à l'approche `--sx-tracking-title`
+  (l'ancien -0,045 à -0,05 em faisait se toucher les lettres), jusqu'à la refonte du panel (lots 5 et 6).
 
 ### Chargement de la police : mesure des trois variantes (lot 0)
 
@@ -147,13 +190,25 @@ Règles R1 à R12 du plan, inchangées, sauf l'amendement ci-dessous.
 - R5 : mode réduit = zéro animation (`animation: none`, `transition: none`), contrôlé par
   `document.getAnimations().length === 0`.
 - R6 : révélations en CSS (`sx-reveal`, `animation-timeline: view()`, visibles par défaut), jamais dans les
-  900 premiers pixels.
+  900 premiers pixels. **Écart au plan** : la plage est bornée en longueur, `entry 0% entry 220px`, et non
+  `entry 0% entry 100%` : avec la plage du plan, un bloc plus haut qu'un tiers d'écran restait lu à 35-78 %
+  d'opacité (contraste du texte atténué jusqu'à 2,0:1). Un bloc est opaque dès que son haut est à 220 px
+  au-dessus du bas de l'écran ; `layout-check --checks=reveal` l'exige pour CHAQUE `.sx-reveal` dont le haut
+  atteint la mi-hauteur (390 × 844 et 1440 × 900).
 - R7 : `KineticHeading` réservé aux H2 de chapitre (accueil, création, refonte), un par écran.
 - R8 : survol translateY(-1px), flèche 3 px, appui scale(.98), 120–180 ms, focus 3 px décalé de 3 px.
 - R9 : bascule de thème sans transition (`html.sx-theme-switching`), fondu `startViewTransition` seulement
   si `data-motion=on` ; aucune transition de page.
 - R11 : LayoutCount = 0 pendant l'animation, < 20 ms de tâches par seconde (CPU × 4) :
-  `node scripts/qa/motion-cost.mjs <base> <chemin> <sélecteur>`.
+  `node scripts/qa/motion-cost.mjs <base> <chemin> <sélecteur>`. **Au défilement** :
+  `motion-cost.mjs <base> <chemin> --scroll [--width=1440 --height=900]` parcourt la page à la molette en mode
+  animé puis avec la pause globale (référence) : LayoutCount au plus +2, surcoût ≤ +40 % ou ≤ +60 ms/s
+  (médianes de 3 passes). Chaque `.sx-reveal`, chaque mot de `KineticHeading` (`.sx-kw`), chaque
+  `.sx-parallax` et chaque plan de ville est une animation de timeline recalculée à chaque image de
+  défilement : en poser peu par écran (une section révélée d'un bloc, pas chaque carte), et mesurer.
+  MotionGate pose `html[data-sx-scrolling]` pendant un défilement : l'ambiance temporelle (lueurs,
+  fenêtres, reflets, halo) s'y suspend, les animations liées au défilement continuent (mesuré à 1 440 px :
+  +98 ms/s avant, +70 ms/s après).
 - R12 : en-tête opaque sur mobile, `backdrop-filter` seulement avec pointeur fin et ≥ 1024 px.
 
 **Amendement (« des animations et des effets partout »)** : une AMBIANCE continue est autorisée — lueurs
@@ -194,8 +249,9 @@ JAMAIS derrière un CTA), `sx-skyline` (`sx-skyline-plane--far|--near`, `sx-skyl
 (+ `--deep`), `sx-reveal`, `sx-kinetic`/`sx-kw`, `sx-grain` (texture statique, déjà posée sur `.sx-hero`,
 `.sx-section--night` et `.sx-cta-band`), `sx-edge` (liseré dégradé d'une carte clé).
 
-Geste signature « la demande qui s'allume » : la fenêtre `sx-win--signal` de `Skyline signal` reçoit un
-halo ambre au survol ou au focus du CTA du hero (`[data-sx-hero]:has(.sx-btn--cta:hover|:focus-visible)`),
+Geste signature « la demande qui s'allume » : la fenêtre `sx-win--signal` (16 × 22 px) de `Skyline signal`
+respire lentement (halo, cycle de 9 s) et reçoit un halo ambre au survol, au focus ou à l'appui (toucher) du
+CTA du hero (`[data-sx-hero]:has(.sx-btn--cta:hover|:focus-visible|:active)`),
 et chaque fois qu'un ancêtre porte `data-sx-signal-on` : le formulaire (lot 5) le pose sur `<html>` après
 un 201. `SignalCard` (carte « Nouvelle demande · SF-… · démonstration ») est posée, immobile, au-dessus de
 la ville ; elle est masquée sous 768 px (pas de place sans toucher aux CTA). Animations propres à un lot : écrites dans sa feuille, sous
@@ -207,25 +263,26 @@ Serveur sauf mention. Props gelées (des props facultatives peuvent seulement s'
 
 | Primitive | Props | Notes |
 | --- | --- | --- |
-| `PublicShell` | `children` | SiteHeader (avec lien d'évitement), `<main id="contenu">`, Footer, MobileCtaBar, MotionGate. Toute page publique ; jamais /admin ni /email. |
-| `Section` | `tone?: 'bg'\|'surface'\|'night'`, `id?`, `labelledBy?`, `className?`, `ambient?: ReactNode` | `ambient` est rendu derrière, aria-hidden, dans un conteneur `data-sx-ambient`. |
+| `PublicShell` | `children` | SiteHeader, `<main id="contenu">`, Footer, MobileCtaBar, MotionGate. Toute page publique ; jamais /admin ni /email. Le lien d'évitement « Aller au contenu » et le ThemeControl sont rendus par le layout racine AVANT la page (1er et 2e arrêts du clavier, WCAG 2.4.3) ; le lien est masqué sans `#contenu`. |
+| `Section` | `tone?: 'bg'\|'surface'\|'night'`, `id?`, `labelledBy?`, `className?`, `ambient?: ReactNode` | `ambient` est rendu derrière, aria-hidden, dans un conteneur `data-sx-ambient`. `night` : portée nuit (`data-sx-tone`), nocturne dans les deux thèmes. |
 | `Container` | `size?: 'default'\|'narrow'\|'wide'`, `as?`, `className?` | 1240 / 820 / 1440 px. |
-| `Eyebrow` | `dot?`, `className?` | Point ambre facultatif. |
+| `Eyebrow` | `dot?`, `className?` | Point ambre facultatif, aligné sur la première ligne ; le texte est un seul élément (contenu mixte, `<Place>` compris, en ligne). |
 | `SectionHead` | `eyebrow?`, `title`, `text?`, `id?`, `level?: 2\|3` | En-tête de section. |
-| `PageHero` | `eyebrow?`, `eyebrowDot?` (true), `title`, `tagline?`, `lead?`, `proofs?: string[]`, `actions?`, `aside?`, `breadcrumbs?: {name,path}[]`, `backdrop?`, `id?` (`hero-titre`), `className?` | Un seul `<h1><span class="sx-h1-main">{title}</span> <span class="sx-h1-tagline">{tagline}</span></h1>` : vraie espace, les deux parties en ligne (un seul candidat LCP). Ordre du DOM : surtitre, H1, chapeau, actions (`.sx-hero-actions`), preuves, aside. `data-sx-hero`. Réserve `--sx-consent-reserve` sous 768 px tant que `data-consent=pending`. `backdrop` = décor plein cadre (motif nocturne), aria-hidden + `data-sx-ambient`. |
+| `PageHero` | `eyebrow?`, `eyebrowDot?` (true), `title`, `tagline?`, `lead?`, `proofs?: string[]`, `actions?`, `aside?`, `breadcrumbs?: {name,path}[]`, `backdrop?`, `id?` (`hero-titre`), `className?`, `tone?: 'auto'\|'night'` (auto) | Fond : ciel `--sx-sky` + halo `--sx-sodium` (nuit en sombre, aube en clair ; `tone="night"` : nuit dans les deux thèmes). Avec une ville, le bas du hero réserve `--sx-skyline-h` + 16 px : aucun texte sur les façades. `backdrop` couvre tout le hero (`inset: 0`, `overflow: clip`). | Un seul `<h1><span class="sx-h1-main">{title}</span> <span class="sx-h1-tagline">{tagline}</span></h1>` : vraie espace, les deux parties en ligne (un seul candidat LCP). Ordre du DOM : surtitre, H1, chapeau, actions (`.sx-hero-actions`), preuves, aside. `data-sx-hero`. Réserve `--sx-consent-reserve` sous 768 px tant que `data-consent=pending`. `backdrop` = décor plein cadre (motif nocturne), aria-hidden + `data-sx-ambient`. |
 | `Breadcrumbs` | `items: {name,path}[]` (SANS l'accueil, ajouté en tête ; le dernier = page courante) | Fil visible + JSON-LD BreadcrumbList identique (via `breadcrumb()` de lib/seo). Serveur uniquement. |
 | `ButtonLink` | `variant?: 'cta'\|'primary'\|'ghost'`, `href`, `icon?: 'arrow'\|'phone'\|'none'\|ReactNode`, `size?: 'md'\|'lg'` (48/52 px), `className?`, + attributs de lien | Passe par CampaignLink (utm_campaign propagé). `data-analytics="contact"` automatique vers /contact, /diagnostic, #demande. |
 | `PhoneLink` | `compact?: boolean\|'sm'`, `label?`, `className?` | `tel:+33618745180`, « 06 18 74 51 80 ». `compact` : icône seule, aria-label « Appeler Mohamed au … ». `'sm'` : icône seule sous 480 px — à utiliser dans le hero mobile pour garder CTA et appel sur une ligne. |
-| `CtaBand` | `title`, `text?`, `primaryHref?` (/contact), `primaryLabel?` (« Parler de mon projet »), `id?`, `phone?` (true), `skyline?` (true) | Remplace NextStep (alias conservé). La réserve basse suit la hauteur de la ville : aucun texte ni CTA sur les façades. |
-| `ProofList` | `items: string[]`, `className?` | Chaque élément = UN span de texte. |
+| `CtaBand` | `title`, `text?`, `primaryHref?` (/contact), `primaryLabel?` (« Parler de mon projet »), `id?`, `phone?` (true), `skyline?` (true) | Remplace NextStep (alias conservé). Toujours nocturne (portée nuit) : ciel, sodium, ville. La réserve basse suit `--sx-skyline-h` : aucun texte ni CTA sur les façades. |
+| `ProofList` | `items: string[]`, `className?` | Chaque élément = UN span de texte ; puce « fenêtre allumée » ambre (`sx-proof-mark`, aria-hidden), plus de coche verte. |
+| `Place` | `children: string` | Nom de lieu insécable (U+2011, espaces insécables, `sx-nowrap`). Serveur ou client. |
 | `Cartouche` | `variant?: 'band'\|'footer'\|'compact'` | SmartFixx SASU, SIREN, siège Paris 1er, Interlocuteur Mohamed, « Je travaille depuis Asnières-sur-Seine (92) », téléphone, email. |
 | `FaqList` | `items: {q, a: ReactNode}[]` | `<details>` natifs, sans JSON-LD FAQPage. |
 | `KineticHeading` | `as?: 'h2'\|'h3'`, `children: string`, `id?` | Mots en inline-block, vraies espaces. |
-| `Media` | `src`, `base?: 'studio-web'\|'studio-automation'\|'studio-security'\|'mail-sculpture'`, `sizes?`, `alt`, `width`, `height`, `loading?` (lazy), `sheen?` | AVIF + WebP 240/480/768 depuis `public/media/studio/`, original en dernier candidat (1024w). Jamais dans un hero. |
+| `Media` | `src`, `base?: 'studio-web'\|'studio-automation'\|'studio-security'\|'mail-sculpture'`, `sizes?`, `maxWidth?` (480), `alt`, `width`, `height`, `loading?` (lazy), `sheen?` | AVIF + WebP 240/480/768/1024 depuis `public/media/studio/`, original en `src`. Largeur affichée bornée à `maxWidth` (`--sx-media-max`) ; le `sizes` par défaut en découle. `layout-check --checks=media` exige un fichier ≥ 0,8 × largeur rendue × DPR (390 en DPR 3, 1440 en DPR 1 et 2). Jamais dans un hero. |
 | `DemoFrame` | `kind?: 'browser'\|'phone'`, `url?`, `label?` (« Démonstration »), `description?`, `ratio?`, `children` | La barre du cadre est la `figcaption` : l'étiquette y est un élément flex (jamais sur l'URL) ; en `phone`, pastille en haut à droite. Contenu aria-hidden, `contain: layout paint`, largeur ≤ 880 px. Aucun texte < 12 px. |
 | `Realisations` | `items?`, `headingLevel?: 2\|3` | Entrées `published` de lib/realisations ; carte texte + maquette DOM sans capture (tableau de suivi : compteurs, 5 demandes de démonstration avec référence, type, date et statut ; 3 demandes en 4/3 sous 480 px) ; rien si aucune entrée. |
 | `Glow` | `tone?: 'blue'\|'amber'`, `size?`, `top/left/right/bottom?`, `alt?`, `duration?` | Lueur d'ambiance, à placer dans un conteneur `data-sx-ambient`. Ambre : jamais derrière un CTA. |
-| `Skyline` | `seed?`, `buildings?` (11), `signal?`, `depth?` (true), `height?`, `className?` | Ville en profondeur (ciel, plan lointain, plan proche, deux gabarits de fenêtres, étages allumés, environ 10 % de lumière), fenêtres qui s'allument ; `signal` = la fenêtre ambre du geste signature ; parallaxe des deux plans au défilement. Dans un hero, le bas du hero lui réserve sa hauteur. |
+| `Skyline` | `seed?`, `buildings?` (11), `signal?`, `depth?` (true), `height?`, `className?` | Ville en profondeur (ciel, plan lointain, plan proche, deux gabarits de fenêtres, étages allumés, environ 10 % de lumière) et silhouette locale (immeubles de rapport à toit mansardé, cheminées, portes-fenêtres 1:2, balcons filants ; pavillons à deux pans), fenêtres qui s'allument ; `signal` = la fenêtre ambre du geste signature ; parallaxe des deux plans au défilement. Dans un hero, le bas du hero lui réserve sa hauteur. |
 | `SignalCard` | `title?`, `reference?`, `meta?`, `top/left/right/bottom?`, `className?` | Carte « Nouvelle demande » (démonstration) immobile au-dessus de la ville, dans un conteneur `data-sx-ambient` ; ≥ 768 px ; jamais sur les CTA ni le H1. |
 | `ScenePlayer` (client) | `label`, `description?`, `duration?` (≤ 7200), `replayOnReturn?`, `className?`, `children` | Pose `.is-playing` (R3/R4) ; état final rendu par le serveur ; Pause/Reprendre/Rejouer hors aria-hidden ; `data-state`. |
 | `StateLoading` (client) | `rows?`, `label?`, `rowHeight?` | `role=status`, `aria-busy`, squelettes à taille réservée. |
@@ -234,6 +291,10 @@ Serveur sauf mention. Props gelées (des props facultatives peuvent seulement s'
 | `MotionGate` (client) | — | Monté par PublicShell. |
 | `MotionToggle` (client) | `variant?: 'inline'\|'icon'` | Contrôle global de pause (`icon` : en-tête ; `inline` : menu et pied). |
 | `MobileCtaBar` (client) | — | Monté par PublicShell (voir plan). |
+
+Consentement : « Refuser » et « Accepter » strictement égaux (taille, graisse, couleurs ; recommandation CNIL
+2020). ThemeControl : repère `region` nommé « Apparence du site » ; piste indigo et curseur ambre en mode
+sombre (le bleu plein reste au panel) ; hors pages publiques, icônes seules sous 768 px.
 
 Interface globale : `SiteHeader` (components/site-header.tsx, client : navigation complète à partir de
 1380 px, menu en dessous ; téléphone en toutes lettres de 768 à 1379 px, en icône ailleurs, masqué sous
@@ -268,9 +329,11 @@ référence, seulement avec consentement et sur un chemin mesuré.
   datePublished, dateModified?})` ; `organization` ; `OG_IMAGE`. Le layout fournit une og:image par défaut
   aux pages qui n'utilisent pas encore pageMeta.
 - `lib/site-identity.ts` : `SITE_IDENTITY` (NAME, BRAND, LEGAL, LEGAL_NAME, SIREN, SIRET, RCS, VAT,
-  REGISTERED_ON, SIEGE, WORK_BASE, PUBLICATION_DIRECTOR, HOST = null, PHONE_DISPLAY, PHONE_E164, EMAIL, AREAS,
+  REGISTERED_ON, SIEGE, WORK_BASE, WORK_CITY, PUBLICATION_DIRECTOR, HOST = null, PHONE_DISPLAY, PHONE_E164, EMAIL, AREAS,
   VSL_AVAILABLE = false, confirmedLegalIds = true, personAuthorAccepted = false). Identifiants confirmés par
-  le propriétaire ; **l'hébergeur du VPS n'est pas connu : ne rien inventer**.
+  le propriétaire ; **l'hébergeur du VPS n'est pas connu : ne rien inventer**. **`PHONE_DISPLAY` sépare les
+  paires par U+00A0** (espace insécable) : un test doit utiliser `/06[\s\u00A0]18[\s\u00A0]74[\s\u00A0]51[\s\u00A0]80/`,
+  jamais `/06 18 74 51 80/`. Exports : `nb(s)` (lieu insécable), `telHref`, `mailHref`.
 - `lib/fetch-json.ts` : `postJson`, `getJson` → `{ok, status, data, kind?: 'network'|'http'|'invalid-json'}` ;
   `frenchError(kind, status, data)`.
 - `lib/realisations.ts` : smartfixx publié (maquette DOM), rangvia et rydar non publiés.
@@ -308,11 +371,11 @@ référence, seulement avec consentement et sur un chemin mesuré.
 
 | Mesure | Avant | Après |
 | --- | --- | --- |
-| CSS public servi par page (gzip -9) | 64 764 o (3 fichiers, 347 Ko bruts) | 20 726 o (1 fichier, 115 Ko bruts) après le tour de correction |
-| Contrastes (contrast.py, 2 thèmes) | — | 138 paires, 0 échec |
-| Police de titre | aucune (Arial) | 1 fichier de 18,0 Ko par appareil |
-| Page jetable, layout-check | — | 0 écart : pas de défilement horizontal (360–1600, dont 1024, 1180, 1280, 1366), en-tête sans débordement ni recouvrement (deux thèmes), menu mobile ≥ 10,9:1, interrupteur de thème contenu dans sa piste, CTA au-dessus du consentement aux 4 formats, LCP = H1 (390 et 1440), 0 animation en mode réduit, dernier `.sx-reveal` à opacité 1, décalage du H1 0 px |
-| Coût d'animation (motion-cost par défaut : `--settle=2500`, médiane de 3 passes, CPU × 4) | — | ambiance du hero 4,4 ms/s (ville en profondeur, lueurs, fenêtres), scène de la page jetable 14,9 ms/s (passes de 6 à 15 : fenêtre courte, bruitée), reflet 4 à 6 ms/s, bandeau 1 à 6 ms/s ; LayoutCount 0 partout |
+| CSS public servi par page (gzip -9) | 64 764 o (3 fichiers, 347 Ko bruts) | 21 494 o (1 fichier) après le 2e tour de correction (ciel, ville locale, portée nuit compris) |
+| Contrastes (contrast.py, 2 thèmes) | — | 182 paires, 0 échec (ciel compris) |
+| Police de titre | aucune (Arial) | 1 fichier de 17,9 ou 18,1 Ko par appareil |
+| Page jetable, layout-check | — | 0 écart : pas de défilement horizontal (360–1600, dont 1024, 1180, 1280, 1366), en-tête sans débordement ni recouvrement (deux thèmes), menu mobile ≥ 10,9:1, interrupteur de thème contenu dans sa piste et atteint à la 2e tabulation, CTA au-dessus du consentement aux 4 formats, LCP = H1 (390 et 1440), 0 animation en mode réduit, chaque `.sx-reveal` opaque à mi-hauteur, aucune icône comprimée, images `.sx-media` nettes en DPR 1 à 3, décalage du H1 0 px ; axe-core : 0 violation (8 configurations) |
+| Coût d'animation (motion-cost par défaut : `--settle=2500`, médiane de 3 passes, CPU × 4) | — | ambiance du hero 10,2 ms/s après le 2e tour (ville locale, halo de la fenêtre signal qui respire ; 4,4 ms/s avant), défilement complet (`--scroll`) : +38,6 ms/s (+11 %) à 390 px, +70,2 ms/s (+25 %) à 1 440 px contre la pause globale, LayoutCount +1 ; scène de la page jetable 14,9 ms/s (passes de 6 à 15 : fenêtre courte, bruitée), reflet 4 à 6 ms/s, bandeau 1 à 6 ms/s ; LayoutCount 0 partout |
 | Lint (copie racine) | 27 erreurs, 87 avertissements | 26 erreurs |
 
 Variante Sites (vinext) : toutes les feuilles, panel compris, sont concaténées en un seul fichier servi
