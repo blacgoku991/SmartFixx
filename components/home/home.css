@@ -2,7 +2,7 @@
    Jetons --sx- uniquement. Aucune classe sx- redéclarée, aucun sélecteur global, aucun :has() à argument
    d'attribut. Une seule règle vise un élément du socle, dans un contexte hm- : la fenêtre signal de la
    ville du hero (.hm-hero … .sx-win--signal), allumée une fois au rythme de la scène.
-   Mouvement : transform et opacity seulement ; scène sous .sx-scene.is-playing (une lecture de 7,2 s) ;
+   Mouvement : transform et opacity seulement ; scène sous .sx-scene.is-playing (une lecture de 7 s) ;
    récit, cartes et tracé liés au défilement sous html[data-motion='on']:not([data-motion-paused]) ;
    ambiance (anneaux de la zone) dans un conteneur [data-sx-ambient], cycles ≥ 16 s, délais négatifs ;
    aucune var() dans les @keyframes ; mode réduit : rien (règle globale du socle + blocs no-preference). */
@@ -98,8 +98,11 @@
 }
 .hm-mp-ok::before{content:'';flex:none;width:8px;height:8px;border-radius:50%;background:var(--sx-success)}
 
-/* Lecture unique (7,2 s) : toutes les animations partent ensemble et durent 7,2 s, leurs images clés
-   portent le minutage (aucun délai positif). État final = état rendu par le serveur (fill both). */
+/* Lecture unique : toutes les animations partent ensemble et durent 7 s, leurs images clés portent le
+   minutage (aucun délai positif). État final = état rendu par le serveur (fill both). 7 s et non 7,2 s :
+   ScenePlayer passe à « done » 7,2 s après le départ et son bouton change d'icône ; avec des animations de
+   7,2 s, ce rendu (insertion d'un SVG : recalcul de style de toute la page à cause des règles :has(>svg) des
+   composants ui du socle) tombait pendant la dernière image animée au lieu de suivre la scène. */
 @keyframes hm-sc-browser{0%{opacity:0;transform:translate3d(0,22px,0) scale(.97)}13%,100%{opacity:1;transform:none}}
 @keyframes hm-sc-a{0%,9%{opacity:0;transform:translate3d(0,10px,0)}19%,100%{opacity:1;transform:none}}
 @keyframes hm-sc-b{0%,15%{opacity:0;transform:translate3d(0,10px,0)}25%,100%{opacity:1;transform:none}}
@@ -114,22 +117,22 @@
 @keyframes hm-sc-card{0%,73%{opacity:0;transform:translate3d(0,-16px,0) scale(.95)}81%,100%{opacity:1;transform:none}}
 @keyframes hm-win-on{0%,74%{opacity:0}79%,100%{opacity:.95}}
 @media (prefers-reduced-motion:no-preference){
-  .hm-scene.is-playing .hm-sc-browser{animation:hm-sc-browser 7.2s cubic-bezier(.2,.7,.2,1) both}
-  .hm-scene.is-playing .hm-sc-a{animation:hm-sc-a 7.2s cubic-bezier(.2,.7,.2,1) both}
-  .hm-scene.is-playing .hm-sc-b{animation:hm-sc-b 7.2s cubic-bezier(.2,.7,.2,1) both}
-  .hm-scene.is-playing .hm-sc-c{animation:hm-sc-c 7.2s cubic-bezier(.2,.7,.2,1) both}
-  .hm-scene.is-playing .hm-sc-phone{animation:hm-sc-phone 7.2s cubic-bezier(.2,.7,.2,1) both}
-  .hm-scene.is-playing .hm-sc-f1{animation:hm-sc-f1 7.2s linear both}
-  .hm-scene.is-playing .hm-sc-f2{animation:hm-sc-f2 7.2s linear both}
-  .hm-scene.is-playing .hm-sc-f3{animation:hm-sc-f3 7.2s linear both}
-  .hm-scene.is-playing .hm-sc-press{animation:hm-sc-press 7.2s cubic-bezier(.2,.7,.2,1) both}
-  .hm-scene.is-playing .hm-sc-tap{animation:hm-sc-tap 7.2s cubic-bezier(.2,.7,.2,1) both}
-  .hm-scene.is-playing .hm-sc-sent{animation:hm-sc-sent 7.2s cubic-bezier(.2,.7,.2,1) both}
-  .hm-scene.is-playing .hm-sc-card{animation:hm-sc-card 7.2s cubic-bezier(.2,.7,.2,1) both}
+  .hm-scene.is-playing .hm-sc-browser{animation:hm-sc-browser 7s cubic-bezier(.2,.7,.2,1) both}
+  .hm-scene.is-playing .hm-sc-a{animation:hm-sc-a 7s cubic-bezier(.2,.7,.2,1) both}
+  .hm-scene.is-playing .hm-sc-b{animation:hm-sc-b 7s cubic-bezier(.2,.7,.2,1) both}
+  .hm-scene.is-playing .hm-sc-c{animation:hm-sc-c 7s cubic-bezier(.2,.7,.2,1) both}
+  .hm-scene.is-playing .hm-sc-phone{animation:hm-sc-phone 7s cubic-bezier(.2,.7,.2,1) both}
+  .hm-scene.is-playing .hm-sc-f1{animation:hm-sc-f1 7s linear both}
+  .hm-scene.is-playing .hm-sc-f2{animation:hm-sc-f2 7s linear both}
+  .hm-scene.is-playing .hm-sc-f3{animation:hm-sc-f3 7s linear both}
+  .hm-scene.is-playing .hm-sc-press{animation:hm-sc-press 7s cubic-bezier(.2,.7,.2,1) both}
+  .hm-scene.is-playing .hm-sc-tap{animation:hm-sc-tap 7s cubic-bezier(.2,.7,.2,1) both}
+  .hm-scene.is-playing .hm-sc-sent{animation:hm-sc-sent 7s cubic-bezier(.2,.7,.2,1) both}
+  .hm-scene.is-playing .hm-sc-card{animation:hm-sc-card 7s cubic-bezier(.2,.7,.2,1) both}
   /* « La demande qui s'allume » : la fenêtre signal de la ville du hero s'éteint au départ de la scène et
      se rallume quand la carte « Nouvelle demande » arrive (une fois). Statique et allumée sans lecture
      (mode réduit, mobile où la scène est masquée, mouvement coupé). :has() à argument de classe. */
-  html[data-motion='on'] .hm-hero:has(.hm-scene.is-playing) .sx-win--signal{animation:hm-win-on 7.2s linear both}
+  html[data-motion='on'] .hm-hero:has(.hm-scene.is-playing) .sx-win--signal{animation:hm-win-on 7s linear both}
 }
 
 /* ============================================================ POUR QUI */

@@ -2,8 +2,8 @@ import { DemoFrame } from "@/components/sx/demo-frame";
 import { SignalCard } from "@/components/sx/ambient";
 /* Scène du hero (serveur, rendue dans ScenePlayer à partir de 1024 px). Le serveur rend l'ÉTAT FINAL :
    le site d'un artisan imaginaire sur ordinateur, sa version téléphone avec le formulaire court rempli, et
-   la carte « Nouvelle demande ». La lecture (une fois, 7,2 s, transform et opacity) est écrite dans
-   home.css sous .sx-scene.is-playing. Toutes les animations partent ensemble et durent 7,2 s (leurs
+   la carte « Nouvelle demande ». La lecture (une fois, 7 s, transform et opacity) est écrite dans
+   home.css sous .sx-scene.is-playing. Toutes les animations partent ensemble et durent 7 s (leurs
    images clés portent le minutage) : un seul départ, pas de délai. Données fictives, aucun texte < 12 px. */
 export function HeroScene() {
   return (
