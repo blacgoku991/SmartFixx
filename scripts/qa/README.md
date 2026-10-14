@@ -34,8 +34,12 @@ npm --prefix scripts/qa ci
 | 9 | /home/user/vps-lot9 | /home/user/root-lot9 | 3385 |
 | 10 | /home/user/vps-lot10 | /home/user/root-lot10 | 3395 |
 
-Les tests HTTP du VPS utilisent un port fixe (3187) : `test-vps-strict.sh` les sérialise par
-`flock /tmp/smartfixx-http.lock`, ce qui permet de lancer plusieurs lots en parallèle.
+Les tests HTTP du VPS utilisent un port fixe (3187) : `test-vps-strict.sh` les sérialise LUI-MÊME par
+`flock -w 1800 /tmp/smartfixx-http.lock`, ce qui permet de lancer plusieurs lots en parallèle. **Ne pas
+envelopper `test-vps-strict.sh` dans `flock /tmp/smartfixx-http.lock`** : les verrous flock(1) valent par
+descripteur ouvert, le verrou intérieur attendrait l'enveloppe (blocage, puis échec explicite au bout de
+30 min). Un appelant qui tient déjà ce verrou exporte `SMARTFIXX_HTTP_LOCK_HELD=1`. Les constructions et
+les mesures Lighthouse, elles, s'enveloppent dans `flock /tmp/smartfixx-build.lock` (4 processeurs).
 
 ## Portes communes à chaque lot
 
@@ -47,6 +51,8 @@ bash scripts/qa/root-tests.sh . /home/user/root-lotN            # 42/44 : seulem
 (cd /home/user/root-lotN && npm run lint)                       # ≤ 27 erreurs (référence 27 erreurs, 87 avertissements)
 bash scripts/qa/serve-vps.sh /home/user/vps-lotN 33N0 &          # puis :
 python3 scripts/qa/vps-crawl-check.py http://127.0.0.1:33N0 --og-404-ok --icons-404-ok   # 0 écart (tolérances jusqu'au lot 7)
+flock /tmp/smartfixx-build.lock env LH_RUNS=5 bash scripts/qa/lh.sh http://127.0.0.1:33N0 out/lh-lotN /page-a-hero …
+                                                                # pages à hero : TBT médian ≤ 200 ms, LCP médian ≤ 2,6 s
 ```
 
 Fichiers déclarés par le layout mais livrés par le lot 7, donc en 404 jusque-là (tolérés par les deux
@@ -69,12 +75,12 @@ réservé reste possible.
 | --- | --- |
 | `check_prepare.py <dépôt>` | Chaînes remplacées par `vps/prepare.py`, comptes exacts du layout, `SITE_URL` Sites de lib/seo.ts (une fois), fuites `signout-with-chatgpt`, tout « chatgpt.site » restant après prepare.py dans app, components, lib (overlays appliqués) : mêmes contrôles stricts que prepare.py. |
 | `rebuild-vps.sh <dépôt> <sortie>` | prepare.py strict, node_modules liés si le lock est identique, `next build --webpack`. |
-| `test-vps-strict.sh <dépôt> <build> [standalone]` | Chaque `vps/tests/http*.test.mjs` (next start puis standalone), runtime, python ; code fiable. Échoue aussi sans fichier HTTP, sans test nommé dans un fichier (Node compte un fichier vide comme un test réussi) ou si runtime ou python n'exécute aucun test. |
+| `test-vps-strict.sh <dépôt> <build> [standalone]` | Chaque `vps/tests/http*.test.mjs` (next start puis standalone, verrou HTTP pris par le script : ne pas l'envelopper), runtime, python ; code fiable. Échoue aussi sans fichier HTTP, sans test nommé dans un fichier (Node compte un fichier vide comme un test réussi) ou si runtime ou python n'exécute aucun test. |
 | `root-tests.sh <dépôt> <copie>` | vinext build et `node --test tests/*.test.mjs` sur une copie ; 2 échecs connus tolérés ; assertions CSS masquées rejouées par css-check. |
 | `serve-vps.sh <build> <port>` | Base temporaire et compte fictif owner@example.test / test-local-owner-password-32-characters. |
 | `vps-crawl-check.py <base> [--og-404-ok] [--icons-404-ok]` | Toutes les URL du sitemap : 200, h1 unique, nonce, canonique unique et absolue, og:image, icônes déclarées en 200, JSON-LD analysable, aucun lien /admin public, thème, en-têtes. |
 | `seo-audit.py <base> [--chemins /a,/b]` | Titre ≤ 65, description 120 à 160, doublons, h1, canonique, og:image, types JSON-LD (LocalBusiness et FAQPage interdits), liens entrants hors pied. |
-| `lh.sh <base> <sortie> <chemins…>` | Lighthouse mobile, 3 passes (LH_RUNS), médiane. |
+| `lh.sh <base> <sortie> <chemins…>` | Lighthouse mobile, 3 passes (LH_RUNS ; 5 conseillées sur cette machine partagée), passe médiane par score, et porte sur les médianes propres : TBT ≤ LH_TBT_MAX (200 ms) et LCP ≤ LH_LCP_MAX (2 600 ms), code de sortie 1 sinon. Toujours sous `flock /tmp/smartfixx-build.lock`. |
 | `shots.mjs <base> <sortie> [--admin] <chemins…>` | Captures 360 × 640, 390 × 844, 412 × 823, 1440 × 900, deux thèmes, consentement ouvert et fermé ; `--admin` se connecte au compte fictif. |
 | `layout-check.mjs <base> <chemins…> [--checks=…]` | Défilement horizontal (360 à 1600 px, dont 1024, 1180, 1280, 1366), en-tête sur 42 largeurs (dont 1024 à 1600 px par pas de 20 px, bouton de pause forcé) sans débordement, chevauchement, libellé tronqué ni élément recouvert par le ThemeControl, navigation attendue par palier (1180, 1420, 1520), contraste des boutons du menu mobile ouvert, interrupteur de thème (curseur visible dans la piste, 44 px), CTA du hero au-dessus du consentement (marge ≥ 16 px sur mobile), aucune révélation dans les 900 premiers pixels (`reveal900`), LCP = H1, h1 unique, 0 animation en mode réduit, opacité finale des `.sx-reveal`, décalage du H1 au chargement de la police ; chaque `.sx-reveal` opaque dès que son haut atteint la mi-hauteur ; interrupteur de thème atteint en 12 tabulations au plus (`tab`) ; aucune icône lucide comprimée (`icons`) ; images `.sx-media` jamais agrandies (`media`, DPR 1 à 3). |
 | `motion-cost.mjs <base> <chemin> <sélecteur> [--budget=20] [--settle=2500] [--runs=3]` | CDP, CPU ralenti 4 fois, après le pic de démarrage commun (`--settle`) : LayoutCount stable à chaque passe et médiane ≤ 20 ms de tâches par seconde ; fenêtre bornée à la fin des animations finies (scène), fin de scène mesurée à part. `--scroll` : défilement complet à la molette, mode animé contre pause globale (LayoutCount ≤ +2, surcoût ≤ +40 % ou ≤ +60 ms/s). |

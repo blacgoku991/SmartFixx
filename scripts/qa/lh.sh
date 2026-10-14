@@ -2,6 +2,9 @@
 # Lighthouse mobile, plusieurs passes par chemin, rapport à la MÉDIANE (par score de performance).
 #   bash scripts/qa/lh.sh <baseURL> <dossierSortie> /chemin1 /chemin2 …
 # Variables : LH_RUNS (3 par défaut), CHROME_PATH (/opt/pw-browsers/chromium par défaut).
+# Porte (tour 3 bis) : LH_TBT_MAX (200 ms) et LH_LCP_MAX (2600 ms) s'appliquent aux MÉDIANES PROPRES du TBT et
+# du LCP de chaque chemin (et non à la passe médiane par score) ; code de sortie 1 si une page les dépasse.
+# Toujours sous « flock /tmp/smartfixx-build.lock » (machine de 4 processeurs, mesures sensibles à la charge).
 # Le binaire lighthouse vient du cache npx (npx --yes lighthouse@13).
 set -uo pipefail
 BASE=${1:?baseURL}; OUT=${2:?sortie}; shift 2; mkdir -p "$OUT"
@@ -15,13 +18,13 @@ for p in "$@"; do
       || echo "échec lighthouse $p passe $i" >&2
   done
 done
-python3 - "$OUT" "$RUNS" <<'PY'
+python3 - "$OUT" "$RUNS" "${LH_TBT_MAX:-200}" "${LH_LCP_MAX:-2600}" <<'PY'
 import json,glob,os,sys,statistics
-out,runs=sys.argv[1],int(sys.argv[2])
+out,runs=sys.argv[1],int(sys.argv[2]); tbt_max,lcp_max=float(sys.argv[3]),float(sys.argv[4]); bad=[]
 groups={}
 for f in sorted(glob.glob(os.path.join(out,'*.run*.json'))):
     name=os.path.basename(f).rsplit('.run',1)[0]; groups.setdefault(name,[]).append(f)
-print(f"{'page':<40}{'perf':>5}{'a11y':>5}{'bp':>5}{'seo':>5}{'LCP':>8}{'TBT':>8}{'CLS':>7}{'JS':>8}{'CSS':>7}{'total':>8}  (médiane de {runs})")
+print(f"{'page':<40}{'perf':>5}{'a11y':>5}{'bp':>5}{'seo':>5}{'LCP':>8}{'TBT':>8}{'CLS':>7}{'JS':>8}{'CSS':>7}{'total':>8}  (passe médiane par score, sur {runs}) | médianes propres TBT, LCP")
 for name,files in groups.items():
     rows=[]
     for f in files:
@@ -37,6 +40,11 @@ for name,files in groups.items():
             tot=sum((i.get('transferSize') or 0) for i in items)))
     if not rows: print(f"{name:<40} aucune passe valide"); continue
     rows.sort(key=lambda r:r['perf']); m=rows[len(rows)//2]
-    print(f"{name:<40}{m['perf']:>5}{m['a11y']:>5}{m['bp']:>5}{m['seo']:>5}{m['lcp']/1000:>7.2f}s{m['tbt']:>6.0f}ms{m['cls']:>7.3f}{m['js']/1024:>6.0f}Ko{m['css']/1024:>5.0f}Ko{m['tot']/1024:>6.0f}Ko")
-    json.dump(m,open(os.path.join(out,name+'.median.json'),'w'),indent=1)
+    mt=statistics.median(r['tbt'] for r in rows); ml=statistics.median(r['lcp'] for r in rows)
+    ok=mt<=tbt_max and ml<=lcp_max
+    if not ok: bad.append(name)
+    print(f"{name:<40}{m['perf']:>5}{m['a11y']:>5}{m['bp']:>5}{m['seo']:>5}{m['lcp']/1000:>7.2f}s{m['tbt']:>6.0f}ms{m['cls']:>7.3f}{m['js']/1024:>6.0f}Ko{m['css']/1024:>5.0f}Ko{m['tot']/1024:>6.0f}Ko | TBT {mt:.0f} ms, LCP {ml/1000:.2f} s ({len(rows)} passes : TBT {', '.join(str(round(r['tbt'])) for r in rows)}) {'ok' if ok else 'ÉCHEC'}")
+    json.dump(dict(m,tbt_median=mt,lcp_median=ml),open(os.path.join(out,name+'.median.json'),'w'),indent=1)
+print(f"porte TBT ≤ {tbt_max:.0f} ms et LCP ≤ {lcp_max/1000:.2f} s (médianes) : " + ("ok" if not bad else "ÉCHEC " + ", ".join(bad)))
+sys.exit(1 if bad else 0)
 PY

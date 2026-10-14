@@ -3,7 +3,9 @@
 # même avec « # fail 5 » : « || true » sous pipefail remet PIPESTATUS à 0).
 #   bash scripts/qa/test-vps-strict.sh <dépôt> <variante_VPS_construite> [standalone]
 # Exécute CHAQUE fichier vps/tests/http*.test.mjs (sérialisés par flock /tmp/smartfixx-http.lock,
-# les ports de test étant fixes), en « next start » puis, avec « standalone », sur .next/standalone
+# les ports de test étant fixes ; NE PAS envelopper ce script dans ce même flock : les verrous flock(1)
+# valent par descripteur ouvert et le verrou intérieur attendrait l'enveloppe. Un appelant qui tient déjà
+# le verrou exporte SMARTFIXX_HTTP_LOCK_HELD=1 ; sinon l'attente est bornée à 30 min, puis échec explicite), en « next start » puis, avec « standalone », sur .next/standalone
 # (mode du conteneur Docker). Puis runtime.test.mjs et la suite python (nginx, empaquetage).
 # Échoue aussi sans aucun fichier http*.test.mjs, ou si une suite n'exécute aucun test (# tests 0, Ran 0).
 set -uo pipefail
@@ -18,8 +20,14 @@ run_http(){ local mode=$1; shift; local extra=("$@")
   for t in "${HTTP_TESTS[@]}"; do
     local n; n=$(basename "$t" .test.mjs); local log="$LOGS/$n-$mode.log"
     echo "## $n ($mode)"
-    ( cd "$OUT" && flock /tmp/smartfixx-http.lock env SMARTFIXX_TEST_BUILD="$OUT" "${extra[@]}" timeout 900 node --test "$t" ) >"$log" 2>&1
-    local s=$?; grep -E "^\s*(not )?ok |^# (pass|fail)" "$log"
+    if [ "${SMARTFIXX_HTTP_LOCK_HELD:-}" = 1 ]; then
+      ( cd "$OUT" && env SMARTFIXX_TEST_BUILD="$OUT" "${extra[@]}" timeout 900 node --test "$t" ) >"$log" 2>&1
+    else
+      ( cd "$OUT" && flock -w 1800 -E 75 /tmp/smartfixx-http.lock env SMARTFIXX_TEST_BUILD="$OUT" "${extra[@]}" timeout 900 node --test "$t" ) >"$log" 2>&1
+    fi
+    local s=$?
+    [ $s = 75 ] && { echo "  -> ÉCHEC $n ($mode) : verrou /tmp/smartfixx-http.lock non obtenu en 30 min (script enveloppé dans ce même flock ? exporter SMARTFIXX_HTTP_LOCK_HELD=1)"; rc=1; continue; }
+    grep -E "^\s*(not )?ok |^# (pass|fail)" "$log"
     # Comme root-tests.sh : « # pass » = « # tests » (aucun ignoré ni annulé) et au moins un VRAI test : un
     # fichier sans test() est compté par Node comme un test réussi qui porte le chemin du fichier.
     local total pass real; total=$(sed -n 's/^# tests //p' "$log" | tail -1); pass=$(sed -n 's/^# pass //p' "$log" | tail -1)
