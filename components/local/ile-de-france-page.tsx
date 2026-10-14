@@ -54,7 +54,7 @@ export function IleDeFrancePage() {
         lead="Artisans, commerces, professions libérales et PME : des sites clairs, lisibles sur mobile, reliés à un tableau de suivi des demandes."
         actions={<><ButtonLink href="/contact?service=creation" size="lg">Parler de mon projet</ButtonLink><PhoneLink compact="sm" /></>}
         proofs={["Rendez-vous sur place dans les communes citées", "Visio pour les points d’étape", "Le même interlocuteur du devis à la mise en ligne"]}
-        backdrop={<><Glow tone="blue" size={720} top="-300px" left="-260px" /><Glow tone="blue" alt size={540} top="-120px" right="-180px" duration={30} /><Skyline seed={7} /></>}
+        backdrop={<><Glow tone="blue" size={720} top="-300px" left="-260px" /><Glow tone="blue" alt size={540} top="-120px" right="-180px" duration={30} /><Skyline seed={7} depth={false} /></>}
       />
 
       <Section id="communes" labelledBy="communes-titre" className="lc-zone-section">
