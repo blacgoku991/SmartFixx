@@ -12,23 +12,26 @@
    (content-visibility: auto) : sur mobile, le style et la mise en page des ~900 éléments hors écran
    pesaient autant que le JavaScript au chargement (Lighthouse : « Style & Layout » 898 ms contre 207 ms sur
    /mentions-legales). Hauteurs de réserve mesurées à 412 et 1 440 px ; « auto » retient ensuite la hauteur
-   réelle (pas de saut au retour). Le hero, le cartouche et « Pour qui » restent rendus immédiatement. */
-.hm-choice,.hm-journey,.hm-deliv-sec,.hm-works,.hm-method,.hm-faq,.hm-zone,.hm-advice,.hm-demande{content-visibility:auto}
+   réelle (pas de saut au retour). Le hero, le cartouche et « Pour qui » restent rendus immédiatement.
+   Récit et méthode : seul leur contenu est différé (.hm-jr, .hm-steps-wrap), pas leur titre cinétique, dont
+   les mots doivent garder une boîte réelle (layout-check reveal900 lit leur position ; une boîte sautée vaut
+   0 px). */
+.hm-choice,.hm-jr,.hm-deliv-sec,.hm-works,.hm-steps-wrap,.hm-faq,.hm-zone,.hm-advice,.hm-demande{content-visibility:auto}
 .hm-choice{contain-intrinsic-size:auto 2770px}
-.hm-journey{contain-intrinsic-size:auto 3000px}
+.hm-jr{contain-intrinsic-size:auto 2550px}
 .hm-deliv-sec{contain-intrinsic-size:auto 1480px}
 .hm-works{contain-intrinsic-size:auto 1080px}
-.hm-method{contain-intrinsic-size:auto 1000px}
+.hm-steps-wrap{contain-intrinsic-size:auto 640px}
 .hm-faq{contain-intrinsic-size:auto 770px}
 .hm-zone{contain-intrinsic-size:auto 1340px}
 .hm-advice{contain-intrinsic-size:auto 1240px}
 .hm-demande{contain-intrinsic-size:auto 2110px}
 @media (min-width:1024px){
   .hm-choice{contain-intrinsic-size:auto 1700px}
-  .hm-journey{contain-intrinsic-size:auto 3100px}
+  .hm-jr{contain-intrinsic-size:auto 2600px}
   .hm-deliv-sec{contain-intrinsic-size:auto 900px}
   .hm-works{contain-intrinsic-size:auto 960px}
-  .hm-method{contain-intrinsic-size:auto 810px}
+  .hm-steps-wrap{contain-intrinsic-size:auto 330px}
   .hm-faq{contain-intrinsic-size:auto 630px}
   .hm-zone{contain-intrinsic-size:auto 830px}
   .hm-advice{contain-intrinsic-size:auto 840px}
