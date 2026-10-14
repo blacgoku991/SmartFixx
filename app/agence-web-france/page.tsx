@@ -1,6 +1,5 @@
-import { LocationPage } from "@/components/location-page";
-import { locations } from "@/lib/locations";
-import { pageMeta } from "@/lib/seo";
-const location=locations.find(l=>l.slug==="agence-web-france")!;
-export const metadata=pageMeta(`${location.title} — SmartFixx`,location.intro.slice(0,160),`/${location.slug}`);
-export default function Page(){return <LocationPage location={location}/>;}
+import { PublicShell } from "@/components/sx";
+import { locationMeta } from "@/components/location-page";
+import { FrancePage } from "@/components/local/france-page";
+export const metadata = locationMeta("agence-web-france");
+export default function Page() { return <PublicShell><FrancePage /></PublicShell>; }
