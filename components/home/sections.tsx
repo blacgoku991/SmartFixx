@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, Briefcase, Building2, Hammer, Mail, Phone, Store } from "lucide-react";
+import { Briefcase, Building2, Hammer, Mail, Phone, Store } from "lucide-react";
 import CampaignLink from "@/components/campaign-link";
 import { Container, Eyebrow, Section, SectionHead } from "@/components/sx/section";
 import { ButtonLink } from "@/components/sx/actions";
@@ -16,7 +16,7 @@ import { SITE_IDENTITY, mailHref, telHref } from "@/lib/site-identity";
 import { AUDIENCE, CHOICE, DELIVERABLES, FAQ, METHOD, OTHER_SERVICES, ZONE_LINKS } from "./content";
 /* Sections de l'accueil après le hero (serveur), dans l'ordre de la page « / » (pages.md). */
 
-const T = " ";
+const T = "\u202F";
 const AUDIENCE_ICONS = [Hammer, Store, Briefcase, Building2];
 
 /* Pour qui : des cibles, jamais des clients. */
@@ -92,13 +92,13 @@ export function Choice() {
                     <span className="hm-other-label">{e.label}</span>
                     <span className="hm-other-service">{serviceLabels[o.id]}</span>
                     <span className="hm-other-text">{o.text}</span>
-                    <ArrowUpRight className="hm-other-arrow" aria-hidden="true" />
+                    <span className="hm-other-arrow hm-arrow hm-arrow--up" aria-hidden="true" />
                   </CampaignLink>
                 </li>
               );
             })}
           </ul>
-          <p className="hm-others-all"><CampaignLink href="/services" className="hm-link">Voir toutes mes prestations<ArrowRight aria-hidden="true" /></CampaignLink></p>
+          <p className="hm-others-all"><CampaignLink href="/services" className="hm-link">Voir toutes mes prestations<span className="hm-arrow" aria-hidden="true" /></CampaignLink></p>
         </div>
       </Container>
     </Section>
@@ -186,7 +186,7 @@ export function Zone() {
           <ul className="hm-zone-links">
             {ZONE_LINKS.map((z) => (
               <li key={z.href}>
-                <CampaignLink href={z.href} className="hm-zone-link"><span className="hm-zone-link-label">{z.label}</span><span className="hm-zone-link-text">{z.text}</span><ArrowRight aria-hidden="true" /></CampaignLink>
+                <CampaignLink href={z.href} className="hm-zone-link"><span className="hm-zone-link-label">{z.label}</span><span className="hm-zone-link-text">{z.text}</span><span className="hm-arrow" aria-hidden="true" /></CampaignLink>
               </li>
             ))}
           </ul>
@@ -218,12 +218,12 @@ export function Advice() {
                 <span className="hm-guide-num sx-ref" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
                 <span className="hm-guide-title">{g.title}</span>
                 <span className="hm-guide-text">{g.description}</span>
-                <span className="hm-guide-more" aria-hidden="true">Lire le guide<ArrowRight /></span>
+                <span className="hm-guide-more" aria-hidden="true">Lire le guide<span className="hm-arrow" /></span>
               </CampaignLink>
             </li>
           ))}
         </ul>
-        <p className="hm-others-all"><CampaignLink href="/conseils" className="hm-link">Tous les conseils<ArrowRight aria-hidden="true" /></CampaignLink></p>
+        <p className="hm-others-all"><CampaignLink href="/conseils" className="hm-link">Tous les conseils<span className="hm-arrow" aria-hidden="true" /></CampaignLink></p>
       </Container>
     </Section>
   );

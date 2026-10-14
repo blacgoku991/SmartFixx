@@ -7,12 +7,43 @@
    ambiance (anneaux de la zone) dans un conteneur [data-sx-ambient], cycles ≥ 16 s, délais négatifs ;
    aucune var() dans les @keyframes ; mode réduit : rien (règle globale du socle + blocs no-preference). */
 
+/* ===================================================== RENDU DIFFÉRÉ
+   Les sections situées sous le premier écran ne sont mises en forme qu'à l'approche de l'écran
+   (content-visibility: auto) : sur mobile, le style et la mise en page des ~900 éléments hors écran
+   pesaient autant que le JavaScript au chargement (Lighthouse : « Style & Layout » 898 ms contre 207 ms sur
+   /mentions-legales). Hauteurs de réserve mesurées à 412 et 1 440 px ; « auto » retient ensuite la hauteur
+   réelle (pas de saut au retour). Le hero, le cartouche et « Pour qui » restent rendus immédiatement. */
+.hm-choice,.hm-journey,.hm-deliv-sec,.hm-works,.hm-method,.hm-faq,.hm-zone,.hm-advice,.hm-demande{content-visibility:auto}
+.hm-choice{contain-intrinsic-size:auto 2770px}
+.hm-journey{contain-intrinsic-size:auto 3000px}
+.hm-deliv-sec{contain-intrinsic-size:auto 1480px}
+.hm-works{contain-intrinsic-size:auto 1080px}
+.hm-method{contain-intrinsic-size:auto 1000px}
+.hm-faq{contain-intrinsic-size:auto 770px}
+.hm-zone{contain-intrinsic-size:auto 1340px}
+.hm-advice{contain-intrinsic-size:auto 1240px}
+.hm-demande{contain-intrinsic-size:auto 2110px}
+@media (min-width:1024px){
+  .hm-choice{contain-intrinsic-size:auto 1700px}
+  .hm-journey{contain-intrinsic-size:auto 3100px}
+  .hm-deliv-sec{contain-intrinsic-size:auto 900px}
+  .hm-works{contain-intrinsic-size:auto 960px}
+  .hm-method{contain-intrinsic-size:auto 810px}
+  .hm-faq{contain-intrinsic-size:auto 630px}
+  .hm-zone{contain-intrinsic-size:auto 830px}
+  .hm-advice{contain-intrinsic-size:auto 840px}
+  .hm-demande{contain-intrinsic-size:auto 1520px}
+}
+
 /* ================================================================ HERO */
 /* Ville du hero un peu plus basse que le défaut du socle (300 px au plus) : à 1 440 × 900, le H1 très
    présent (89 px) et la scène laissent ainsi voir les toits dans le premier écran. */
 .hm-hero{--sx-skyline-h:clamp(120px,13vw,196px)}
 .hm-hero-aside{display:none;min-width:0}
 @media (min-width:1024px){
+  /* Premier écran 1 440 × 900, consentement ouvert : le bas du CTA reste au-dessus du haut de la carte de
+     consentement (layout-check --checks=cta), malgré le H1 à 89 px sur trois lignes. */
+  .hm-hero{padding-top:var(--sx-space-6)}
   .hm-hero-aside{display:block}
   .hm-hero-proofs{display:flex;flex-wrap:wrap;column-gap:22px;row-gap:8px}
   .hm-hero-proofs>li{grid-template-columns:12px auto}
@@ -151,14 +182,19 @@
 .hm-other-label{font-weight:700;font-size:var(--sx-step-1);color:var(--sx-accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 .hm-other-service{font-size:.875rem;font-weight:600;color:var(--sx-text-muted)}
 .hm-other-text{color:var(--sx-text-muted);font-size:.9375rem;line-height:1.45}
-.hm-other-arrow{grid-column:2;grid-row:1;width:20px;height:20px;color:var(--sx-accent);transition:transform var(--sx-dur-base) var(--sx-ease-out)}
+.hm-other-arrow{grid-column:2;grid-row:1;color:var(--sx-accent);transition:transform var(--sx-dur-base) var(--sx-ease-out)}
 @media (hover:hover){.hm-other:hover{transform:translate3d(0,-1px,0);border-color:var(--sx-line-strong)}.hm-other:hover .hm-other-arrow{transform:translate3d(3px,-3px,0)}}
 @media (min-width:640px){.hm-others-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (min-width:1180px){.hm-others-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .hm-others-all{margin:var(--sx-space-5) 0 0}
 .hm-link{display:inline-flex;align-items:center;gap:8px;min-height:44px;color:var(--sx-accent);font-weight:650;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
-.hm-link svg{width:18px;height:18px;transition:transform var(--sx-dur-base) var(--sx-ease-out)}
-@media (hover:hover){.hm-link:hover svg{transform:translate3d(3px,0,0)}}
+.hm-link .hm-arrow{transition:transform var(--sx-dur-base) var(--sx-ease-out)}
+@media (hover:hover){.hm-link:hover .hm-arrow{transform:translate3d(3px,0,0)}}
+/* Flèches des liens : glyphe de texte (→, ↗) plutôt qu'une icône SVG, répétée une quinzaine de fois dans le
+   HTML et dans la charge utile RSC. */
+.hm-arrow{display:inline-block;flex:none;width:1.1em;font-family:var(--sx-font-text);font-weight:700;line-height:1;text-align:center;text-decoration:none}
+.hm-arrow::before{content:'→'}
+.hm-arrow--up::before{content:'↗'}
 .hm-inline-link{color:var(--sx-accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
 
 /* ========================================== LE PARCOURS D'UNE DEMANDE */
@@ -281,8 +317,8 @@
 .hm-zone-link{display:grid;grid-template-columns:minmax(0,1fr) 22px;column-gap:var(--sx-space-4);row-gap:2px;align-items:center;min-height:56px;padding:var(--sx-space-4) var(--sx-space-5);border:1px solid var(--sx-line);border-radius:var(--sx-radius-md);background:color-mix(in srgb,var(--sx-surface) 82%,transparent);color:var(--sx-text);text-decoration:none;transition:transform var(--sx-dur-base) var(--sx-ease-out),border-color var(--sx-dur-base) var(--sx-ease-out)}
 .hm-zone-link-label{font-weight:700;color:var(--sx-accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 .hm-zone-link-text{grid-column:1;color:var(--sx-text-muted);font-size:.9375rem}
-.hm-zone-link svg{grid-column:2;grid-row:1/span 2;width:20px;height:20px;color:var(--sx-accent);transition:transform var(--sx-dur-base) var(--sx-ease-out)}
-@media (hover:hover){.hm-zone-link:hover{transform:translate3d(0,-1px,0);border-color:var(--sx-line-strong)}.hm-zone-link:hover svg{transform:translate3d(3px,0,0)}}
+.hm-zone-link .hm-arrow{grid-column:2;grid-row:1/span 2;color:var(--sx-accent);transition:transform var(--sx-dur-base) var(--sx-ease-out)}
+@media (hover:hover){.hm-zone-link:hover{transform:translate3d(0,-1px,0);border-color:var(--sx-line-strong)}.hm-zone-link:hover .hm-arrow{transform:translate3d(3px,0,0)}}
 .hm-rings{display:grid;gap:var(--sx-space-4);justify-items:center;margin:0}
 .hm-rings figcaption{max-width:28rem;color:var(--sx-text-muted);font-size:var(--sx-step--1);text-align:center}
 .hm-rings-map{position:relative;width:min(100%,460px);aspect-ratio:1}
@@ -308,8 +344,8 @@
 .hm-guide-title{font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:var(--sx-step-2);line-height:1.1;letter-spacing:var(--sx-tracking-title);text-decoration:underline;text-decoration-thickness:1px;text-decoration-color:var(--sx-line-strong);text-underline-offset:5px}
 .hm-guide-text{color:var(--sx-text-muted);font-size:.9375rem}
 .hm-guide-more{display:inline-flex;align-items:center;gap:8px;color:var(--sx-accent);font-weight:650}
-.hm-guide-more svg{width:18px;height:18px;transition:transform var(--sx-dur-base) var(--sx-ease-out)}
-@media (hover:hover){.hm-guide:hover{transform:translate3d(0,-2px,0);border-color:var(--sx-line-strong)}.hm-guide:hover .hm-guide-more svg{transform:translate3d(3px,0,0)}}
+.hm-guide-more .hm-arrow{transition:transform var(--sx-dur-base) var(--sx-ease-out)}
+@media (hover:hover){.hm-guide:hover{transform:translate3d(0,-2px,0);border-color:var(--sx-line-strong)}.hm-guide:hover .hm-guide-more .hm-arrow{transform:translate3d(3px,0,0)}}
 @media (min-width:900px){.hm-guides{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
 /* ============================================================= DEMANDE */

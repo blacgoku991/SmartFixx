@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ButtonLink, PhoneLink } from "@/components/sx/actions";
 import { Eyebrow } from "@/components/sx/section";
 import { ProofList } from "@/components/sx/proof-list";
@@ -16,13 +17,13 @@ import { HeroScene } from "./hero-scene";
    Décor : ciel et halo sodium du socle, une lueur bleue, la ville nocturne (Skyline graine 0, fenêtre
    signal) dans le tiers inférieur du hero, qui occupe la réserve du consentement sur mobile. La fenêtre
    signal s'allume quand la scène atteint « demande reçue » (home.css). */
-const NBSP = " ";
+const NBSP = "\u00A0";
 export function HomeHero() {
   return (
     <section className="sx-hero hm-hero" data-sx-hero="" aria-labelledby="hero-titre">
       <div className="sx-hero-backdrop" aria-hidden="true" data-sx-ambient="">
         <Glow size={760} top="-38%" right="-14%" />
-        <Skyline signal />
+        <Suspense fallback={null}><Skyline signal /></Suspense>
       </div>
       <div className="sx-container sx-hero-grid sx-hero-grid--aside">
         <div className="sx-hero-copy">
@@ -42,9 +43,9 @@ export function HomeHero() {
           <ProofList items={HERO.proofs} className="sx-hero-proofs hm-hero-proofs" />
         </div>
         <div className="hm-hero-aside">
-          <ScenePlayer label={HERO.sceneLabel} description={HERO.sceneDescription} className="hm-scene">
+          <Suspense fallback={null}><ScenePlayer label={HERO.sceneLabel} description={HERO.sceneDescription} className="hm-scene">
             <HeroScene />
-          </ScenePlayer>
+          </ScenePlayer></Suspense>
         </div>
       </div>
     </section>

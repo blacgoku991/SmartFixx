@@ -1,7 +1,7 @@
 /* Textes de l'accueil (lot 1). Voix : « je » (Mohamed), sans prix, délai, avis, chiffre ni client.
    Les réponses aux objections et la phrase « Je le conçois, je le construis… » sont à valider par le
    propriétaire avant la mise en ligne (décision n° 6). Espaces fines insécables (U+202F) avant « ; : ! ? ». */
-const T = " ";
+const T = "\u202F";
 
 export const HERO = {
   eyebrow: "Mohamed · SmartFixx · ",
