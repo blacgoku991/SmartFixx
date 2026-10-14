@@ -485,10 +485,24 @@
   .sx-menu-group{margin-top:var(--sx-space-4);font-size:var(--sx-step--1);font-weight:650;letter-spacing:var(--sx-tracking-eyebrow);text-transform:uppercase;color:var(--sx-text-muted)}
   .sx-menu-foot{display:grid;justify-items:start;gap:var(--sx-space-3);margin-top:var(--sx-space-5)}
   .sx-menu-foot>.sx-btn--cta{justify-self:stretch}
+  /* Paliers (tour 3, vérifiés de 1024 à 1600 px par pas de 20 px, layout-check « header », bouton de pause
+     affiché, police système de Linux DejaVu, parmi les plus larges) :
+     < 360 : marque, pause, menu, thème ; 360-767 : + téléphone en icône ;
+     768-1179 : téléphone en toutes lettres (+ CTA dès 1024), menu ;
+     1180-1519 : navigation courte (Création de site, Refonte, Prestations ▾ ; + Asnières & Île-de-France
+                 dès 1420), téléphone en icône, menu (tous les liens y restent), interrupteur sans soleil ni lune ;
+     ≥ 1520 : navigation complète, plus de menu, téléphone en icône, soleil et lune. Le conteneur large est
+              plafonné à 1 440 px dès 1 520 px : la place ne grandit plus au-delà (marge mesurée 64 px). Le
+              numéro en toutes lettres (+158 px) n'y tient pas à côté de la navigation complète. */
   @media (max-width:359.98px){.sx-header-phone-compact{display:none}}
-  @media (min-width:768px) and (max-width:1379.98px){.sx-header-phone{display:inline-flex}.sx-header-phone-compact{display:none}}
+  @media (min-width:768px) and (max-width:1179.98px){.sx-header-phone{display:inline-flex}.sx-header-phone-compact{display:none}}
   @media (min-width:1024px){.sx-header-cta{display:inline-flex}}
-  @media (min-width:1380px){
+  @media (min-width:1180px) and (max-width:1519.98px){
+    .sx-nav-wide{display:none}
+    .sx-nav a,.sx-subnav summary{padding:0 10px}
+  }
+  @media (min-width:1420px) and (max-width:1519.98px){.sx-nav-wide.sx-nav-local{display:block}}
+  @media (min-width:1180px){
     .sx-nav{display:flex;align-items:center;min-width:0;margin-right:auto}
     .sx-header .sx-brand{margin-right:var(--sx-space-5)}
     .sx-nav>ul{display:flex;align-items:center;gap:2px;margin:0;padding:0;list-style:none}
@@ -501,8 +515,8 @@
     .sx-subnav ul{position:absolute;top:calc(100% + 8px);left:0;z-index:var(--sx-z-overlay);display:grid;min-width:280px;margin:0;padding:8px;list-style:none;border:1px solid var(--sx-line);border-radius:var(--sx-radius-md);background:var(--sx-surface-2);box-shadow:var(--sx-shadow-2)}
     :root[data-theme='light'] .sx-subnav ul{background:var(--sx-surface);border-color:var(--sx-line-strong)}
     .sx-subnav ul a{display:flex;width:100%;border-radius:var(--sx-radius-sm);color:var(--sx-text)}
-    .sx-menu-button,.sx-menu{display:none!important}
   }
+  @media (min-width:1520px){.sx-menu-button,.sx-menu{display:none!important}}
   @media (min-width:1024px) and (pointer:fine){
     .sx-header{background:color-mix(in srgb,var(--sx-bg) 82%,transparent);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%)}
   }
@@ -560,7 +574,10 @@
   html:has(.sx-header) .theme-control{top:calc((var(--sx-header-h) - 44px) / 2);bottom:auto;right:max(var(--sx-gutter),calc((100% - 1440px) / 2));z-index:calc(var(--sx-z-header) + 1);width:var(--sx-theme-slot-w);padding:0;border:0;background:transparent;box-shadow:none}
   html:has(.sx-header) .theme-control svg{display:none}
   html:has(.sx-header) .theme-control>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-  @media (min-width:768px){
+  /* 768-1519 px : interrupteur seul (52 px), pour laisser la place à la navigation courte dès 1180 px ;
+     icônes soleil et lune avec la navigation complète (≥ 1520 px). */
+  @media (min-width:768px){html:has(.sx-header){--sx-theme-slot-w:52px}}
+  @media (min-width:1520px){
     html:has(.sx-header){--sx-theme-slot-w:96px}
     html:has(.sx-header) .theme-control svg{display:block}
   }

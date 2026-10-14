@@ -8,8 +8,11 @@ import { ButtonLink, PhoneLink } from "@/components/sx/actions";
 import { MotionToggle } from "@/components/sx/motion-gate";
 /* En-tête public (le lien d'évitement et le ThemeControl sont rendus avant lui par le layout racine). Mobile (60 px) : marque « par Mohamed », téléphone compact, pause des animations,
    menu, emplacement réservé au ThemeControl (rendu par le layout, positionné en fixed dans
-   .sx-theme-slot). Navigation complète à partir de 1380 px (sous-menu Prestations), menu en dessous ;
-   téléphone en toutes lettres de 768 à 1379 px ; CTA « Parler de mon projet » à partir de 1024 px.
+   .sx-theme-slot). Navigation courte de 1180 à 1519 px (Création de site, Refonte, Prestations ▾, puis
+   Asnières & Île-de-France dès 1420 px ; les liens .sx-nav-wide masqués restent dans le menu), complète
+   à partir de 1520 px, menu en dessous de 1520 px ; téléphone en toutes lettres de 768 à 1179 px, en
+   icône ailleurs ; CTA « Parler de mon projet » à partir de 1024 px (paliers mesurés : globals.css,
+   « En-tête »).
    Le menu mobile est un panneau natif (attribut popover), sans Radix ; repli JS (.is-open) si le
    navigateur ne connaît pas popover. Le sous-menu est un <details>. */
 const prestations: [string, string][] = [
@@ -68,7 +71,7 @@ export function SiteHeader() {
                 <ul>{prestations.map(([label, href]) => <li key={href}><Link href={href} aria-current={current(href)}>{label}</Link></li>)}</ul>
               </details>
             </li>
-            {after.map(([label, href]) => <li key={href}><Link href={href} aria-current={current(href)}>{label}</Link></li>)}
+            {after.map(([label, href], i) => <li key={href} className={i === 0 ? "sx-nav-wide sx-nav-local" : "sx-nav-wide"}><Link href={href} aria-current={current(href)}>{label}</Link></li>)}
           </ul>
         </nav>
         <div className="sx-header-actions">
