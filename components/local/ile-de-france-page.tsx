@@ -50,7 +50,7 @@ export function IleDeFrancePage() {
         className="lc-hero lc-hero--idf"
         breadcrumbs={[{ name: "Île-de-France", path: PATH }]}
         title={<>Création et refonte de sites internet en <Commune>Île-de-France</Commune></>}
-        tagline={<>depuis <Commune>Asnières-sur-Seine</Commune>, des Hauts-de-Seine à Paris</>}
+        tagline={<>depuis <Commune>Asnières-sur-Seine</Commune>, des <Commune>Hauts-de-Seine</Commune> à Paris</>}
         lead="Artisans, commerces, professions libérales et PME : des sites clairs, lisibles sur mobile, reliés à un tableau de suivi des demandes."
         actions={<><ButtonLink href="/contact?service=creation" size="lg">Parler de mon projet</ButtonLink><PhoneLink compact="sm" /></>}
         proofs={["Rendez-vous sur place dans les communes citées", "Visio pour les points d’étape", "Le même interlocuteur du devis à la mise en ligne"]}
