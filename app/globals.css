@@ -71,7 +71,9 @@
   --sx-indigo:#2A2370;           /* seconde température « nuit » : surfaces nocturnes, piste de l'interrupteur */
   --sx-sky:linear-gradient(180deg,var(--sx-sky-top) 0%,var(--sx-sky-mid) 58%,color-mix(in srgb,var(--sx-indigo) 45%,var(--sx-sky-low)) 80%,var(--sx-sky-low) 100%);
   --sx-sodium:radial-gradient(80% 45% at 50% 100%,rgba(255,182,72,.18),transparent 72%);
-  --sx-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.06'/%3E%3C/svg%3E");
+  /* Grain : tuile de 64 px (180 px avant le tour 3). Chrome compte une image de fond comme candidate LCP
+     à la taille de sa tuile : 180 × 180 = 32 400 px² battait le H1 d'un titre court sur mobile. */
+  --sx-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.06'/%3E%3C/svg%3E");
   --sx-scrim:rgba(4,7,16,.72);
   --sx-selection-bg:#FFC56E;
   --sx-selection-text:#0B1226;
@@ -185,7 +187,7 @@
   --sx-sky-low:#FADFC2;          /* ciel pêche de l'aube à la ligne des toits */
   --sx-sky:linear-gradient(180deg,var(--sx-sky-top) 0%,var(--sx-sky-mid) 55%,var(--sx-sky-low) 100%);
   --sx-sodium:radial-gradient(80% 45% at 50% 100%,rgba(255,182,72,.30),transparent 72%);
-  --sx-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .04 0 0 0 0 .07 0 0 0 0 .15 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+  --sx-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .04 0 0 0 0 .07 0 0 0 0 .15 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
   --sx-scrim:rgba(11,18,38,.45);
   --sx-selection-bg:#C9D3FF;
   --sx-selection-text:#0B1226;
