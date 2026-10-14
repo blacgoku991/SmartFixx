@@ -19,6 +19,7 @@ export const quoteRequests = sqliteTable("quote_requests", {
   budget:text("budget").notNull().default("a_definir"),
   timeline:text("timeline").notNull().default("flexible"),
   campaign:text("campaign").notNull().default("site"),
+  activity:text("activity").notNull().default(""),
 }, table => [index("idx_quote_requests_status_created").on(table.status, table.createdAt), index("idx_quote_requests_created").on(table.createdAt), index("idx_quote_requests_email_created_at").on(table.email, table.createdAt), index("idx_quote_requests_expires_at").on(table.expiresAt), index("idx_quote_requests_campaign_expires").on(table.campaign,table.expiresAt)]);
 
 export const adminIdentities = sqliteTable("admin_identities", {
