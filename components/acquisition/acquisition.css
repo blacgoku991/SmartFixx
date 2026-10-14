@@ -291,45 +291,37 @@
 /* ------------------------------------------------------------------ Scène de la planche annotée */
 /* Toutes les animations de la scène DÉMARRENT ENSEMBLE (aucun délai) : le décalage des repères est écrit
    dans les images clés. Mesuré (CPU × 4) : avec des délais échelonnés, chaque départ différé réveillait le
-   fil principal (environ 140 ms/s de tâches) ; un seul départ commun reste sous le plafond. */
+   fil principal (environ 140 ms/s de tâches) ; un seul départ commun reste sous le plafond. La liste des
+   annotations ne s'anime pas : son allumage (piloté par :has(.sx-scene.is-playing)) coûtait, au défilement à
+   1 440 px, +100 ms/s de plus que la seule scène (motion-cost --scroll : +170 ms/s contre +75 sans lui). */
 @keyframes aq-wake{0%{opacity:.25}21.4%,100%{opacity:1}}
 @keyframes aq-scan{0%{opacity:0;transform:translateY(0)}4%{opacity:1}26.2%,100%{opacity:0;transform:translateY(680%)}}
 @keyframes aq-z1{0%,21.4%{opacity:0}32.1%,100%{opacity:1}}
 @keyframes aq-l1{0%,21.4%{transform:scaleX(0)}32.1%,100%{transform:scaleX(1)}}
 @keyframes aq-m1{0%,29.8%{opacity:0;transform:scale(.4)}39.3%,100%{opacity:1;transform:scale(1)}}
-@keyframes aq-i1{0%,29.8%{opacity:.35;transform:translateX(-6px)}41.7%,100%{opacity:1;transform:none}}
 @keyframes aq-z2{0%,40.5%{opacity:0}51.2%,100%{opacity:1}}
 @keyframes aq-l2{0%,40.5%{transform:scaleX(0)}51.2%,100%{transform:scaleX(1)}}
 @keyframes aq-m2{0%,48.8%{opacity:0;transform:scale(.4)}58.3%,100%{opacity:1;transform:scale(1)}}
-@keyframes aq-i2{0%,48.8%{opacity:.35;transform:translateX(-6px)}60.7%,100%{opacity:1;transform:none}}
 @keyframes aq-z3{0%,59.5%{opacity:0}70.2%,100%{opacity:1}}
 @keyframes aq-l3{0%,59.5%{transform:scaleX(0)}70.2%,100%{transform:scaleX(1)}}
 @keyframes aq-m3{0%,67.9%{opacity:0;transform:scale(.4)}77.4%,100%{opacity:1;transform:scale(1)}}
-@keyframes aq-i3{0%,67.9%{opacity:.35;transform:translateX(-6px)}79.8%,100%{opacity:1;transform:none}}
 @keyframes aq-z4{0%,78.6%{opacity:0}89.3%,100%{opacity:1}}
 @keyframes aq-l4{0%,78.6%{transform:scaleX(0)}89.3%,100%{transform:scaleX(1)}}
 @keyframes aq-m4{0%,86.9%{opacity:0;transform:scale(.4)}96.4%,100%{opacity:1;transform:scale(1)}}
-@keyframes aq-i4{0%,86.9%{opacity:.35;transform:translateX(-6px)}98.8%,100%{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){
   .sx-scene.is-playing .aq-an-wrap{animation:aq-wake 4.2s ease-out both}
   .sx-scene.is-playing .aq-an-scan{animation:aq-scan 4.2s ease-in-out both}
-  .sx-scene.is-playing .aq-an-zone,.sx-scene.is-playing .aq-an-lead,.sx-scene.is-playing .aq-an-mark,.aq-board:has(.sx-scene.is-playing) .aq-mark{animation-duration:4.2s;animation-timing-function:ease-out;animation-fill-mode:both}
+  .sx-scene.is-playing .aq-an-zone,.sx-scene.is-playing .aq-an-lead,.sx-scene.is-playing .aq-an-mark{animation-duration:4.2s;animation-timing-function:ease-out;animation-fill-mode:both}
   .sx-scene.is-playing .aq-an-k1 .aq-an-zone{animation-name:aq-z1}
   .sx-scene.is-playing .aq-an-k1 .aq-an-lead{animation-name:aq-l1}
   .sx-scene.is-playing .aq-an-k1 .aq-an-mark{animation-name:aq-m1}
-  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(1){animation-name:aq-i1}
   .sx-scene.is-playing .aq-an-k2 .aq-an-zone{animation-name:aq-z2}
   .sx-scene.is-playing .aq-an-k2 .aq-an-lead{animation-name:aq-l2}
   .sx-scene.is-playing .aq-an-k2 .aq-an-mark{animation-name:aq-m2}
-  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(2){animation-name:aq-i2}
   .sx-scene.is-playing .aq-an-k3 .aq-an-zone{animation-name:aq-z3}
   .sx-scene.is-playing .aq-an-k3 .aq-an-lead{animation-name:aq-l3}
   .sx-scene.is-playing .aq-an-k3 .aq-an-mark{animation-name:aq-m3}
-  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(3){animation-name:aq-i3}
   .sx-scene.is-playing .aq-an-k4 .aq-an-zone{animation-name:aq-z4}
   .sx-scene.is-playing .aq-an-k4 .aq-an-lead{animation-name:aq-l4}
   .sx-scene.is-playing .aq-an-k4 .aq-an-mark{animation-name:aq-m4}
-  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(4){animation-name:aq-i4}
-  /* L'annotation s'allume avec son repère (:has() à argument de classe) ; elle se fige avec la scène. */
-  .aq-board:has(.sx-scene.is-paused) .aq-mark{animation-play-state:paused}
 }

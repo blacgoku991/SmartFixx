@@ -5,8 +5,8 @@ import type { Item } from "@/lib/content/acquisition";
    - Les repères sont une couche HTML posée sur le SVG, en pourcentages du viewBox : zone en pointillés ambre,
      ligne de rappel, pastille numérotée ①–④. Rendus dans leur état final par le serveur.
    - Scène unique (ScenePlayer, une fois, puis état final) : le téléphone s'éclaire et un balayage descend
-     l'écran, puis chaque zone s'allume avec sa ligne de rappel (scaleX) et sa pastille (scale), et
-     l'annotation correspondante de la liste passe de l'ombre à la lumière. Transform et opacity seulement,
+     l'écran, puis chaque zone s'allume avec sa ligne de rappel (scaleX) et sa pastille (scale) ; la liste
+     reste immobile (coût mesuré au défilement, voir acquisition.css). Transform et opacity seulement,
      sur des éléments HTML (composités). Mesuré : un tracé stroke-dashoffset sur le SVG provoquait une mise
      en page par image (LayoutCount 40 sur la fenêtre de la scène, motion-cost) ; il est donc abandonné.
    - La maquette est un décor aria-hidden (dans la scène) ; la liste ordonnée porte le contenu. Étiquette
