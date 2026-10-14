@@ -17,6 +17,44 @@
 @source '../components/{sx,home,acquisition,services,local,forms,secondary,editorial,admin-panel}/**/*.tsx';
 @source '../components/ui/{accordion,alert-dialog,button,checkbox,dialog,input,input-group,label,select,separator,sheet,skeleton,switch,table,tabs,textarea,toggle,tooltip}.tsx';
 @source '../components/ui/{message-scroller,attachment}.tsx';
+/* Utilitaires « :has([attribut]) » des composants ui EXCLUS (tour 3 bis). Mesuré : un seul de ces
+   sélecteurs (argument de :has() fait d'un attribut : [data-slot=…], [aria-…], [role=…], [data-align=…])
+   suffit pour que CHAQUE insertion d'un élément dans la page (scripts de Next, annonceur de route, bandeau
+   de consentement, menus) recalcule le style de TOUTE la page : 9 ms à 412 px sans ralentissement, de 50 à
+   120 ms sous CPU × 4, plusieurs fois pendant l'hydratation (TBT). Sans eux : 0,1 ms. Aucun n'est rendu
+   aujourd'hui (pas d'AlertDialogMedia, de ligne de tableau dépliable ni de case à cocher dans un tableau,
+   input-group et attachment ne servent pas au site). Ne pas en réintroduire : poser une classe sur
+   l'élément (ou un :has() à argument de classe ou de balise, sans coût mesuré). */
+@source not inline("[&:has([role=checkbox])]:pr-0");
+@source not inline("dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40");
+@source not inline("has-[>[data-align=block-end]]:[&>input]:pt-3");
+@source not inline("has-[>[data-align=block-end]]:flex-col");
+@source not inline("has-[>[data-align=block-end]]:h-auto");
+@source not inline("has-[>[data-align=block-start]]:[&>input]:pb-3");
+@source not inline("has-[>[data-align=block-start]]:flex-col");
+@source not inline("has-[>[data-align=block-start]]:h-auto");
+@source not inline("has-[>[data-align=inline-end]]:[&>input]:pr-2");
+@source not inline("has-[>[data-align=inline-start]]:[&>input]:pl-2");
+@source not inline("has-[[data-slot=input-group-control]:focus-visible]:border-ring");
+@source not inline("has-[[data-slot=input-group-control]:focus-visible]:ring-[3px]");
+@source not inline("has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50");
+@source not inline("has-[[data-slot][aria-invalid=true]]:border-destructive");
+@source not inline("has-[[data-slot][aria-invalid=true]]:ring-destructive/20");
+@source not inline("has-aria-expanded:bg-muted/50");
+@source not inline("has-data-[slot=alert-dialog-media]:gap-x-6");
+@source not inline("has-data-[slot=alert-dialog-media]:grid-rows-[auto_auto_1fr]");
+@source not inline("has-data-[slot=attachment-content]:px-1.5");
+@source not inline("has-data-[slot=attachment-content]:px-2");
+@source not inline("has-data-[slot=attachment-content]:px-2.5");
+@source not inline("has-data-[slot=attachment-content]:py-1");
+@source not inline("has-data-[slot=attachment-content]:py-1.5");
+@source not inline("has-data-[slot=attachment-content]:py-2");
+@source not inline("has-data-[slot=attachment-content]:w-30");
+@source not inline("has-data-[slot=attachment-media]:p-1");
+@source not inline("has-data-[slot=attachment-media]:p-1.5");
+@source not inline("has-data-[slot=attachment-media]:p-2");
+@source not inline("sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2");
+@source not inline("sm:group-data-[size=default]/alert-dialog-content:has-data-[slot=alert-dialog-media]:grid-rows-[auto_1fr]");
 
 /* SmartFixx — jetons « Nuit cinétique ». Sombre par défaut : <html data-theme='dark'> est rendu par le serveur.
    Préfixe --sx- : ne heurte ni les --sfx-* hérités du panel (legacy-tokens.css, transitoire) ni les variables shadcn.
@@ -309,7 +347,12 @@
   .sx-eyebrow-short{display:none}
   @media (max-width:479.98px){.sx-eyebrow-long{display:none}.sx-eyebrow-short{display:inline}}
   .sx-hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sx-space-3);margin-top:var(--sx-space-5)}
-  @media (max-width:479.98px){.sx-hero-actions .sx-btn{flex:1 0 auto;padding-inline:20px}}
+  /* Sous 480 px : CTA et téléphone compact (PhoneLink compact="sm", 44 px) sur UNE ligne tant que le CTA
+     mesure au plus 270 px (328 px utiles à 360 px, moins l'écart de 8 px et le téléphone de 44 px = 276 px ;
+     270 px retenus) : avec 16 px de marge intérieure, « Demandez votre devis » (263 px) et « Recevoir mon
+     devis » (238 px) tiennent ; « Présentez-nous votre projet » (315 px) passe sur deux lignes (le téléphone
+     descend : 56 px de plus, voir le budget de DESIGN_SYSTEM). */
+  @media (max-width:479.98px){.sx-hero-actions{gap:8px}.sx-hero-actions .sx-btn{flex:1 0 auto;padding-inline:16px}}
   .sx-hero .sx-hero-proofs{margin-top:var(--sx-space-5)}
   .sx-hero-backdrop{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:clip}
   .sx-hero-aside{min-width:0}
@@ -328,6 +371,16 @@
   .sx-breadcrumbs li+li::before{content:'›';color:var(--sx-text-faint)}
   .sx-breadcrumbs a{color:var(--sx-text-muted);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
   .sx-breadcrumbs [aria-current]{color:var(--sx-text)}
+  /* Sous 480 px : le fil tient sur UNE ligne (budget du hero mobile) ; seul l'élément courant, que le H1
+     répète juste dessous, est abrégé par des points de suspension (le texte complet reste dans le DOM et
+     dans le JSON-LD). Les liens parents ne sont jamais coupés. */
+  @media (max-width:479.98px){
+    .sx-breadcrumbs{margin-bottom:var(--sx-space-4)}
+    .sx-breadcrumbs ol{flex-wrap:nowrap}
+    .sx-breadcrumbs li{flex:none;white-space:nowrap}
+    .sx-breadcrumbs li:last-child{flex:0 1 auto;min-width:0}
+    .sx-breadcrumbs [aria-current]{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  }
 
   /* --- Boutons (R8 : survol translateY(-1px), flèche 3 px, appui scale(.98), 120-180 ms) --- */
   .sx-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:0 22px;border:1px solid transparent;border-radius:var(--sx-radius-window);font-family:var(--sx-font-text);font-size:1rem;font-weight:650;line-height:1.1;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform var(--sx-dur-fast) var(--sx-ease-out),background-color var(--sx-dur-base) var(--sx-ease-out),border-color var(--sx-dur-base) var(--sx-ease-out),color var(--sx-dur-base) var(--sx-ease-out)}
@@ -355,7 +408,7 @@
   .sx-phone-icon svg{width:18px;height:18px}
   .sx-phone:not(.sx-phone--compact){padding-inline-end:6px}
   .sx-phone--compact{min-height:44px}
-  @media (max-width:479.98px){.sx-phone--compact-sm{padding:0}.sx-phone--compact-sm .sx-phone-number{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}}
+  @media (max-width:479.98px){.sx-phone.sx-phone--compact-sm{padding:0}.sx-phone--compact-sm .sx-phone-number{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}}
 
   /* --- Preuves --- */
   .sx-proofs{display:grid;gap:10px;margin:0;padding:0;list-style:none}
@@ -619,28 +672,42 @@
   .sx-skyline-plane{position:absolute;left:0;right:0;bottom:0;height:100%;display:flex;align-items:flex-end;gap:3px}
   .sx-skyline-plane--far{gap:2px;padding-inline:1%}
   .sx-skyline-plane--near{height:84%}
-  .sx-skyline-b{--face:var(--sx-facade-near);--px:15px;--py:20px;--ww:9px;--wh:12px;position:relative;flex:var(--w,1) 1 0;height:var(--h,60%);background:var(--face);border-radius:2px 2px 0 0;box-shadow:inset 0 1px 0 var(--sx-rim);overflow:clip}
-  .sx-skyline-b:has(.sx-win--signal){overflow:visible}
-  .sx-skyline-b--b{--px:13px;--py:24px;--ww:8px;--wh:14px}
+  /* Coût de style (tour 3 bis) : AUCUNE propriété personnalisée par immeuble ni par fenêtre (chacune
+     donnait à l'élément sa propre table de variables : 16 ms par recalcul complet au lieu de 7 sans ville).
+     Hauteur et largeur relative de l'immeuble, position des fenêtres : en ligne, en px (ambient.tsx) ;
+     gabarits (grille × rangée, fenêtre) : classes ci-dessous, en valeurs fixes. Plan proche : tour 15 × 20
+     (fenêtre 9 × 12), tour --b 13 × 24 (8 × 14), mansardé 14 × 24 (7 × 15), pavillon 15 × 20 ; plan
+     lointain : 11 × 15 (6 × 8). La lueur des fenêtres est en rgba fixe : --sx-window-on vaut #FFB648 dans
+     les deux thèmes (à reporter ici si ce jeton change). */
+  .sx-skyline-b{position:relative;flex:1 1 0;height:60%;background:var(--sx-facade-near);border-radius:2px 2px 0 0;box-shadow:inset 0 1px 0 var(--sx-rim);overflow:clip}
+  .sx-skyline-b--signal{overflow:visible}
   /* Immeuble de rapport : toit mansardé et deux souches de cheminée (clip-path statique), portes-fenêtres
      au format 1:2, balcons filants aux 2e et 5e étages. Pavillon : toit à deux pans, une rangée de fenêtres. */
-  .sx-skyline-b--mansard{--px:14px;--py:24px;--ww:7px;--wh:15px;clip-path:polygon(0 24px,8% 11px,20% 11px,20% 0,27% 0,27% 11px,66% 11px,66% 4px,73% 4px,73% 11px,92% 11px,100% 24px,100% 100%,0 100%)}
-  .sx-skyline-b--mansard::before{top:30px}
-  .sx-skyline-b--mansard::after{content:'';position:absolute;left:5px;right:5px;bottom:calc(8px + var(--py) * 2 - 4px);height:1px;background:var(--sx-rim);box-shadow:0 calc(var(--py) * -3) 0 var(--sx-rim)}
+  .sx-skyline-b--mansard{clip-path:polygon(0 24px,8% 11px,20% 11px,20% 0,27% 0,27% 11px,66% 11px,66% 4px,73% 4px,73% 11px,92% 11px,100% 24px,100% 100%,0 100%)}
   .sx-skyline-b--pavillon{clip-path:polygon(0 18px,50% 0,100% 18px,100% 100%,0 100%)}
-  .sx-skyline-b--pavillon::before{top:24px}
-  .sx-skyline-plane--far .sx-skyline-b{--face:var(--sx-facade-far);--px:11px;--py:15px;--ww:6px;--wh:8px;box-shadow:none}
-  /* Grille de fenêtres ancrée en bas (rangée r = 0 au pied) : les fenêtres allumées s'y alignent. */
-  .sx-skyline-b::before{content:'';position:absolute;inset:12px 9px 8px;background:repeating-linear-gradient(90deg,transparent 0 var(--ww),var(--face) var(--ww) var(--px)),repeating-linear-gradient(to top,transparent 0 var(--wh),var(--face) var(--wh) var(--py)),var(--sx-window-off)}
-  .sx-floor{position:absolute;left:9px;right:9px;bottom:calc(8px + var(--r,0) * var(--py));height:var(--wh);background:repeating-linear-gradient(90deg,var(--sx-window-warm) 0 var(--ww),transparent var(--ww) var(--px));opacity:.7}
-  .sx-win{position:absolute;left:calc(9px + var(--c,0) * var(--px));bottom:calc(8px + var(--r,0) * var(--py));width:var(--ww);height:var(--wh);border-radius:1px;background:var(--sx-window-on);opacity:0;box-shadow:0 0 12px 2px color-mix(in srgb,var(--sx-window-on) 50%,transparent)}
+  .sx-skyline-plane--far .sx-skyline-b{background:var(--sx-facade-far);box-shadow:none}
+  /* Grille de fenêtres ancrée en bas (rangée 0 au pied) : les fenêtres allumées s'y alignent. Elle part
+     de 12 px sous le faîte pour toutes les silhouettes (le clip-path des toits la recoupe). */
+  .sx-skyline-b::before{content:'';position:absolute;inset:12px 9px 8px;background:repeating-linear-gradient(90deg,transparent 0 9px,var(--sx-facade-near) 9px 15px),repeating-linear-gradient(to top,transparent 0 12px,var(--sx-facade-near) 12px 20px),var(--sx-window-off)}
+  .sx-skyline-b--b::before{background:repeating-linear-gradient(90deg,transparent 0 8px,var(--sx-facade-near) 8px 13px),repeating-linear-gradient(to top,transparent 0 14px,var(--sx-facade-near) 14px 24px),var(--sx-window-off)}
+  .sx-skyline-b--mansard::before{background:repeating-linear-gradient(90deg,transparent 0 7px,var(--sx-facade-near) 7px 14px),repeating-linear-gradient(to top,transparent 0 15px,var(--sx-facade-near) 15px 24px),var(--sx-window-off)}
+  .sx-skyline-b--mansard::after{content:'';position:absolute;left:5px;right:5px;bottom:52px;height:1px;background:var(--sx-rim);box-shadow:0 -72px 0 var(--sx-rim)}
+  .sx-skyline-plane--far .sx-skyline-b::before{background:repeating-linear-gradient(90deg,transparent 0 6px,var(--sx-facade-far) 6px 11px),repeating-linear-gradient(to top,transparent 0 8px,var(--sx-facade-far) 8px 15px),var(--sx-window-off)}
+  .sx-skyline-plane--far .sx-skyline-b--mansard::after{bottom:34px;box-shadow:0 -45px 0 var(--sx-rim)}
+  .sx-floor{position:absolute;left:9px;right:9px;height:12px;background:repeating-linear-gradient(90deg,var(--sx-window-warm) 0 9px,transparent 9px 15px);opacity:.7}
+  .sx-skyline-b--b .sx-floor{height:14px;background:repeating-linear-gradient(90deg,var(--sx-window-warm) 0 8px,transparent 8px 13px)}
+  .sx-win{position:absolute;width:9px;height:12px;border-radius:1px;background:var(--sx-window-on);opacity:0;box-shadow:0 0 12px 2px rgba(255,182,72,.5)}
+  .sx-skyline-b--b .sx-win{width:8px;height:14px}
+  .sx-skyline-b--mansard .sx-win{width:7px;height:15px}
+  .sx-skyline-plane--far .sx-floor{height:8px;background:repeating-linear-gradient(90deg,var(--sx-window-warm) 0 6px,transparent 6px 11px)}
+  .sx-skyline-plane--far .sx-win{width:6px;height:8px}
   .sx-win.is-on{opacity:.8}
   .sx-win.is-lit,.sx-win--signal{opacity:.95}
   /* Fenêtre signal : « la demande qui s'allume ». Halo au survol ou au focus du CTA du hero, ou quand un
      ancêtre porte data-sx-signal-on (le formulaire le pose sur <html> après un 201). */
-  .sx-win--signal{z-index:1;width:16px;height:22px;border-radius:2px;box-shadow:0 0 18px 4px color-mix(in srgb,var(--sx-window-on) 55%,transparent)}
-  .sx-win--signal::before{content:'';position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--sx-window-on) 45%,transparent),transparent);opacity:.35}
-  .sx-win--signal::after{content:'';position:absolute;inset:-24px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--sx-window-on) 60%,transparent),transparent);opacity:0;transition:opacity var(--sx-dur-slow) var(--sx-ease-out)}
+  .sx-skyline .sx-win--signal{z-index:1;width:16px;height:22px;border-radius:2px;box-shadow:0 0 18px 4px rgba(255,182,72,.55)}
+  .sx-win--signal::before{content:'';position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,182,72,.45),transparent);opacity:.35}
+  .sx-win--signal::after{content:'';position:absolute;inset:-24px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,182,72,.6),transparent);opacity:0;transition:opacity var(--sx-dur-slow) var(--sx-ease-out)}
   [data-sx-signal-on] .sx-win--signal::after,[data-sx-hero]:has(.sx-btn--cta:is(:hover,:focus-visible,:active)) .sx-win--signal::after{opacity:1}
   /* Carte « Nouvelle demande » posée au-dessus de la ville (décor aria-hidden, contenu de démonstration) :
      visible dès le rendu serveur, immobile (voir la note de mesure dans la section MOUVEMENT). */
@@ -705,16 +772,18 @@
   html[data-motion='on'] [data-sx-ambient] .sx-glow--alt{animation-name:sx-drift-alt}
   /* Fenêtre signal : halo qui respire lentement (cycle de 9 s, délai négatif). */
   html[data-motion='on'] [data-sx-ambient] .sx-win--signal::before{animation:sx-breathe 9s var(--sx-ease-inout) infinite;animation-delay:-3s}
-  html[data-motion='on'] [data-sx-ambient] .sx-win:not(.is-lit):not(.is-on):not(.sx-win--signal){animation:sx-twinkle var(--sx-twinkle-dur,18s) linear infinite;animation-delay:var(--sx-delay,0s)}
+  html[data-motion='on'] [data-sx-ambient] .sx-win:not(.is-lit):not(.is-on):not(.sx-win--signal){animation:sx-twinkle 18s linear infinite}
   /* Carte « Nouvelle demande » : volontairement immobile. Mesuré (motion-cost, CPU × 4) : une entrée de
      0,9 s différée coûte 40 ms/s et un flottement infini 8 à 10 ms/s de plus sur le hero (images du fil
      principal à chaque départ ou itération), alors que lueurs, fenêtres et parallaxe restent à 4 ms/s. */
   html[data-motion='on'] [data-sx-ambient].sx-sheen::after,html[data-motion='on'] [data-sx-ambient] .sx-sheen::after{animation:sx-sheen 11s var(--sx-ease-inout) infinite;animation-delay:var(--sx-delay,-2s)}
-  html[data-motion='on'] [data-sx-ambient]:not([data-sx-visible]),html[data-motion='on'] [data-sx-ambient]:not([data-sx-visible]) *,html[data-motion='on'] [data-sx-ambient]:not([data-sx-visible])::after,html[data-motion='on'] [data-sx-ambient]:not([data-sx-visible]) *::after,html[data-motion='on'] [data-sx-ambient]:not([data-sx-visible]) *::before{animation-play-state:paused!important}
-  /* Pendant un défilement (MotionGate) : ambiance temporelle suspendue, sauf les animations liées au
-     défilement (plans de la ville, parallaxe), qui doivent suivre la page. */
-  html[data-sx-scrolling] [data-sx-ambient] :not(.sx-skyline-plane,.sx-parallax),html[data-sx-scrolling] [data-sx-ambient] *::before,html[data-sx-scrolling] [data-sx-ambient] *::after,html[data-sx-scrolling] [data-sx-ambient]::after{animation-play-state:paused!important}
-  html[data-motion-paused] [data-sx-ambient],html[data-motion-paused] [data-sx-ambient] *,html[data-motion-paused] [data-sx-ambient]::after,html[data-motion-paused] [data-sx-ambient] *::after,html[data-motion-paused] [data-sx-ambient] *::before{animation-play-state:paused!important}
+  /* Ambiance figée hors écran (data-sx-visible absent), pendant la pause globale et pendant un défilement.
+     MotionGate recopie la pause (html[data-motion-paused]) et le défilement (html[data-sx-scrolling]) sur
+     chaque conteneur : data-sx-hold="pause" et/ou "scroll". Ces règles ne portent JAMAIS sur un attribut de
+     <html> : avec un « * » à droite, chaque bascule sur <html> recalculerait le style de toute la page. Au
+     défilement, les animations liées au défilement (plans de la ville, parallaxe) continuent. */
+  [data-sx-ambient]:not([data-sx-visible]),[data-sx-ambient]:not([data-sx-visible]) *,[data-sx-ambient]:not([data-sx-visible])::after,[data-sx-ambient]:not([data-sx-visible]) *::after,[data-sx-ambient]:not([data-sx-visible]) *::before,[data-sx-ambient][data-sx-hold~=pause],[data-sx-ambient][data-sx-hold~=pause] *,[data-sx-ambient][data-sx-hold~=pause]::after,[data-sx-ambient][data-sx-hold~=pause] *::after,[data-sx-ambient][data-sx-hold~=pause] *::before{animation-play-state:paused!important}
+  [data-sx-ambient][data-sx-hold~=scroll] :not(.sx-skyline-plane,.sx-parallax),[data-sx-ambient][data-sx-hold~=scroll] *::before,[data-sx-ambient][data-sx-hold~=scroll] *::after,[data-sx-ambient][data-sx-hold~=scroll]::after{animation-play-state:paused!important}
   /* Défilement : révélations (R6), titres cinétiques (R7), parallaxe lente. Visibles par défaut. */
   @supports (animation-timeline:view()){
     html[data-motion='on']:not([data-motion-paused]) .sx-reveal{animation:sx-reveal linear both;animation-timeline:view();animation-range:entry 0% entry 220px}

@@ -15,7 +15,9 @@ import { Breadcrumbs } from "./breadcrumbs";
    le groupe risquerait de déborder à 360 px, H1 de 40 px). Agit sur une chaîne, ou descend dans le
    DERNIER enfant d'un fragment ou d'un élément (<span className="sx-keyword">site internet</span>).
    Une espace située entre deux nœuds (« Création de <span>site</span> ») n'est pas traitée : le lot qui
-   compose un tel titre lie lui-même ses deux derniers mots (U+00A0). */
+   compose un tel titre lie lui-même ses deux derniers mots (U+00A0). Même traitement pour le sous-titre
+   (tagline), qui passe sur deux lignes à 360 px : « sans perdre ce qui fonctionne / déjà » devient « sans
+   perdre ce qui / fonctionne déjà ». */
 const NBSP = "\u00A0";
 function bindLastSpace(text: string): string {
   const end = text.trimEnd().length; const i = text.lastIndexOf(" ", end - 1);
@@ -68,7 +70,7 @@ export function PageHero({ eyebrow, eyebrowShort, eyebrowDot = true, title, tagl
         <div className="sx-hero-copy">
           {breadcrumbs?.length ? <Breadcrumbs items={breadcrumbs} /> : null}
           {eyebrow ? <Eyebrow dot={eyebrowDot}>{eyebrowShort ? <><span className="sx-eyebrow-long">{eyebrow}</span><span className="sx-eyebrow-short">{eyebrowShort}</span></> : eyebrow}</Eyebrow> : null}
-          <h1 id={id} className="sx-h1"><span className="sx-h1-main">{noWidow(title)}</span>{tagline ? <>{" "}<span className="sx-h1-tagline">{tagline}</span></> : null}</h1>
+          <h1 id={id} className="sx-h1"><span className="sx-h1-main">{noWidow(title)}</span>{tagline ? <>{" "}<span className="sx-h1-tagline">{noWidow(tagline)}</span></> : null}</h1>
           {lead ? <p className="sx-lead">{lead}</p> : null}
           {actions ? <div className="sx-hero-actions">{actions}</div> : null}
           {proofs?.length ? <ProofList items={proofs} className="sx-hero-proofs" /> : null}

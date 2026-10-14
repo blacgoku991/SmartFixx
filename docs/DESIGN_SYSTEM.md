@@ -210,7 +210,8 @@ Règles R1 à R12 du plan, inchangées, sauf l'amendement ci-dessous.
   défilement : en poser peu par écran (une section révélée d'un bloc, pas chaque carte), et mesurer.
   MotionGate pose `html[data-sx-scrolling]` pendant un défilement : l'ambiance temporelle (lueurs,
   fenêtres, reflets, halo) s'y suspend, les animations liées au défilement continuent (mesuré à 1 440 px :
-  +98 ms/s avant, +70 ms/s après).
+  +98 ms/s avant, +70 ms/s au tour 2, +3,5 ms/s (+1 %) au tour 3 bis, où la suspension passe par
+  `data-sx-hold` sur les conteneurs au lieu d'une règle sur `<html>`).
 - R12 : en-tête opaque sur mobile, `backdrop-filter` seulement avec pointeur fin et ≥ 1024 px.
 
 **Amendement (« des animations et des effets partout »)** : une AMBIANCE continue est autorisée — lueurs
@@ -219,6 +220,13 @@ condition :
 - transform et opacity uniquement ; uniquement sous `html[data-motion="on"]` ;
 - suspendue hors écran : tout décor d'ambiance est dans un conteneur `[data-sx-ambient]`, que MotionGate
   observe et marque `data-sx-visible` ; sans cet attribut, `animation-play-state: paused` ;
+- MotionGate recopie aussi la pause globale et le défilement sur chaque conteneur :
+  `data-sx-hold="pause"` et/ou `"scroll"` (tour 3 bis). Le CSS qui fige l'ambiance porte sur le
+  conteneur (`[data-sx-ambient][data-sx-hold~=pause] *`), JAMAIS sur `html[attribut] … *` : une règle à
+  `*` à droite sous un attribut de `<html>` transforme chaque bascule (passage à `data-motion=on`, pause,
+  début et fin de défilement) en recalcul de style de TOUTE la page (11 ms par bascule sans
+  ralentissement, 1,7 ms après). Les lots gardent `html[data-motion='on'] … .xx-classe` (classe à droite :
+  invalidation ciblée) pour lancer leurs animations ;
 - arrêtée net en `prefers-reduced-motion` ;
 - contrôle GLOBAL « Mettre en pause les animations » / « Relancer les animations » (`MotionToggle`,
   ≥ 44 px, clavier, mémorisé dans `localStorage['smartfixx-motion-paused']`, pose
@@ -241,13 +249,28 @@ Pièges mesurés (CDP, CPU × 4) :
   de style du document) : une entrée de 0,9 s différée a été mesurée à 40 ms/s, un flottement infini de
   7 s à 8–10 ms/s de plus sur le hero ; d'où une `SignalCard` immobile. Préférer peu d'animations
   longues (cycles ≥ 20 s, délais négatifs) qui démarrent toutes ensemble au passage à `data-motion=on`.
+- **coût de style (tour 3 bis, page à hero + bandeau, 412 px)** : (1) pas de propriété personnalisée
+  posée élément par élément en masse (style en ligne `--x` ou classe qui déclare des `--x`) : chacune
+  donne à l'élément sa propre table de variables ; la ville en posait sur chaque immeuble et chaque
+  fenêtre (recalcul complet 16,2 ms → 8,5 ms une fois retirées, positions en px en ligne et gabarits en
+  classes) ; (2) aucun `:has()` dont l'argument est un attribut (`[data-slot=…]`, `[aria-…]`, `[role=…]`) :
+  un seul suffit pour que chaque insertion d'élément (scripts de Next, annonceur de route, consentement,
+  menus) recalcule toute la page (9 ms → 0,1 ms) ; les utilitaires Tailwind de ce type des composants ui
+  sont exclus par `@source not inline(…)` dans globals.css ; `:has()` à argument de classe ou de balise :
+  sans coût mesuré ; (3) `--sx-float-h` n'est écrite sur `<html>` que si sa valeur change ;
+  (4) `content-visibility:auto` sur le bandeau et le pied a été mesuré (7,9 → 4,7 ms) puis ÉCARTÉ : les
+  captures pleine page laissent le pied blanc et les mesures de ses éléments sont fausses avant rendu.
+- **porte Lighthouse d'une page à hero** : `LH_RUNS=5 bash scripts/qa/lh.sh <base> <sortie> <chemins…>`
+  sous `flock /tmp/smartfixx-build.lock` : médiane propre du TBT ≤ 200 ms et du LCP ≤ 2,6 s par chemin
+  (code de sortie 1 sinon). Chaque lot la passe sur ses pages à hero.
 - `motion-cost.mjs` attend 2,5 s après `data-motion=on` (`--settle`) : le pic de démarrage commun à toutes
   les animations (environ 1,5 s sous CPU × 4) n'est pas imputé à l'effet mesuré. Mesure répétée 3 fois,
   budget sur la médiane.
 
 Classes d'ambiance disponibles (CSS du socle) : `sx-glow` (+ `--amber`, `--alt` ; la lueur ambre ne se pose
 JAMAIS derrière un CTA), `sx-skyline` (`sx-skyline-plane--far|--near`, `sx-skyline-b` (+ `--b`), `sx-win`
-(+ `is-on` fixe, `sx-win--signal`), `sx-floor`), `sx-signal-card`, `sx-sheen` (reflet), `sx-parallax`
+(+ `is-on` fixe, `sx-win--signal`), `sx-floor` ; positions en px en ligne, gabarits en classes, aucune
+variable par élément depuis le tour 3 bis), `sx-signal-card`, `sx-sheen` (reflet), `sx-parallax`
 (+ `--deep`), `sx-reveal`, `sx-kinetic`/`sx-kw`, `sx-grain` (texture statique, déjà posée sur `.sx-hero`,
 `.sx-section--night` et `.sx-cta-band`), `sx-edge` (liseré dégradé d'une carte clé).
 
@@ -270,10 +293,10 @@ Serveur sauf mention. Props gelées (des props facultatives peuvent seulement s'
 | `Container` | `size?: 'default'\|'narrow'\|'wide'`, `as?`, `className?` | 1240 / 820 / 1440 px. |
 | `Eyebrow` | `dot?`, `className?` | Point ambre facultatif, aligné sur la première ligne ; le texte est un seul élément (contenu mixte, `<Place>` compris, en ligne). |
 | `SectionHead` | `eyebrow?`, `title`, `text?`, `id?`, `level?: 2\|3` | En-tête de section. |
-| `PageHero` | `eyebrow?`, `eyebrowShort?` (surtitre affiché sous 480 px à la place d'`eyebrow`), `eyebrowDot?` (true), `title`, `tagline?`, `lead?`, `proofs?: string[]`, `actions?`, `aside?`, `breadcrumbs?: {name,path}[]`, `backdrop?`, `id?` (`hero-titre`), `className?`, `tone?: 'auto'\|'night'` (auto) | Fond : ciel `--sx-sky` + halo `--sx-sodium` (nuit en sombre, aube en clair ; `tone="night"` : nuit dans les deux thèmes). Avec une ville, le bas du hero réserve `--sx-skyline-h` + 16 px : aucun texte sur les façades. `backdrop` couvre tout le hero (`inset: 0`, `overflow: clip`). | Un seul `<h1><span class="sx-h1-main">{title}</span> <span class="sx-h1-tagline">{tagline}</span></h1>` : vraie espace, les deux parties en ligne (un seul candidat LCP). Ordre du DOM : surtitre, H1, chapeau, actions (`.sx-hero-actions`), preuves, aside. `data-sx-hero`. Réserve `--sx-consent-reserve` sous 768 px tant que `data-consent=pending`. `backdrop` = décor plein cadre (motif nocturne), aria-hidden + `data-sx-ambient`. **Anti-veuve** : la dernière espace du titre devient insécable si les deux derniers mots tiennent en 16 caractères (chaîne, ou dernier enfant d'un fragment ou d'un élément) ; une espace placée ENTRE deux nœuds (« Création de <span>site</span> ») n'est pas traitée : le lot lie lui-même ses deux derniers mots par U+00A0. Budget de lignes du hero mobile : voir plus bas. |
-| `Breadcrumbs` | `items: {name,path}[]` (SANS l'accueil, ajouté en tête ; le dernier = page courante) | Fil visible + JSON-LD BreadcrumbList identique (via `breadcrumb()` de lib/seo). Serveur uniquement. |
+| `PageHero` | `eyebrow?`, `eyebrowShort?` (surtitre affiché sous 480 px à la place d'`eyebrow`), `eyebrowDot?` (true), `title`, `tagline?`, `lead?`, `proofs?: string[]`, `actions?`, `aside?`, `breadcrumbs?: {name,path}[]`, `backdrop?`, `id?` (`hero-titre`), `className?`, `tone?: 'auto'\|'night'` (auto) | Fond : ciel `--sx-sky` + halo `--sx-sodium` (nuit en sombre, aube en clair ; `tone="night"` : nuit dans les deux thèmes). Avec une ville, le bas du hero réserve `--sx-skyline-h` + 16 px : aucun texte sur les façades. `backdrop` couvre tout le hero (`inset: 0`, `overflow: clip`). | Un seul `<h1><span class="sx-h1-main">{title}</span> <span class="sx-h1-tagline">{tagline}</span></h1>` : vraie espace, les deux parties en ligne (un seul candidat LCP). Ordre du DOM : surtitre, H1, chapeau, actions (`.sx-hero-actions`), preuves, aside. `data-sx-hero`. Réserve `--sx-consent-reserve` sous 768 px tant que `data-consent=pending`. `backdrop` = décor plein cadre (motif nocturne), aria-hidden + `data-sx-ambient`. **Anti-veuve** : la dernière espace du titre devient insécable si les deux derniers mots tiennent en 16 caractères (chaîne, ou dernier enfant d'un fragment ou d'un élément) ; une espace placée ENTRE deux nœuds (« Création de <span>site</span> ») n'est pas traitée : le lot lie lui-même ses deux derniers mots par U+00A0. Même anti-veuve sur `tagline` (tour 3 bis). Budget de lignes du hero mobile : voir plus bas. |
+| `Breadcrumbs` | `items: {name,path}[]` (SANS l'accueil, ajouté en tête ; le dernier = page courante) | Fil visible + JSON-LD BreadcrumbList identique (via `breadcrumb()` de lib/seo). Serveur uniquement. Sous 480 px : UNE ligne, marge basse de 16 px ; seul l'élément courant (répété par le H1) est abrégé par « … » s'il ne tient pas, les liens parents jamais (texte complet dans le DOM et le JSON-LD). « Accueil › Prestations › Création de site internet » tient en entier à 360 px. |
 | `ButtonLink` | `variant?: 'cta'\|'primary'\|'ghost'`, `href`, `icon?: 'arrow'\|'phone'\|'none'\|ReactNode`, `size?: 'md'\|'lg'` (48/52 px), `className?`, + attributs de lien | Passe par CampaignLink (utm_campaign propagé). `data-analytics="contact"` automatique vers /contact, /diagnostic, #demande. |
-| `PhoneLink` | `compact?: boolean\|'sm'`, `label?`, `className?` | `tel:+33618745180`, « 06 18 74 51 80 ». `compact` : icône seule, aria-label « Appeler Mohamed au … ». `'sm'` : icône seule sous 480 px — à utiliser dans le hero mobile pour garder CTA et appel sur une ligne. |
+| `PhoneLink` | `compact?: boolean\|'sm'`, `label?`, `className?` | `tel:+33618745180`, « 06 18 74 51 80 ». `compact` : icône seule, aria-label « Appeler Mohamed au … ». `'sm'` : icône seule de 44 px sous 480 px — à utiliser dans le hero mobile. CTA et appel tiennent sur UNE ligne à 360 px seulement si le CTA mesure au plus 270 px (voir « Budget de lignes du hero mobile ») ; au-delà, l'appel passe à la ligne. |
 | `CtaBand` | `title`, `text?`, `primaryHref?` (/contact), `primaryLabel?` (« Parler de mon projet »), `id?`, `phone?` (true), `skyline?` (true) | Remplace NextStep (alias conservé). Toujours nocturne (portée nuit) : ciel, sodium, ville (graine 5, distincte de celle du hero). La réserve basse suit `--sx-skyline-h` : aucun texte ni CTA sur les façades. |
 | `ProofList` | `items: string[]`, `className?` | Chaque élément = UN span de texte ; puce « fenêtre allumée » ambre (`sx-proof-mark`, aria-hidden), plus de coche verte. |
 | `Place` | `children: string` | Nom de lieu insécable (U+2011, espaces insécables, `sx-nowrap`). Serveur ou client. |
@@ -329,18 +352,26 @@ complète à 1 520 px et non 1 180 ; à 1 380 px (réglage du tour 1), elle chev
 ### Budget de lignes du hero mobile
 
 À 360 × 640, consentement ouvert, le CTA du hero doit rester au moins 16 px au-dessus du consentement
-(`layout-check --checks=cta`, 360 × 640, 390 × 664, 412 × 823). Budget à 360 px :
+(`layout-check --checks=cta`, 360 × 640, 390 × 664, 412 × 823). Budget à 360 px (tour 3 bis, mesuré) :
 
 | Élément | Lignes au plus | Coût d'une ligne |
 | --- | --- | --- |
-| Surtitre | 1 (utiliser `eyebrowShort` sous 480 px, ex. « Mohamed · Asnières (92) ») | 22 px |
+| Fil d'Ariane OU surtitre | 1 (le fil tient toujours sur une ligne sous 480 px ; surtitre : utiliser `eyebrowShort`, ex. « Mohamed · Asnières (92) ») | — |
 | H1 (`title`) | 3 | 39 px |
 | Sous-titre (`tagline`) | 2 | 22 px |
-| Chapeau (`lead`) | 3 | 25 px |
+| Chapeau (`lead`) | 4 avec une ligne d'actions, 2 si les actions prennent deux lignes | 25 px |
+| Actions (CTA + `PhoneLink compact="sm"`) | 1 si le CTA mesure au plus 270 px à 360 px, sinon 2 | 56 px |
 
-Une ligne de H1 coûte presque deux lignes de texte. Mesure de référence (page jetable, textes de l'accueil
-du plan, surtitre court) : surtitre 1, H1 2, sous-titre 3, chapeau 4 lignes, marge de 34 px ; le budget
-ci-dessus donne environ 42 px. Sans surtitre court, l'accueil et la page Asnières tombaient à 10 et 8 px.
+Largeur propre des CTA des annonces Search à 360 px (16 px de marge intérieure sous 480 px, flèche
+comprise) : « Recevoir mon devis » 238 px et « Demandez votre devis » 263 px tiennent avec l'appel ;
+« Présenter mon projet » 255 px aussi ; « Présentez-nous votre projet » (315 px) passe sur deux lignes à 360
+et à 390 px (le téléphone descend : 56 px). Mesures (page jetable, textes de pages.md, fil 1 ligne, H1 3,
+sous-titre 2) : Création, chapeau 4 lignes, « Demandez votre devis » ou « Recevoir mon devis » : marge
+23 px ; Refonte, « Présentez-nous votre projet », chapeau 2 lignes : 17 px ; même CTA, chapeau 4 lignes :
+−33 px (échec) ; « Présenter mon projet », chapeau 4 lignes : 23 px. Donc, sur la page Refonte : soit le
+chapeau tient en 2 lignes avec le CTA « Présentez-nous votre projet », soit le CTA court « Présenter mon
+projet » et le chapeau porte la phrase de l'annonce. Une ligne de H1 coûte presque deux lignes de chapeau.
+Sans surtitre court, l'accueil et la page Asnières tombaient à 10 et 8 px.
 
 Attributs posés sur `<html>` : `data-theme`, `data-consent` (`pending|set`, par le script du layout avant
 le premier rendu), `data-consent-open`, `data-motion` (`on|off`), `data-motion-paused`, et la variable
@@ -426,6 +457,8 @@ référence, seulement avec consentement et sur un chemin mesuré.
 | Lighthouse mobile (tour 3, médiane de 3) | /mentions-legales : perf 96, JS 164 Ko, LCP 2,57 s, TBT 118 ms ; / : perf 89, JS 179 Ko, LCP 3,55 s | /mentions-legales : perf 98, JS 141 Ko, LCP 2,21 s, TBT 64 ms ; / : perf 90, JS 164 Ko, LCP 3,39 s (accueil non migré : LCP = image studio, composant de services de l'ancienne page) |
 | En-tête (tour 3) | navigation absente de 1024 à 1379 px, chevauchement dès 1384 px | navigation courte dès 1180 px, complète dès 1520 ; 42 largeurs × 2 thèmes sans débordement, chevauchement, troncature ni recouvrement ; espace libre minimal 58 px |
 | Élément LCP du hero (tour 3) | grain du fond (tuile 180 × 180 = 32 400 px²) à 360 et 390 px sur un titre court | H1 à 360, 390 et 1440 px (tuile de 64 px) |
+| Coût de style d'une page à hero (tour 3 bis, page jetable PageHero + Skyline signal + Cartouche + CtaBand, 412 px, sans ralentissement, médiane de 30 recalculs) | recalcul complet 16,2 ms ; insertion d'un élément : recalcul complet 9 ms ; bascule d'un attribut de `<html>` (motion, pause, défilement) : 10 à 11 ms | 8,5 ms ; 0,1 ms ; 0 à 1,7 ms. Rendu de la ville identique au pixel près (écart max 1/255, 2 thèmes, 412 et 1 440 px) |
+| Lighthouse mobile d'une page à hero (tour 3 bis, 5 passes, médianes propres) | /zz-verif TBT 178 ms, LCP 2,41 s ; hero de Création TBT 167 ms, LCP 2,40 s (machine partagée : TBT de 74 à 235 ms selon la passe) | /zz-verif TBT 164 ms, LCP 2,44 s ; Création 159 ms, 2,41 s ; Refonte 180 ms, 2,38 s ; /mentions-legales 77 ms, 2,28 s : porte ≤ 200 ms et ≤ 2,6 s tenue, marge faible ; défilement animé à 1 440 px +3,5 ms/s (+1 %) contre +70 ms/s |
 | Tests de la racine | 41/43 | 42/44 (nouveau : tests/measured-paths.test.mjs), toujours les 2 seuls échecs connus |
 
 Variante Sites (vinext) : toutes les feuilles, panel compris, sont concaténées en un seul fichier servi

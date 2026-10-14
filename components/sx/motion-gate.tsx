@@ -9,6 +9,11 @@ import { Pause, Play } from "lucide-react";
    - Observe chaque [data-sx-ambient] : data-sx-visible quand il est à l'écran (sinon ses animations sont
      suspendues par le CSS), y compris pour les éléments ajoutés après navigation.
    - Pose html[data-sx-scrolling] pendant un défilement : l'ambiance temporelle s'y suspend.
+   - Recopie la pause globale et le défilement sur CHAQUE conteneur d'ambiance (data-sx-hold="pause scroll") :
+     le CSS qui fige l'ambiance porte sur ce conteneur et non sur <html>. Mesuré (tour 3 bis) : une règle
+     « html[attr] [data-sx-ambient] * » fait de chaque bascule d'attribut sur <html> (passage à data-motion=on,
+     pause, début et fin de défilement) un recalcul de style de TOUTE la page (11 ms par bascule à 412 px sans
+     ralentissement, 1,6 ms sans ces règles) ; sur le conteneur, seul son décor est recalculé.
    Aucun script en ligne : ce code est bundlé (nonce assuré sur le VPS). */
 const PAUSE_KEY = "smartfixx-motion-paused";
 type Nav = Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
@@ -39,8 +44,14 @@ export function MotionGate() {
       for (const e of entries) (e.target as HTMLElement).toggleAttribute("data-sx-visible", e.isIntersecting);
     }, { rootMargin: "80px 0px" });
     const seen = new WeakSet<Element>();
-    const scan = () => document.querySelectorAll("[data-sx-ambient]").forEach((el) => { if (!seen.has(el)) { seen.add(el); io.observe(el); } });
+    let scrolling = false;
+    const holdValue = () => [html.hasAttribute("data-motion-paused") ? "pause" : "", scrolling ? "scroll" : ""].filter(Boolean).join(" ");
+    const applyHold = (el: Element, v: string) => { if (v) { if (el.getAttribute("data-sx-hold") !== v) el.setAttribute("data-sx-hold", v); } else if (el.hasAttribute("data-sx-hold")) el.removeAttribute("data-sx-hold"); };
+    const syncHold = () => { const v = holdValue(); document.querySelectorAll("[data-sx-ambient]").forEach((el) => applyHold(el, v)); };
+    const scan = () => { const v = holdValue(); document.querySelectorAll("[data-sx-ambient]").forEach((el) => { if (!seen.has(el)) { seen.add(el); io.observe(el); applyHold(el, v); } }); };
     scan();
+    const pmo = new MutationObserver(syncHold);
+    pmo.observe(html, { attributes: true, attributeFilter: ["data-motion-paused"] });
     let pending = 0;
     const mo = new MutationObserver(() => { if (!pending) pending = requestAnimationFrame(() => { pending = 0; scan(); }); });
     mo.observe(document.body, { childList: true, subtree: true });
@@ -50,12 +61,12 @@ export function MotionGate() {
     // (révélations, mots, parallaxe, ville qui s'enfonce) ne sont pas concernées.
     let scrollTimer = 0;
     const onScroll = () => {
-      if (!html.hasAttribute("data-sx-scrolling")) html.setAttribute("data-sx-scrolling", "");
+      if (!scrolling) { scrolling = true; html.setAttribute("data-sx-scrolling", ""); syncHold(); }
       window.clearTimeout(scrollTimer);
-      scrollTimer = window.setTimeout(() => html.removeAttribute("data-sx-scrolling"), 200);
+      scrollTimer = window.setTimeout(() => { scrolling = false; html.removeAttribute("data-sx-scrolling"); syncHold(); }, 200);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => { cancelled = true; mq.removeEventListener("change", onChange); io.disconnect(); mo.disconnect(); window.removeEventListener("load", idle); window.removeEventListener("scroll", onScroll); window.clearTimeout(scrollTimer); html.removeAttribute("data-sx-scrolling"); };
+    return () => { cancelled = true; mq.removeEventListener("change", onChange); io.disconnect(); mo.disconnect(); pmo.disconnect(); window.removeEventListener("load", idle); window.removeEventListener("scroll", onScroll); window.clearTimeout(scrollTimer); html.removeAttribute("data-sx-scrolling"); };
   }, []);
   return null;
 }

@@ -45,17 +45,29 @@ function plan(count: number, seed: number, near: boolean, signalAt?: number): Bu
     return { h: near ? HEIGHTS[k] : Math.min(98, HEIGHTS[k] + 6), w: near ? WIDTHS[k] : WIDTHS[k] * 0.8, b: kind === "tower" && (i + seed) % 3 === 1, kind, twinkle, on, floor: kind === "tower" && (i * 5 + seed) % 4 === 2 ? ((i + seed) % 3) + 1 : undefined };
   });
 }
+/* Gabarits de fenêtres (px) par plan et par silhouette : pas de grille (--px), rangée (--py) ni taille
+   (--ww × --wh) en propriétés personnalisées. Coût de style mesuré (tour 3 bis, recalcul complet, page à
+   hero + bandeau) : une propriété personnalisée posée sur un élément lui donne sa propre table de variables,
+   et la ville en posait sur chaque immeuble et chaque fenêtre (16 ms par recalcul contre 7 ms sans
+   ville, près de 100 ms par recalcul sous CPU × 4). Les positions sont donc calculées ici, en px, et les
+   tailles portées par des classes (voir globals.css, « Ville nocturne »). */
+const GRID = { tower: { px: 15, py: 20 }, b: { px: 13, py: 24 }, mansard: { px: 14, py: 24 }, pavillon: { px: 15, py: 20 }, far: { px: 11, py: 15 } } as const;
+function grid(b: Building, near: boolean) { return !near ? GRID.far : b.kind === "tower" ? (b.b ? GRID.b : GRID.tower) : GRID[b.kind]; }
+const at = (g: { px: number; py: number }, w: Win) => ({ left: `${9 + w.c * g.px}px`, bottom: `${8 + w.r * g.py}px` });
 function Plane({ items, near, signalAt }: { items: Building[]; near: boolean; signalAt?: number }) {
   return (
     <div className={`sx-skyline-plane sx-skyline-plane--${near ? "near" : "far"}`}>
-      {items.map((b, i) => (
-        <span className={["sx-skyline-b", b.b ? "sx-skyline-b--b" : "", b.kind !== "tower" ? `sx-skyline-b--${b.kind}` : ""].filter(Boolean).join(" ")} key={i} style={{ "--h": `${b.h}%`, "--w": b.w } as CSSProperties}>
-          {b.floor !== undefined ? <i className="sx-floor" style={{ "--r": b.floor } as CSSProperties} /> : null}
-          {b.on.map((w, j) => <i key={`o${j}`} className="sx-win is-on" style={{ "--c": w.c, "--r": w.r } as CSSProperties} />)}
-          {b.twinkle.map((w, j) => <i key={`t${j}`} className="sx-win" style={{ "--c": w.c, "--r": w.r, "--sx-delay": `${w.d}s`, "--sx-twinkle-dur": `${w.dur}s` } as CSSProperties} />)}
-          {signalAt === i ? <i className="sx-win sx-win--signal is-lit" style={{ "--c": 1, "--r": 1 } as CSSProperties} /> : null}
-        </span>
-      ))}
+      {items.map((b, i) => {
+        const g = grid(b, near);
+        return (
+          <span className={["sx-skyline-b", b.b ? "sx-skyline-b--b" : "", b.kind !== "tower" ? `sx-skyline-b--${b.kind}` : "", signalAt === i ? "sx-skyline-b--signal" : ""].filter(Boolean).join(" ")} key={i} style={{ height: `${b.h}%`, flexGrow: b.w }}>
+            {b.floor !== undefined ? <i className="sx-floor" style={{ bottom: `${8 + b.floor * g.py}px` }} /> : null}
+            {b.on.map((w, j) => <i key={`o${j}`} className="sx-win is-on" style={at(g, w)} />)}
+            {b.twinkle.map((w, j) => <i key={`t${j}`} className="sx-win" style={{ ...at(g, w), animationDelay: `${w.d}s`, animationDuration: `${w.dur}s` }} />)}
+            {signalAt === i ? <i className="sx-win sx-win--signal is-lit" style={at(g, { c: 1, r: 1 })} /> : null}
+          </span>
+        );
+      })}
     </div>
   );
 }
