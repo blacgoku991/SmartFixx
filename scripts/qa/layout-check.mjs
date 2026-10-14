@@ -1,20 +1,28 @@
 // Contrôles de mise en page et de mouvement sur une variante servie.
-//   node scripts/qa/layout-check.mjs <baseURL> /chemin1 /chemin2 … [--checks=overflow,header,menu,theme,cta,lcp,h1,reduced,reveal,font]
+//   node scripts/qa/layout-check.mjs <baseURL> /chemin1 /chemin2 … [--checks=overflow,header,menu,theme,cta,lcp,h1,reduced,reveal900,reveal,font,tab,icons,media]
 // Par défaut, tous les contrôles. Code de sortie 1 si un écart est constaté (tous sont listés).
 //  overflow : aucun défilement horizontal à 360, 390, 412, 768, 1024, 1180, 1280, 1366, 1440 et 1600 px ;
-//  header   : aux mêmes largeurs (thèmes sombre et clair), .sx-header-inner ne déborde pas
-//             (scrollWidth ≤ clientWidth) et aucun point d'un lien ou bouton visible de l'en-tête n'est
-//             recouvert par le ThemeControl fixe (elementFromPoint sur une grille de 5 × 3 points) ;
+//  header   : aux mêmes largeurs et de 1024 à 1600 px par pas de 20 px (thèmes sombre et clair),
+//             .sx-header-inner ne déborde pas (scrollWidth ≤ clientWidth), aucun lien ou bouton visible n'en
+//             chevauche un autre ni n'est tronqué, aucun point n'est recouvert par le ThemeControl fixe
+//             (elementFromPoint sur une grille de 5 × 3 points), bouton de pause affiché (data-motion=on
+//             forcé : pire cas) ; navigation d'ordinateur : « Création de site », « Refonte » et
+//             « Prestations » visibles dès 1180 px, « Asnières & Île-de-France » dès 1420 px, navigation
+//             complète et plus de bouton Menu dès 1520 px ;
 //  menu     : menu mobile ouvert à 390 × 844, deux thèmes : contraste calculé ≥ 4,5 pour chaque .sx-btn,
 //             numéro de téléphone et contrôle des animations visibles du menu (couleur du texte sur le premier fond opaque) ;
 //  theme    : interrupteur du ThemeControl à 390 et 1440, deux états : curseur visible (pas de
 //             clip-path), contenu dans la piste, piste ≥ 44 × 26, zone de clic ≥ 44 px de haut ;
 //  cta      : le bas des CTA du hero ([data-sx-hero] .sx-hero-actions) est au-dessus du haut du
 //             consentement ([data-sx-consent]) à 360 × 640, 390 × 664, 412 × 823 et 1440 × 900,
-//             consentement ouvert, et visible dans le premier écran ;
+//             consentement ouvert, et visible dans le premier écran ; sur mobile (360, 390, 412), avec
+//             une marge d'au moins 16 px (budget de lignes du hero, docs/DESIGN_SYSTEM.md) ;
 //  lcp      : l'élément LCP (PerformanceObserver) est le H1 ou un de ses descendants (390 × 844, 1440 × 900) ;
 //  h1       : exactement un h1 ;
 //  reduced  : avec reducedMotion=reduce, document.getAnimations().length === 0 après 5 s ;
+//  reveal900 : R6, aucune révélation dans les 900 premiers pixels : page en haut, à 390 × 844 et 1440 × 900,
+//             aucun .sx-reveal, .sx-kinetic .sx-kw ni .sx-parallax visible dont le haut (top + scrollY) est
+//             à moins de 900 px ;
 //  reveal   : opacité calculée 1 sur le dernier .sx-reveal après défilement complet (390 × 844, 1440 × 900),
 //             et, pour CHAQUE .sx-reveal, opacité ≥ 0,99 quand son haut est placé à mi-hauteur d'écran (pas de
 //             bloc translucide en zone de lecture, même pour un bloc plus haut que l'écran) ;
@@ -30,8 +38,10 @@ const argv = process.argv.slice(2);
 const base = argv[0]?.replace(/\/$/, "");
 const paths = argv.slice(1).filter((a) => !a.startsWith("--"));
 const checksArg = argv.find((a) => a.startsWith("--checks="));
-const checks = new Set((checksArg ? checksArg.slice(9) : "overflow,header,menu,theme,cta,lcp,h1,reduced,reveal,font,tab,icons,media").split(","));
+const checks = new Set((checksArg ? checksArg.slice(9) : "overflow,header,menu,theme,cta,lcp,h1,reduced,reveal900,reveal,font,tab,icons,media").split(","));
 const WIDTHS = [360, 390, 412, 768, 1024, 1180, 1280, 1366, 1440, 1600];
+// En-tête : toutes les largeurs d'ordinateur de 1024 à 1600 px par pas de 20 px (paliers 1180, 1420, 1520).
+const HEADER_WIDTHS = [...new Set([...WIDTHS, ...Array.from({ length: 29 }, (_, i) => 1024 + i * 20), 1179, 1419, 1519, 1520])].sort((a, b) => a - b);
 // Contraste WCAG d'un élément : couleur du texte sur le premier fond opaque de ses ancêtres.
 const contrastOf = (sel) => [...document.querySelectorAll(sel)].filter((e) => e.getBoundingClientRect().height > 0 && getComputedStyle(e).visibility !== "hidden").map((e) => {
   const rgb = (c) => (c.match(/[\d.]+/g) || []).map(Number);
@@ -82,14 +92,29 @@ for (const path of paths) {
     for (const theme of ["dark", "light"]) {
       const { ctx, page } = await open({ width: 1440, height: 900 }, path, { consent: "ferme", theme });
       await page.waitForTimeout(400);
+      // Pire cas : le bouton de pause des animations (visible sous data-motion=on) occupe 52 px de plus.
+      await page.evaluate(() => { document.documentElement.dataset.motion = "on"; document.documentElement.removeAttribute("data-motion-paused"); });
       const bad = [];
-      for (const width of WIDTHS) {
+      for (const width of HEADER_WIDTHS) {
         await page.setViewportSize({ width, height: 900 });
         await page.waitForTimeout(150);
         const r = await page.evaluate(() => {
           const inner = document.querySelector(".sx-header-inner"); const tc = document.querySelector(".theme-control");
           if (!inner) return { missing: true };
           const vis = [...inner.querySelectorAll("a,button,summary")].filter((e) => { const b = e.getBoundingClientRect(); return b.width > 0 && b.height > 0 && getComputedStyle(e).visibility !== "hidden"; });
+          const name = (e) => (e.textContent || e.getAttribute("aria-label") || e.tagName).trim().slice(0, 24);
+          // Chevauchements entre contrôles (une navigation comprimée déborde sur les actions sans faire
+          // grandir scrollWidth) et libellés tronqués.
+          const clash = [];
+          for (let i = 0; i < vis.length; i++) for (let j = i + 1; j < vis.length; j++) {
+            if (vis[i].contains(vis[j]) || vis[j].contains(vis[i])) continue;
+            const a = vis[i].getBoundingClientRect(), b = vis[j].getBoundingClientRect();
+            const x = Math.min(a.right, b.right) - Math.max(a.left, b.left), y = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+            if (x > 1 && y > 1) clash.push(`${name(vis[i])} / ${name(vis[j])} (${Math.round(x)} px)`);
+          }
+          for (const e of vis) if (e.scrollWidth > e.clientWidth + 1 && e.clientWidth > 0) clash.push(`${name(e)} tronqué (${e.scrollWidth} > ${e.clientWidth})`);
+          const shown = new Set(vis.filter((e) => e.closest(".sx-nav")).map((e) => (e.textContent || "").trim()));
+          const menu = vis.some((e) => e.classList.contains("sx-menu-button"));
           const covered = [];
           for (const e of vis) {
             const b = e.getBoundingClientRect(); let hit = 0;
@@ -101,12 +126,19 @@ for (const path of paths) {
             }
             if (hit) covered.push(`${(e.textContent || e.getAttribute("aria-label") || e.tagName).trim().slice(0, 24)} (${hit}/15)`);
           }
-          return { overflow: inner.scrollWidth > inner.clientWidth + 1 ? `${inner.scrollWidth} > ${inner.clientWidth}` : "", covered };
+          return { overflow: inner.scrollWidth > inner.clientWidth + 1 ? `${inner.scrollWidth} > ${inner.clientWidth}` : "", covered, clash, shown: [...shown], menu };
         });
         if (r.missing) { bad.push(`${width}px : pas de .sx-header-inner`); break; }
-        if (r.overflow || r.covered.length) bad.push(`${width}px : ${r.overflow ? "en-tête déborde " + r.overflow + " ; " : ""}${r.covered.length ? "recouverts par le ThemeControl ou hors écran : " + r.covered.join(", ") : ""}`);
+        const short = ["Création de site", "Refonte", "Prestations"];
+        const need = width >= 1520 ? [...short, "Asnières & Île-de-France", "Conseils"] : width >= 1420 ? [...short, "Asnières & Île-de-France"] : width >= 1180 ? short : [];
+        const missing = need.filter((n) => !r.shown.includes(n));
+        const nav = [];
+        if (missing.length) nav.push(`navigation : ${missing.join(", ")} absent(s)`);
+        if (width >= 1520 && r.menu) nav.push("bouton Menu encore affiché");
+        if (width < 1520 && !r.menu) nav.push("bouton Menu absent");
+        if (r.overflow || r.covered.length || r.clash.length || nav.length) bad.push(`${width}px : ${r.overflow ? "en-tête déborde " + r.overflow + " ; " : ""}${r.covered.length ? "recouverts par le ThemeControl ou hors écran : " + r.covered.join(", ") + " ; " : ""}${r.clash.length ? "chevauchements : " + r.clash.join(", ") + " ; " : ""}${nav.join(" ; ")}`);
       }
-      if (bad.length) bad.forEach((b) => ko(`en-tête (${theme}) ${b}`)); else ok(`en-tête (${theme}) : ni débordement ni recouvrement de ${WIDTHS[0]} à ${WIDTHS[WIDTHS.length - 1]} px`);
+      if (bad.length) bad.forEach((b) => ko(`en-tête (${theme}) ${b}`)); else ok(`en-tête (${theme}) : ni débordement, ni chevauchement, ni recouvrement sur ${HEADER_WIDTHS.length} largeurs de ${HEADER_WIDTHS[0]} à ${HEADER_WIDTHS[HEADER_WIDTHS.length - 1]} px ; navigation courte dès 1180, complète dès 1520 (bouton de pause affiché)`);
       await ctx.close();
     }
   }
@@ -160,10 +192,11 @@ for (const path of paths) {
         return { n: acts.length, bottom: Math.max(...acts.map((e) => e.getBoundingClientRect().bottom)), consentTop: cb ? cb.top : null, vh: innerHeight };
       });
       const label = `${viewport.width}×${viewport.height}`;
+      const gap = viewport.width < 768 ? 16 : 0; const margin = Math.round(r.consentTop - r.bottom);
       if (!r.n) { ko(`${label} : aucun CTA trouvé dans [data-sx-hero] .sx-hero-actions`); }
       else if (r.consentTop === null) { ko(`${label} : consentement [data-sx-consent] non affiché`); }
-      else if (r.bottom <= r.consentTop && r.bottom <= r.vh) ok(`${label} : CTA (bas ${Math.round(r.bottom)}) au-dessus du consentement (haut ${Math.round(r.consentTop)})`);
-      else ko(`${label} : CTA bas ${Math.round(r.bottom)} / consentement haut ${Math.round(r.consentTop)} / écran ${r.vh}`);
+      else if (r.bottom + gap <= r.consentTop && r.bottom <= r.vh) ok(`${label} : CTA (bas ${Math.round(r.bottom)}) au-dessus du consentement (haut ${Math.round(r.consentTop)}), marge ${margin} px${gap ? " ≥ " + gap : ""}`);
+      else ko(`${label} : CTA bas ${Math.round(r.bottom)} / consentement haut ${Math.round(r.consentTop)} / écran ${r.vh} : marge ${margin} px${gap ? " (minimum " + gap + " px : budget de lignes du hero dépassé, voir DESIGN_SYSTEM.md)" : ""}`);
       await ctx.close();
     }
   }
@@ -189,6 +222,16 @@ for (const path of paths) {
     const n = await page.evaluate(() => document.getAnimations().map((a) => (a.animationName || a.constructor.name) + "@" + (a.effect?.target?.className || "")));
     if (n.length === 0) ok("mode réduit : 0 animation après 5 s"); else ko(`mode réduit : ${n.length} animation(s) : ${n.slice(0, 5).join(", ")}`);
     await ctx.close();
+  }
+  if (checks.has("reveal900")) {
+    for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+      const { ctx, page } = await open(viewport, path, { consent: "ferme" });
+      await page.waitForTimeout(300);
+      const r = await page.evaluate(() => [...document.querySelectorAll(".sx-reveal, .sx-kinetic .sx-kw, .sx-parallax")].filter((e) => getComputedStyle(e).display !== "none").map((e) => ({ top: Math.round(e.getBoundingClientRect().top + scrollY), what: (e.classList.contains("sx-kw") ? ".sx-kw" : e.classList.contains("sx-parallax") ? ".sx-parallax" : ".sx-reveal") + " « " + (e.textContent || "").trim().slice(0, 30) + " »" })).filter((x) => x.top < 900));
+      const label = `${viewport.width}×${viewport.height}`;
+      if (r.length) ko(`${label} : révélation dans les 900 premiers pixels (R6) : ${r.slice(0, 5).map((x) => `${x.what} à ${x.top} px`).join(" ; ")}`); else ok(`${label} : aucune révélation dans les 900 premiers pixels (R6)`);
+      await ctx.close();
+    }
   }
   if (checks.has("reveal")) {
     for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
