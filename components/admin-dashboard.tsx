@@ -21,12 +21,12 @@ type Pending = { oldestId: string; oldestReference: string; oldestAt: number; st
 type Listing = { requests: Quote[]; total: number; counts: { status: RequestStatus; total: number }[]; page: number; pageSize: number; pending?: Pending };
 
 /* Libellés des statuts (API inchangée : new, in_progress, quoted, won, archived), au féminin : « une demande ». */
-const STATUS: Record<RequestStatus, { label: string; filter: string; tone: string }> = {
-  new: { label: "Nouvelle", filter: "Nouvelles", tone: "signal" },
-  in_progress: { label: "En cours", filter: "En cours", tone: "accent" },
-  quoted: { label: "Devis envoyé", filter: "Devis envoyé", tone: "violet" },
-  won: { label: "Gagnée", filter: "Gagnées", tone: "success" },
-  archived: { label: "Archivée", filter: "Archivées", tone: "neutral" },
+const STATUS: Record<RequestStatus, { label: string; filter: string; chip: string; pill: string }> = {
+  new: { label: "Nouvelle", filter: "Nouvelles", chip: "rq-status rq-status--signal", pill: "rq-pill rq-pill--signal" },
+  in_progress: { label: "En cours", filter: "En cours", chip: "rq-status rq-status--accent", pill: "rq-pill rq-pill--accent" },
+  quoted: { label: "Devis envoyé", filter: "Devis envoyé", chip: "rq-status rq-status--violet", pill: "rq-pill rq-pill--violet" },
+  won: { label: "Gagnée", filter: "Gagnées", chip: "rq-status rq-status--success", pill: "rq-pill rq-pill--success" },
+  archived: { label: "Archivée", filter: "Archivées", chip: "rq-status rq-status--neutral", pill: "rq-pill" },
 };
 const NEEDS: { id: string; label: string }[] = [{ id: "all", label: "Tous les besoins" }, ...Object.entries(serviceLabels).map(([id, label]) => ({ id, label }))];
 const date = (value: number) => new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Paris" }).format(value);
@@ -36,13 +36,14 @@ const needLabel = (q: Quote) => q.service === "emailing" ? (q.volume ? `Emailing
 /* Titre de secours : entreprise, sinon activité, sinon nom. */
 const titleOf = (q: Quote) => (q.company || "").trim() || (q.activity || "").trim() || q.name;
 const subOf = (q: Quote) => [q.activity, q.company].map(s => (s || "").trim()).filter(Boolean).filter(s => s !== titleOf(q))[0] || "";
+const isNew = (q: Quote) => q.status === "new";
 const ageHours = (q: Quote) => (Date.now() - q.created_at) / 3600000;
 const mailtoOf = (q: Quote) => `mailto:${encodeURIComponent(q.email)}?subject=${encodeURIComponent(`Votre demande SmartFixx ${q.reference}`)}`;
 const telOf = (q: Quote) => `tel:${(q.phone || "").replace(/[^\d+]/g, "")}`;
 
 function StatusPill({ status }: { status: RequestStatus }) {
   const s = STATUS[status] || STATUS.new;
-  return <span className={`rq-status rq-status--${s.tone}`}><span className="rq-dot" aria-hidden="true" />{s.label}</span>;
+  return <span className={s.chip}><span className="rq-dot" aria-hidden="true" />{s.label}</span>;
 }
 
 /* 401/403 de session : retour à la connexion, onglet conservé. */
@@ -158,7 +159,7 @@ export function AdminDashboard({ name }: { name: string }) {
         </label>
         <div className="rq-pills" role="group" aria-label="Filtrer par statut">
           <button type="button" className="rq-pill" aria-pressed={status === "all"} onClick={() => { setStatus("all"); setPage(1); }}>Toutes <span className="rq-pill-n">{data ? formatNumber(total) : "–"}</span></button>
-          {statuses.map(s => <button type="button" key={s} className={`rq-pill rq-pill--${STATUS[s].tone}`} aria-pressed={status === s} onClick={() => { setStatus(s); setPage(1); }}><span className="rq-dot" aria-hidden="true" />{STATUS[s].filter} <span className="rq-pill-n">{data ? formatNumber(count(s)) : "–"}</span></button>)}
+          {statuses.map(s => <button type="button" key={s} className={STATUS[s].pill} aria-pressed={status === s} onClick={() => { setStatus(s); setPage(1); }}><span className="rq-dot" aria-hidden="true" />{STATUS[s].filter} <span className="rq-pill-n">{data ? formatNumber(count(s)) : "–"}</span></button>)}
         </div>
         <div className="rq-pills" role="group" aria-label="Filtrer par besoin">
           {NEEDS.map(n => <button type="button" key={n.id} className="rq-pill" aria-pressed={serviceFilter === n.id} onClick={() => { setServiceFilter(n.id); setPage(1); }}>{n.label}</button>)}
@@ -176,10 +177,10 @@ export function AdminDashboard({ name }: { name: string }) {
                 <thead><tr><th scope="col">Contact</th><th scope="col">Besoin</th><th scope="col">Statut</th><th scope="col">Reçue le</th><th scope="col">Campagne</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
                 <tbody>
                   {data.requests.map(q => (
-                    <tr key={q.id} className={q.status === "new" ? "rq-row rq-row--new" : "rq-row"} onClick={e => { if (!(e.target as HTMLElement).closest("a,button")) openRequest(q.id); }}>
+                    <tr key={q.id} className={isNew(q) ? "rq-row rq-row--new" : "rq-row"} onClick={e => { if (!(e.target as HTMLElement).closest("a,button")) openRequest(q.id); }}>
                       <td><button type="button" className="rq-open" onClick={() => openRequest(q.id)}><span className="rq-avatar" aria-hidden="true">{(titleOf(q).slice(0, 1) || "?").toUpperCase()}</span><span className="rq-contact"><strong>{titleOf(q)}</strong><small>{q.name !== titleOf(q) ? q.name : subOf(q) || "—"}</small></span></button></td>
                       <td><span className="rq-need">{needLabel(q)}</span>{q.website_url ? <small className="rq-sub">Site indiqué</small> : null}</td>
-                      <td><StatusPill status={q.status} />{q.status === "new" && ageHours(q) > 48 ? <small className="rq-late">+ de 48 h</small> : null}</td>
+                      <td><StatusPill status={q.status} />{isNew(q) && ageHours(q) > 48 ? <small className="rq-late">+ de 48 h</small> : null}</td>
                       <td><span className="rq-date">{shortDate(q.created_at)}</span><small className="rq-sub rq-ref">{q.reference}</small></td>
                       <td><span className="rq-campaign">{q.campaign || "site"}</span></td>
                       <td>
@@ -196,11 +197,11 @@ export function AdminDashboard({ name }: { name: string }) {
             <ul className="rq-cards">
               {data.requests.map(q => (
                 <li key={q.id}>
-                  <button type="button" className={q.status === "new" ? "rq-card rq-card--new" : "rq-card"} onClick={() => openRequest(q.id)}>
+                  <button type="button" className={isNew(q) ? "rq-card rq-card--new" : "rq-card"} onClick={() => openRequest(q.id)}>
                     <span className="rq-card-top"><StatusPill status={q.status} /><span className="rq-date">{shortDate(q.created_at)}</span></span>
                     <strong className="rq-card-title">{titleOf(q)}</strong>
                     <span className="rq-card-sub">{[q.name !== titleOf(q) ? q.name : "", needLabel(q)].filter(Boolean).join(" · ")}</span>
-                    <span className="rq-card-foot"><span className="rq-ref">{q.reference}</span>{q.status === "new" && ageHours(q) > 48 ? <span className="rq-late">+ de 48 h</span> : null}<span className="rq-card-go" aria-hidden="true"><ChevronRight /></span></span>
+                    <span className="rq-card-foot"><span className="rq-ref">{q.reference}</span>{isNew(q) && ageHours(q) > 48 ? <span className="rq-late">+ de 48 h</span> : null}<span className="rq-card-go" aria-hidden="true"><ChevronRight /></span></span>
                   </button>
                 </li>
               ))}
