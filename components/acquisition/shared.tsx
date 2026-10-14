@@ -33,12 +33,14 @@ export function ChapterHead({ id, eyebrow, title, text, kinetic = false, classNa
   );
 }
 
-/* Déroulement en 4 étapes, sans durée : une rangée de « fenêtres » numérotées reliées par un fil. */
+/* Déroulement en 4 étapes, sans durée : une rangée de « fenêtres » numérotées reliées par un fil. Titre non
+   cinétique : un seul titre cinétique par page (planche annotée, ce que je reprends) ; chaque mot cinétique
+   est une animation de timeline recalculée à chaque image de défilement (motion-cost --scroll). */
 export function Steps({ id, eyebrow, title, text, items }: { id: string; eyebrow: string; title: string; text: string; items: Step[] }) {
   return (
     <Section id="deroulement" labelledBy={id}>
       <Container>
-        <ChapterHead id={id} eyebrow={eyebrow} title={title} text={text} kinetic />
+        <ChapterHead id={id} eyebrow={eyebrow} title={title} text={text} />
         <ol className="aq-steps">
           {items.map((s, i) => (
             <li className="aq-step" key={s.title}>
