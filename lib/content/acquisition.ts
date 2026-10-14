@@ -37,7 +37,6 @@ export type AcquisitionContent = {
     cta: string;
     proofs: string[];
   };
-  form: { eyebrow: string; note: string };
   steps: { eyebrow: string; title: string; text: string; items: Step[] };
   faq: { eyebrow: string; title: string; text: string; items: Faq[] };
   related: { title: string; intro: Rich; links: RelatedLink[] };
@@ -63,7 +62,6 @@ export const creation: AcquisitionContent & {
     cta: "Recevoir mon devis",
     proofs: ["Un seul interlocuteur : moi, Mohamed", "Pensé d’abord pour le mobile", "Formulaire relié à un tableau de suivi"],
   },
-  form: { eyebrow: "Votre demande de devis", note: "Votre demande est enregistrée et arrive dans mon tableau de suivi : je la lis moi-même." },
   scope: {
     eyebrow: "Le périmètre, sans zone grise",
     title: "Ce qui est inclus, en option ou défini au devis",
@@ -158,7 +156,6 @@ export const refonte: AcquisitionContent & {
     cta: "Présenter mon projet",
     proofs: ["État des lieux avant toute maquette", "Redirections préparées pour vos pages utiles", "Un seul interlocuteur : moi, Mohamed"],
   },
-  form: { eyebrow: "Votre projet de refonte", note: "Indiquez l’adresse de votre site actuel : je le regarde avant de vous répondre." },
   compare: {
     eyebrow: "Avant, après",
     title: "Ce que la refonte change, d’un seul geste",

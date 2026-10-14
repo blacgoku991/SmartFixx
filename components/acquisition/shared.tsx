@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { ArrowRight } from "lucide-react";
 import CampaignLink from "@/components/campaign-link";
 import { Container, Eyebrow, Section } from "@/components/sx/section";
 import { KineticHeading } from "@/components/sx/kinetic-heading";
@@ -80,7 +79,6 @@ export function Related({ id, title, intro, links }: { id: string; title: string
               <CampaignLink href={l.href} className="aq-link">
                 <span className="aq-link-label">{withPlace(l.label)}</span>
                 <span className="aq-link-text">{l.text}</span>
-                <ArrowRight className="aq-link-icon" aria-hidden="true" />
               </CampaignLink>
             </li>
           ))}

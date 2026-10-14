@@ -57,16 +57,16 @@ function OldSite() {
     <div className="aq-old">
       <span className="aq-ba-chip aq-ba-chip--old">Avant</span>
       <div className="aq-old-banner"><span className="aq-old-logo">Menuiserie Démo</span></div>
-      <div className="aq-old-nav"><i /><i /><i /><i /><i /></div>
+      <div className="aq-old-nav" />
       <div className="aq-old-body">
         <p className="aq-old-welcome">Bienvenue sur notre site internet&#8239;!</p>
         <span className="aq-old-mark aq-old-mark--3"><b>3</b>Offre floue</span>
         <div className="aq-old-cols">
-          <div className="aq-old-text"><i /><i /><i /><i /><i /><i /><i /></div>
+          <div className="aq-old-text" />
           <div className="aq-old-img" />
         </div>
         <span className="aq-old-mark aq-old-mark--1"><b>1</b>Texte illisible sur mobile</span>
-        <div className="aq-old-text aq-old-text--wide"><i /><i /><i /><i /></div>
+        <div className="aq-old-text aq-old-text--wide" />
       </div>
       <div className="aq-old-foot"><span>Tél.</span><i /><span className="aq-old-mark aq-old-mark--2"><b>2</b>Téléphone introuvable</span></div>
     </div>

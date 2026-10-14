@@ -61,11 +61,11 @@ export function RefonteSections() {
           <ChapterHead id="aq-change-titre" eyebrow={r.change.eyebrow} title={r.change.title} text={r.change.text} />
           <ul className="aq-change">
             {r.change.items.map((it, i) => (
-              <li className="aq-change-card" key={it.title}>
+              <li className="aq-change-card" key={it.title} data-idx={String(i + 1).padStart(2, "0")}>
                 <span className="aq-change-win" aria-hidden="true"><i /><i /><i /><i /></span>
                 <h3 className="aq-change-title">{it.title}</h3>
                 <p>{it.text}</p>
-                <span className="aq-change-idx" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                
               </li>
             ))}
           </ul>

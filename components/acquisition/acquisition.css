@@ -7,14 +7,9 @@
    var() dans les images clés ; rien d'animé dans le premier écran ; mode réduit = aucune animation. */
 
 /* ------------------------------------------------------------------ Hero d'acquisition */
-/* Formulaire : carte « fenêtre allumée » (liseré ambre en tête : la demande qui arrive). Une seule instance
-   (#demande) ; scroll-margin pour l'en-tête collant. */
-.aq-form{position:relative;scroll-margin-top:calc(var(--sx-header-h) + 16px);padding:var(--sx-space-5) var(--sx-space-4) var(--sx-space-4);border:1px solid var(--sx-edge);border-radius:var(--sx-radius-xl);background:var(--sx-surface);box-shadow:var(--sx-shadow-2)}
-.aq-form::before{content:'';position:absolute;left:var(--sx-space-5);top:-1px;width:min(160px,40%);height:3px;border-radius:0 0 3px 3px;background:var(--sx-signal)}
-.aq-form-eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 var(--sx-space-3);font-size:var(--sx-step--1);font-weight:650;color:var(--sx-text-muted)}
-.aq-form-dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--sx-signal);box-shadow:0 0 0 4px color-mix(in srgb,var(--sx-signal) 18%,transparent)}
-.aq-form-note{margin:var(--sx-space-4) 0 0;padding-top:var(--sx-space-3);border-top:1px solid var(--sx-line);font-size:var(--sx-step--1);color:var(--sx-text-muted)}
-@media (min-width:480px){.aq-form{padding:var(--sx-space-6) var(--sx-space-6) var(--sx-space-5)}}
+/* Ancre du formulaire (#demande) : le formulaire court (lot 5) porte son propre cadre ; l'aside ne fait que
+   réserver l'ancre sous l'en-tête collant. */
+.aq-form{scroll-margin-top:calc(var(--sx-header-h) + 16px)}
 /* À partir de 1024 px : le formulaire occupe la colonne de droite (grille du socle) ; le texte du hero
    reste en vue pendant qu'on remplit (sticky, aucune animation). */
 @media (min-width:1024px){
@@ -130,10 +125,11 @@
 .aq-link{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px var(--sx-space-4);align-items:center;height:100%;min-height:44px;padding:var(--sx-space-4) var(--sx-space-5);border:1px solid var(--sx-line);border-radius:var(--sx-radius-lg);background:var(--sx-surface);color:var(--sx-text);text-decoration:none;transition:transform var(--sx-dur-fast) var(--sx-ease-out)}
 .aq-link-label{font-weight:700;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,var(--sx-accent) 60%,transparent)}
 .aq-link-text{grid-column:1;color:var(--sx-text-muted);font-size:var(--sx-step--1);line-height:1.4}
-.aq-link-icon{grid-column:2;grid-row:1 / span 2;width:20px;height:20px;color:var(--sx-accent);transition:transform var(--sx-dur-base) var(--sx-ease-out)}
-@media (hover:hover){.aq-link:hover{transform:translateY(-1px);border-color:var(--sx-line-strong)}.aq-link:hover .aq-link-icon{transform:translateX(3px)}}
+/* Flèche en pseudo-élément (une icône SVG de moins par carte). */
+.aq-link::after{content:'→';grid-column:2;grid-row:1 / span 2;color:var(--sx-accent);font-size:1.25rem;line-height:1;transition:transform var(--sx-dur-base) var(--sx-ease-out)}
+@media (hover:hover){.aq-link:hover{transform:translateY(-1px);border-color:var(--sx-line-strong)}.aq-link:hover::after{transform:translateX(3px)}}
 @media (min-width:700px){.aq-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (min-width:1180px){.aq-links{grid-template-columns:repeat(4,minmax(0,1fr))}.aq-link{grid-template-columns:minmax(0,1fr);align-content:start}.aq-link-icon{grid-column:1;grid-row:auto;margin-top:var(--sx-space-2)}}
+@media (min-width:1180px){.aq-links{grid-template-columns:repeat(4,minmax(0,1fr))}.aq-link{grid-template-columns:minmax(0,1fr);align-content:start}.aq-link::after{grid-column:1;grid-row:auto;margin-top:var(--sx-space-2)}}
 
 /* ------------------------------------------------------------------ Refonte : comparateur avant/après */
 .aq-ba{max-width:1000px;margin-inline:auto}
@@ -166,16 +162,14 @@
 .aq-old{position:absolute;inset:0;display:flex;flex-direction:column;background:#E9E3D3;color:#3A2E22;font-family:Georgia,'Times New Roman',serif}
 .aq-old-banner{display:grid;place-items:center;height:clamp(40px,7cqw,60px);background:linear-gradient(180deg,#7C8BA1,#4E5D74);border-bottom:3px double #C9B98F}
 .aq-old-logo{color:#F4EFE2;font-size:clamp(14px,2.6cqw,24px);font-style:italic;font-weight:700;text-shadow:2px 2px 0 #2A3344;letter-spacing:.04em}
-.aq-old-nav{display:flex;justify-content:center;gap:clamp(6px,1.4cqw,14px);padding:clamp(6px,1cqw,10px);background:#CFC6AE;border-bottom:1px solid #B7AB8B}
-.aq-old-nav i{display:block;width:clamp(28px,6cqw,62px);height:6px;border-radius:2px;background:#8D7F60}
+/* Menu et lignes de texte figurés par des dégradés répétés (un élément chacun : la page compte déjà
+   environ 1 000 éléments, et chaque recalcul complet du style au chargement coûte en proportion). */
+.aq-old-nav{height:calc(6px + 2 * clamp(6px,1cqw,10px));background:repeating-linear-gradient(90deg,transparent 0 clamp(6px,1.4cqw,14px),#8D7F60 0 calc(clamp(6px,1.4cqw,14px) + clamp(28px,6cqw,62px))) 50% 50%/min(100%,calc(5 * (clamp(28px,6cqw,62px) + clamp(6px,1.4cqw,14px)))) 6px no-repeat,#CFC6AE;border-bottom:1px solid #B7AB8B}
 .aq-old-body{position:relative;flex:1;display:grid;align-content:start;gap:clamp(8px,1.6cqw,16px);padding:clamp(10px,2.4cqw,26px) clamp(12px,4cqw,48px)}
 .aq-old-welcome{margin:0;text-align:center;color:#8E2416;font-size:clamp(16px,3cqw,28px);font-weight:700;font-style:italic;line-height:1.15}
 .aq-old-cols{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:clamp(8px,2cqw,22px);align-items:start}
-.aq-old-text{display:grid;gap:clamp(3px,.6cqw,6px)}
-.aq-old-text i{display:block;height:3px;border-radius:2px;background:#9C907A}
-.aq-old-text i:nth-child(3n){width:82%}
-.aq-old-text i:nth-child(4n){width:64%}
-.aq-old-text--wide{width:100%}
+.aq-old-text{height:calc(7 * (3px + clamp(3px,.6cqw,6px)));background:repeating-linear-gradient(180deg,#9C907A 0 3px,transparent 0 calc(3px + clamp(3px,.6cqw,6px)))}
+.aq-old-text--wide{height:calc(4 * (3px + clamp(3px,.6cqw,6px)));width:86%}
 .aq-old-img{aspect-ratio:4/3;background:linear-gradient(45deg,transparent 48.5%,#A99C80 49%,#A99C80 51%,transparent 51.5%),linear-gradient(-45deg,transparent 48.5%,#A99C80 49%,#A99C80 51%,transparent 51.5%),#D7CEB8;border:1px solid #A99C80}
 .aq-old-foot{position:relative;display:flex;align-items:center;gap:6px;padding:6px clamp(12px,4cqw,48px) 8px;background:#CFC6AE;border-top:1px solid #B7AB8B;color:#6E6250;font-size:12px}
 .aq-old-foot>i{display:block;width:clamp(40px,8cqw,80px);height:3px;background:#9C907A}
@@ -284,7 +278,8 @@
 .aq-change-card{position:relative;display:grid;align-content:start;gap:var(--sx-space-3);padding:var(--sx-space-6) var(--sx-space-5) var(--sx-space-5);border:1px solid var(--sx-line);border-radius:var(--sx-radius-lg);background:var(--sx-bg);overflow:hidden}
 .aq-change-card p{margin:0;color:var(--sx-text-muted)}
 .aq-change-title{margin:0;font-size:var(--sx-step-2)}
-.aq-change-idx{position:absolute;right:var(--sx-space-5);top:var(--sx-space-4);font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:2.5rem;line-height:1;color:var(--sx-surface-3)}
+/* Numéro décoratif en pseudo-élément (contenu non textuel, hors arbre d'accessibilité). */
+.aq-change-card::after{content:attr(data-idx);position:absolute;right:var(--sx-space-5);top:var(--sx-space-4);font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:2.5rem;line-height:1;color:var(--sx-surface-3)}
 /* Fenêtres 2 × 2 qui s'allument au survol (opacity d'un calque ambre) ; la première est toujours allumée. */
 .aq-change-win{display:grid;grid-template-columns:repeat(2,14px);gap:5px}
 .aq-change-win i{position:relative;display:block;width:14px;height:18px;border-radius:2px;border:1px solid var(--sx-line-strong);background:var(--sx-window-off)}
