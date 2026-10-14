@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { ButtonLink, PhoneLink } from "@/components/sx/actions";
 import { Eyebrow } from "@/components/sx/section";
 import { ProofList } from "@/components/sx/proof-list";
@@ -23,7 +22,7 @@ export function HomeHero() {
     <section className="sx-hero hm-hero" data-sx-hero="" aria-labelledby="hero-titre">
       <div className="sx-hero-backdrop" aria-hidden="true" data-sx-ambient="">
         <Glow size={760} top="-38%" right="-14%" />
-        <Suspense fallback={null}><Skyline signal /></Suspense>
+        <Skyline signal />
       </div>
       <div className="sx-container sx-hero-grid sx-hero-grid--aside">
         <div className="sx-hero-copy">
@@ -43,9 +42,9 @@ export function HomeHero() {
           <ProofList items={HERO.proofs} className="sx-hero-proofs hm-hero-proofs" />
         </div>
         <div className="hm-hero-aside">
-          <Suspense fallback={null}><ScenePlayer label={HERO.sceneLabel} description={HERO.sceneDescription} className="hm-scene">
+          <ScenePlayer label={HERO.sceneLabel} description={HERO.sceneDescription} className="hm-scene">
             <HeroScene />
-          </ScenePlayer></Suspense>
+          </ScenePlayer>
         </div>
       </div>
     </section>
