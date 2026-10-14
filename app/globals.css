@@ -365,7 +365,7 @@
 
   /* --- Cartouche d'identité --- */
   .sx-cartouche{font-size:var(--sx-step--1);color:var(--sx-text-muted);font-style:normal}
-  .sx-cartouche dl{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0}
+  .sx-cartouche dl{display:flex;flex-wrap:wrap;align-items:center;gap:6px 22px;margin:0}
   .sx-cartouche div{display:flex;gap:6px;align-items:baseline}
   .sx-cartouche dt{color:var(--sx-text-faint)}
   .sx-cartouche dd{margin:0;color:var(--sx-text)}
