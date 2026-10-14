@@ -10,7 +10,7 @@
 # Échoue aussi si la suite est tuée (délai de 600 s), si aucun test n'a tourné, ou si les comptes ne
 # tombent pas juste (pass = tests − fail, fail ≤ 2).
 set -uo pipefail
-REPO=$(realpath "${1:?dépôt}"); OUT=$(realpath -m "${2:?copie}"); DEPS=/home/user/smartfixx-vps-dev
+QA_DIR=$(cd "$(dirname "$0")" && pwd); REPO=$(realpath "${1:?dépôt}"); OUT=$(realpath -m "${2:?copie}"); DEPS=/home/user/smartfixx-vps-dev
 . "$(dirname "$0")/qa-guard.sh"
 qa_guard_out "$REPO" "$OUT" "$DEPS"
 cmp -s "$REPO/package-lock.json" "$DEPS/package-lock.json" || { echo "package-lock.json différent de $DEPS : npm ci nécessaire dans la copie." >&2; exit 3; }
@@ -34,4 +34,8 @@ if [ "$total" -lt 1 ]; then echo "ÉCHEC : aucun test exécuté"; exit 1; fi
 if [ "$fail" -gt 2 ] || [ "$pass" -ne $((total - fail)) ]; then echo "ÉCHEC : $pass réussis, $fail échoués sur $total (attendu : au plus 2 échecs connus, aucun test ignoré ni annulé)"; exit 1; fi
 unexpected=$(grep -E "^not ok |^    not ok " "$LOG.tests" | grep -vE "renders development preview metadata|emits the catalog's animation and scrolling utilities" || true)
 if [ -n "$unexpected" ]; then echo "ÉCHECS NOUVEAUX :"; echo "$unexpected"; echo "Détail : $LOG.tests"; exit 1; fi
+# Le test connu « emits the catalog's animation… » s'arrête à sa 3e assertion : les 5 suivantes
+# (scrollbar-gutter exceptée, connue) sont rejouées ici pour qu'une régression ne passe pas au vert.
+absent=$(node "$QA_DIR/css-check.mjs" "$OUT/dist" 2>&1 | grep '^ABSENT' | grep -v -F -e 'scrollbar-width:\s*none' -e 'scrollbar-gutter:\s*stable' || true)
+if [ -n "$absent" ]; then echo "ÉCHEC : assertions CSS masquées par l'échec connu : $absent"; exit 1; fi
 echo "Racine : $pass/$total, aucun échec hors des 2 échecs connus de la base."

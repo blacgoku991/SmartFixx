@@ -57,23 +57,27 @@ Les deux échecs connus de la racine, indépendants du design, sont les seuls to
 aussi si la suite est tuée, si aucun test ne tourne ou si les comptes ne tombent pas juste) :
 « renders development preview metadata » (Node refuse `cloudflare:workers`) et
 « emits the catalog's animation and scrolling utilities » (scrollbar-width:none et scrollbar-gutter:stable
-ne sont générés par aucun utilitaire défini).
+ne sont générés par aucun utilitaire défini). Ce second test s'arrête à sa 3e assertion : `root-tests.sh`
+rejoue donc `css-check.mjs` sur le `dist/` de la copie et échoue si une AUTRE assertion manque
+(scroll-fade-reveal-b, mask-image, tw-shimmer, prefers-reduced-motion:reduce…).
+`rebuild-vps.sh` efface la sortie si `prepare.py` échoue (mode strict) : une relance vers le même dossier
+réservé reste possible.
 
 ## Outils
 
 | Script | Rôle |
 | --- | --- |
-| `check_prepare.py <dépôt>` | Chaînes remplacées par `vps/prepare.py`, comptes exacts du layout, fuites `signout-with-chatgpt`. |
+| `check_prepare.py <dépôt>` | Chaînes remplacées par `vps/prepare.py`, comptes exacts du layout, `SITE_URL` Sites de lib/seo.ts (une fois), fuites `signout-with-chatgpt`, tout « chatgpt.site » restant après prepare.py dans app, components, lib (overlays appliqués) : mêmes contrôles stricts que prepare.py. |
 | `rebuild-vps.sh <dépôt> <sortie>` | prepare.py strict, node_modules liés si le lock est identique, `next build --webpack`. |
 | `test-vps-strict.sh <dépôt> <build> [standalone]` | Chaque `vps/tests/http*.test.mjs` (next start puis standalone), runtime, python ; code fiable. |
-| `root-tests.sh <dépôt> <copie>` | vinext build et `node --test tests/*.test.mjs` sur une copie ; 2 échecs connus tolérés. |
+| `root-tests.sh <dépôt> <copie>` | vinext build et `node --test tests/*.test.mjs` sur une copie ; 2 échecs connus tolérés ; assertions CSS masquées rejouées par css-check. |
 | `serve-vps.sh <build> <port>` | Base temporaire et compte fictif owner@example.test / test-local-owner-password-32-characters. |
 | `vps-crawl-check.py <base> [--og-404-ok] [--icons-404-ok]` | Toutes les URL du sitemap : 200, h1 unique, nonce, canonique unique et absolue, og:image, icônes déclarées en 200, JSON-LD analysable, aucun lien /admin public, thème, en-têtes. |
 | `seo-audit.py <base> [--chemins /a,/b]` | Titre ≤ 65, description 120 à 160, doublons, h1, canonique, og:image, types JSON-LD (LocalBusiness et FAQPage interdits), liens entrants hors pied. |
 | `lh.sh <base> <sortie> <chemins…>` | Lighthouse mobile, 3 passes (LH_RUNS), médiane. |
 | `shots.mjs <base> <sortie> [--admin] <chemins…>` | Captures 360 × 640, 390 × 844, 412 × 823, 1440 × 900, deux thèmes, consentement ouvert et fermé ; `--admin` se connecte au compte fictif. |
-| `layout-check.mjs <base> <chemins…> [--checks=…]` | Défilement horizontal (360 à 1600 px, dont 1024, 1180, 1280, 1366), en-tête sans débordement ni élément recouvert par le ThemeControl, contraste des boutons du menu mobile ouvert, interrupteur de thème (curseur visible dans la piste, 44 px), CTA du hero au-dessus du consentement, LCP = H1, h1 unique, 0 animation en mode réduit, opacité finale des `.sx-reveal`, décalage du H1 au chargement de la police. |
-| `motion-cost.mjs <base> <chemin> <sélecteur> [--budget=20] [--settle=2500] [--runs=3]` | CDP, CPU ralenti 4 fois, après le pic de démarrage commun (`--settle`) : LayoutCount stable à chaque passe et médiane ≤ 20 ms de tâches par seconde ; fenêtre bornée à la fin des animations finies (scène), fin de scène mesurée à part. |
+| `layout-check.mjs <base> <chemins…> [--checks=…]` | Défilement horizontal (360 à 1600 px, dont 1024, 1180, 1280, 1366), en-tête sans débordement ni élément recouvert par le ThemeControl, contraste des boutons du menu mobile ouvert, interrupteur de thème (curseur visible dans la piste, 44 px), CTA du hero au-dessus du consentement, LCP = H1, h1 unique, 0 animation en mode réduit, opacité finale des `.sx-reveal`, décalage du H1 au chargement de la police ; chaque `.sx-reveal` opaque dès que son haut atteint la mi-hauteur ; interrupteur de thème atteint en 12 tabulations au plus (`tab`) ; aucune icône lucide comprimée (`icons`) ; images `.sx-media` jamais agrandies (`media`, DPR 1 à 3). |
+| `motion-cost.mjs <base> <chemin> <sélecteur> [--budget=20] [--settle=2500] [--runs=3]` | CDP, CPU ralenti 4 fois, après le pic de démarrage commun (`--settle`) : LayoutCount stable à chaque passe et médiane ≤ 20 ms de tâches par seconde ; fenêtre bornée à la fin des animations finies (scène), fin de scène mesurée à part. `--scroll` : défilement complet à la molette, mode animé contre pause globale (LayoutCount ≤ +2, surcoût ≤ +40 % ou ≤ +60 ms/s). |
 | `contrast.py [globals.css]` | Paires de jetons --sx- dans les deux thèmes (texte ≥ 4,5, contrôles ≥ 3). |
 | `orphan-classes.mjs <dépôt> [--scope=admin] [--css=<build>/.next/static] [--save] [--base]` | Classes citées par les .tsx sans règle CSS. Porte 12 : `--scope=admin --css=<build>/.next/static --base=scripts/qa/baselines/orphans-admin-6d95248.json` (référence de la base, versionnée ; régénération décrite en tête du script). |
 | `css-check.mjs <dossier>` | Rejoue les 8 assertions CSS de `tests/ui-components.test.mjs` sur un dossier de build. |

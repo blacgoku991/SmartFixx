@@ -19,7 +19,9 @@ if ! cmp -s "$REPO/package-lock.json" "$DEPS/package-lock.json"; then
   echo "package-lock.json a changé : installation complète (npm ci) dans $OUT." >&2; NEED_CI=1
 fi
 rm -rf -- "$OUT"
-python3 "$REPO/vps/prepare.py" "$OUT" >/dev/null
+# Un échec strict de prepare.py laisse une sortie à moitié générée, sans marqueur : on l'efface (OUT a
+# passé qa_guard_out) pour qu'une relance vers le même dossier réservé reste possible.
+python3 "$REPO/vps/prepare.py" "$OUT" >/dev/null || { st=$?; rm -rf -- "$OUT"; exit $st; }
 qa_mark_out "$OUT"
 cd "$OUT"
 if [ "$NEED_CI" = 1 ]; then npm ci --no-audit --no-fund >/dev/null; else ln -s "$DEPS/node_modules" node_modules; fi

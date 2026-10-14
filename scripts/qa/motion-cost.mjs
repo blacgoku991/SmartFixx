@@ -17,10 +17,65 @@
 // MÉDIANE (une fenêtre courte de scène est bruitée), LayoutCount sur CHAQUE passe.
 // Code de sortie 1 si LayoutCount augmente pendant une fenêtre, si la médiane dépasse le budget, ou si
 // aucune animation n'a été trouvée.
+//
+// Mode défilement : node scripts/qa/motion-cost.mjs <base> <chemin> --scroll [--width=390] [--height=844]
+//   [--runs=3] [--max-overhead-pct=40] [--max-overhead-ms=60]
+// Les effets liés au défilement (révélations, mots cinétiques, parallaxe, ville qui s'enfonce) sont des
+// animations de timeline : la mesure immobile ne les voit pas. On parcourt toute la page à la molette
+// (120 px toutes les 50 ms) sous CPU × 4, en mode animé (après data-motion=on et --settle) puis avec le
+// contrôle global en pause (localStorage 'smartfixx-motion-paused' : ni timeline de défilement, ni ambiance
+// qui tourne), qui sert de référence du coût du défilement lui-même. La référence n'est PAS le mode réduit :
+// sous reducedMotion=reduce, Chromium ne lisse plus le défilement à la molette (moins d'images), ce qui
+// fausse la comparaison (mesuré : 275 ms/s en réduit, 354 ms/s en mode animé sans aucune animation). Échec si
+// LayoutCount (médiane) dépasse la référence de plus de 2, ou si le surcoût de TaskDuration (ms par seconde
+// de défilement, médianes) dépasse À LA FOIS --max-overhead-pct % et --max-overhead-ms ms/s.
 import { chromium } from "playwright";
 const argv = process.argv.slice(2);
 const [base, path, selector] = argv;
 const opt = (k, d) => Number((argv.find((a) => a.startsWith(`--${k}=`)) || "").split("=")[1] || d);
+if (argv.includes("--scroll")) {
+  if (!base || !path) { console.error("usage : motion-cost.mjs <base> <chemin> --scroll"); process.exit(2); }
+  const viewport = { width: opt("width", 390), height: opt("height", 844) };
+  async function scrollOnce(paused) {
+    const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || "/opt/pw-browsers/chromium" });
+    const ctx = await browser.newContext({ viewport, reducedMotion: "no-preference" });
+    await ctx.addInitScript((pz) => { try { localStorage.setItem("smartfixx-statistics-preference-v1", JSON.stringify({ value: "no", at: Date.now() })); if (pz) localStorage.setItem("smartfixx-motion-paused", "1"); else localStorage.removeItem("smartfixx-motion-paused"); } catch {} }, paused);
+    const page = await ctx.newPage();
+    const cdp = await ctx.newCDPSession(page);
+    await cdp.send("Performance.enable");
+    await page.goto(base.replace(/\/$/, "") + path, { waitUntil: "load", timeout: 60000 });
+    try { await page.waitForSelector('html[data-motion="on"]', { timeout: 6000 }); } catch { console.log("  ! html[data-motion=on] absent"); }
+    await page.waitForTimeout(opt("settle", 2500));
+    await page.mouse.move(viewport.width / 2, viewport.height / 2);
+    await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
+    const metrics = async () => Object.fromEntries((await cdp.send("Performance.getMetrics")).metrics.map((m) => [m.name, m.value]));
+    const a = await metrics(); const t0 = Date.now(); let steps = 0;
+    for (; steps < 400; steps++) {
+      await page.mouse.wheel(0, 120); await page.waitForTimeout(50);
+      if (steps % 5 === 4 && await page.evaluate(() => scrollY + innerHeight >= document.documentElement.scrollHeight - 2)) break;
+    }
+    await page.waitForTimeout(300);
+    const b = await metrics(); const elapsed = Date.now() - t0;
+    const anims = await page.evaluate(() => document.getAnimations().length);
+    await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
+    await browser.close();
+    const d = (k) => (b[k] || 0) - (a[k] || 0);
+    return { mode: paused ? "pause" : "animé", animations: anims, crans: steps + 1, dureeMs: elapsed, LayoutCount: d("LayoutCount"), RecalcStyleCount: d("RecalcStyleCount"), TaskDurationMs: +(d("TaskDuration") * 1000).toFixed(0), msParSeconde: +((d("TaskDuration") * 1000) / (elapsed / 1000)).toFixed(1) };
+  }
+  const med = (xs) => { const s = [...xs].sort((x, y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
+  const runs = Math.max(1, opt("runs", 3)); const anim = [], red = [];
+  for (let i = 0; i < runs; i++) { anim.push(await scrollOnce(false)); red.push(await scrollOnce(true)); }
+  const A = { ms: med(anim.map((r) => r.msParSeconde)), layout: med(anim.map((r) => r.LayoutCount)), recalc: med(anim.map((r) => r.RecalcStyleCount)) };
+  const R = { ms: med(red.map((r) => r.msParSeconde)), layout: med(red.map((r) => r.LayoutCount)), recalc: med(red.map((r) => r.RecalcStyleCount)) };
+  const over = +(A.ms - R.ms).toFixed(1), pct = R.ms > 0 ? +((100 * (A.ms - R.ms)) / R.ms).toFixed(0) : 0;
+  console.log(JSON.stringify({ chemin: path, viewport, passes: [...anim, ...red], anime: A, pause: R, surcoutMsParSeconde: over, surcoutPct: pct }, null, 1));
+  let bad = 0;
+  if (A.layout > R.layout + 2) { console.log(`✗ LayoutCount au défilement : ${A.layout} (animé) contre ${R.layout} (pause)`); bad++; } else console.log(`✓ LayoutCount au défilement stable : ${A.layout} (animé) / ${R.layout} (pause)`);
+  const maxPct = opt("max-overhead-pct", 40), maxMs = opt("max-overhead-ms", 60);
+  if (pct > maxPct && over > maxMs) { console.log(`✗ surcoût du défilement animé : +${over} ms/s (+${pct} %), plafonds +${maxMs} ms/s ou +${maxPct} %`); bad++; }
+  else console.log(`✓ surcoût du défilement animé : +${over} ms/s (+${pct} %) ; ${A.ms} contre ${R.ms} ms/s ; recalculs de style ${A.recalc} contre ${R.recalc}`);
+  process.exit(bad ? 1 : 0);
+}
 if (!base || !path || !selector) { console.error("usage : motion-cost.mjs <base> <chemin> <sélecteur>"); process.exit(2); }
 const windowMs = opt("window", 4000);
 const budget = opt("budget", 20);

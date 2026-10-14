@@ -56,5 +56,25 @@ for f,needle,want in [('app/layout.tsx','  return (',1),('app/layout.tsx','<scri
 for p in (root/'components').rglob('*.tsx'):
     if p.name!='admin-workspace.tsx' and 'signout-with-chatgpt' in p.read_text():
         bad+=1; print('FUITE  signout-with-chatgpt non traité par prepare.py :',p.relative_to(root))
+# SITE_URL de lib/seo.ts : prepare.py exige qu'il devienne https://smartfixx.fr (donc qu'il vaille
+# exactement l'URL Sites, remplacée par portable()).
+site_decl='export const SITE_URL="https://smartfixx-reach.wgg9cdxhs2.chatgpt.site"'
+n=(root/'lib/seo.ts').read_text().count(site_decl)
+if n!=1: bad+=1; print(f'COMPTE x{n} (attendu 1) lib/seo.ts :: {site_decl!r}')
+# Même règle que le contrôle de fuite final de prepare.py : après remplacement de l'URL Sites dans les
+# .ts/.tsx (portable()), plus aucun « chatgpt.site » dans app, components et lib (overlays VPS appliqués,
+# relay exclu, app/chatgpt-auth.ts supprimé par prepare.py).
+SITES='https://smartfixx-reach.wgg9cdxhs2.chatgpt.site'
+effective={}
+for base in [root,ov]:
+    for d in ['app','components','lib']:
+        if not (base/d).is_dir(): continue
+        for p in (base/d).rglob('*'):
+            if p.is_file() and 'relay' not in p.parts: effective[p.relative_to(base)]=p
+effective.pop(Path('app/chatgpt-auth.ts'),None)
+for r,p in sorted(effective.items()):
+    text=p.read_text(errors='ignore')
+    if p.suffix in ('.ts','.tsx'): text=text.replace(SITES,'')
+    if 'chatgpt.site' in text: bad+=1; print('FUITE  chatgpt.site restant après prepare.py :',r)
 print('écarts:',bad)
 sys.exit(1 if bad else 0)

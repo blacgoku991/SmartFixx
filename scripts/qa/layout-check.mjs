@@ -15,7 +15,14 @@
 //  lcp      : l'élément LCP (PerformanceObserver) est le H1 ou un de ses descendants (390 × 844, 1440 × 900) ;
 //  h1       : exactement un h1 ;
 //  reduced  : avec reducedMotion=reduce, document.getAnimations().length === 0 après 5 s ;
-//  reveal   : opacité calculée 1 sur le dernier .sx-reveal après défilement complet (390 × 844, 1440 × 900) ;
+//  reveal   : opacité calculée 1 sur le dernier .sx-reveal après défilement complet (390 × 844, 1440 × 900),
+//             et, pour CHAQUE .sx-reveal, opacité ≥ 0,99 quand son haut est placé à mi-hauteur d'écran (pas de
+//             bloc translucide en zone de lecture, même pour un bloc plus haut que l'écran) ;
+//  tab      : l'interrupteur de thème est atteint en 12 tabulations au plus (390 et 1440) ;
+//  icons    : aucune icône SVG visible comprimée (largeur rendue < 90 % de sa hauteur : icônes lucide carrées),
+//             390 et 1440, deux thèmes ;
+//  media    : chaque image de <picture class="sx-media"> : largeur du fichier choisi ≥ 0,8 × largeur rendue ×
+//             DPR (390 en DPR 3, 1440 en DPR 1 et 2) ;
 //  font     : police bloquée puis libérée, décalage vertical du H1 et de l'élément suivant ≤ 1 px
 //             (360, 390, 412, 1440).
 import { chromium } from "playwright";
@@ -23,7 +30,7 @@ const argv = process.argv.slice(2);
 const base = argv[0]?.replace(/\/$/, "");
 const paths = argv.slice(1).filter((a) => !a.startsWith("--"));
 const checksArg = argv.find((a) => a.startsWith("--checks="));
-const checks = new Set((checksArg ? checksArg.slice(9) : "overflow,header,menu,theme,cta,lcp,h1,reduced,reveal,font").split(","));
+const checks = new Set((checksArg ? checksArg.slice(9) : "overflow,header,menu,theme,cta,lcp,h1,reduced,reveal,font,tab,icons,media").split(","));
 const WIDTHS = [360, 390, 412, 768, 1024, 1180, 1280, 1366, 1440, 1600];
 // Contraste WCAG d'un élément : couleur du texte sur le premier fond opaque de ses ancêtres.
 const contrastOf = (sel) => [...document.querySelectorAll(sel)].filter((e) => e.getBoundingClientRect().height > 0 && getComputedStyle(e).visibility !== "hidden").map((e) => {
@@ -39,8 +46,8 @@ const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH 
 let failures = 0;
 const ok = (m) => console.log("  ✓", m);
 const ko = (m) => { failures++; console.log("  ✗", m); };
-async function open(viewport, path, { consent = "ouvert", reduced = false, theme = "dark", beforeGoto, waitUntil = "load" } = {}) {
-  const ctx = await browser.newContext({ viewport, reducedMotion: reduced ? "reduce" : "no-preference" });
+async function open(viewport, path, { consent = "ouvert", reduced = false, theme = "dark", beforeGoto, waitUntil = "load", dpr = 1 } = {}) {
+  const ctx = await browser.newContext({ viewport, deviceScaleFactor: dpr, reducedMotion: reduced ? "reduce" : "no-preference" });
   await ctx.addInitScript(([c, t]) => {
     try {
       localStorage.setItem("smartfixx-theme", t);
@@ -186,6 +193,7 @@ for (const path of paths) {
   if (checks.has("reveal")) {
     for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 }]) {
       const { ctx, page } = await open(viewport, path, { consent: "ferme" });
+      await page.waitForSelector("html[data-motion]", { timeout: 6000 }).catch(() => {});
       const h = await page.evaluate(() => document.documentElement.scrollHeight);
       for (let y = 0; y <= h; y += Math.floor(viewport.height * 0.6)) { await page.evaluate((v) => window.scrollTo(0, v), y); await page.waitForTimeout(120); }
       await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
@@ -194,6 +202,58 @@ for (const path of paths) {
       const label = `${viewport.width}×${viewport.height}`;
       if (!r.n) ok(`${label} : aucun .sx-reveal (rien à contrôler)`);
       else if (Number(r.op) === 1) ok(`${label} : dernier .sx-reveal opacité 1 (${r.n} éléments)`); else ko(`${label} : dernier .sx-reveal opacité ${r.op}`);
+      if (r.n) {
+        const motion = await page.evaluate(() => document.documentElement.dataset.motion || "absent");
+        const low = [];
+        for (let i = 0; i < r.n; i++) {
+          await page.evaluate(([k, vh]) => { const e = document.querySelectorAll(".sx-reveal")[k]; window.scrollTo(0, e.getBoundingClientRect().top + scrollY - vh / 2); }, [i, viewport.height]);
+          await page.waitForTimeout(200);
+          const m = await page.evaluate((k) => { const e = document.querySelectorAll(".sx-reveal")[k]; const b = e.getBoundingClientRect(); return { top: Math.round(b.top), h: Math.round(b.height), op: Number(getComputedStyle(e).opacity) }; }, i);
+          if (m.top <= viewport.height / 2 + 2 && m.op < 0.99) low.push(`n° ${i + 1} (hauteur ${m.h} px, haut à ${m.top} px) opacité ${m.op.toFixed(2)}`);
+        }
+        if (low.length) ko(`${label} : .sx-reveal translucide en zone de lecture : ${low.join(" ; ")}`); else ok(`${label} : chaque .sx-reveal opaque (≥ 0,99) dès que son haut atteint la mi-hauteur (data-motion=${motion})`);
+      }
+      await ctx.close();
+    }
+  }
+  if (checks.has("tab")) {
+    for (const width of [390, 1440]) {
+      const { ctx, page } = await open({ width, height: 900 }, path, { consent: "ferme" });
+      await page.waitForTimeout(300);
+      let reached = 0;
+      for (let i = 1; i <= 40; i++) {
+        await page.keyboard.press("Tab");
+        if (await page.evaluate(() => !!document.activeElement?.closest(".theme-control"))) { reached = i; break; }
+      }
+      if (reached && reached <= 12) ok(`${width}px : interrupteur de thème atteint à la tabulation ${reached}`); else ko(`${width}px : interrupteur de thème ${reached ? "atteint à la tabulation " + reached : "non atteint en 40 tabulations"} (plafond 12)`);
+      await ctx.close();
+    }
+  }
+  if (checks.has("icons")) {
+    for (const theme of ["dark", "light"]) for (const width of [390, 1440]) {
+      const { ctx, page } = await open({ width, height: 900 }, path, { consent: "ferme", theme });
+      await page.waitForTimeout(300);
+      const bad = await page.evaluate(() => [...document.querySelectorAll("svg")].filter((e) => { const b = e.getBoundingClientRect(); const cs = getComputedStyle(e); return b.height >= 8 && cs.visibility !== "hidden" && cs.display !== "none" && b.width < 0.9 * b.height && /lucide/.test(e.getAttribute("class") || ""); }).slice(0, 6).map((e) => `${(e.getAttribute("class") || "").split(" ").find((c) => c.startsWith("lucide-")) || "svg"} ${e.getBoundingClientRect().width.toFixed(1)}×${e.getBoundingClientRect().height.toFixed(1)}`));
+      if (bad.length) ko(`${width}px (${theme}) : icône(s) comprimée(s) : ${bad.join(", ")}`); else ok(`${width}px (${theme}) : aucune icône comprimée`);
+      await ctx.close();
+    }
+  }
+  if (checks.has("media")) {
+    for (const [viewport, dpr] of [[{ width: 390, height: 844 }, 3], [{ width: 1440, height: 900 }, 1], [{ width: 1440, height: 900 }, 2]]) {
+      const { ctx, page } = await open(viewport, path, { consent: "ferme", dpr });
+      const n = await page.locator("picture.sx-media img").count();
+      const label = `${viewport.width}px DPR ${dpr}`;
+      if (!n) { ok(`${label} : aucune image .sx-media`); await ctx.close(); continue; }
+      const bad = [];
+      for (let i = 0; i < n; i++) {
+        const img = page.locator("picture.sx-media img").nth(i);
+        await img.evaluate((e) => { e.loading = "eager"; e.scrollIntoView({ block: "center" }); });
+        await page.waitForFunction((k) => { const e = document.querySelectorAll("picture.sx-media img")[k]; return e.complete && e.currentSrc; }, i, { timeout: 10000 }).catch(() => {});
+        const m = await img.evaluate(async (e) => { const im = new Image(); im.src = e.currentSrc; try { await im.decode(); } catch {} return { file: e.currentSrc.split("/").pop(), fileW: im.naturalWidth, shown: e.getBoundingClientRect().width }; });
+        const need = 0.8 * m.shown * dpr;
+        if (m.fileW < need) bad.push(`${m.file} ${m.fileW} px pour ${Math.round(m.shown)} px CSS × ${dpr} (minimum ${Math.round(need)})`);
+      }
+      if (bad.length) ko(`${label} : image(s) agrandie(s) : ${bad.join(" ; ")}`); else ok(`${label} : ${n} image(s) .sx-media nette(s)`);
       await ctx.close();
     }
   }
