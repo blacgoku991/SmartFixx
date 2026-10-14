@@ -3,8 +3,7 @@
    liée qu'à ces deux routes ; dans la variante Sites (vinext) elle est concaténée partout, d'où le préfixe
    sur CHAQUE règle. Jamais de sélecteur global ni de redéclaration d'une classe sx- : une primitive du
    socle n'est retouchée que sous une classe aq- (portée locale), et seulement pour sa mise en page.
-   Mouvement (charte R1-R12 + amendement) : transform et opacity seulement (stroke-dashoffset limité au SVG
-   de la planche, 320 × 470) ; scènes sous .sx-scene.is-playing (ScenePlayer : load + idle, une fois) ; aucune
+   Mouvement (charte R1-R12 + amendement) : transform et opacity seulement ; scènes sous .sx-scene.is-playing (ScenePlayer : load + idle, une fois) ; aucune
    var() dans les images clés ; rien d'animé dans le premier écran ; mode réduit = aucune animation. */
 
 /* ------------------------------------------------------------------ Hero d'acquisition */
@@ -66,7 +65,6 @@
 .aq-an-scene{position:relative}
 .aq-an{display:block;width:100%;max-width:320px;height:auto;margin-inline:auto;overflow:visible}
 .aq-an-phone{fill:none;stroke:var(--sx-line-strong);stroke-width:2}
-.aq-an-trace{stroke-dasharray:1;stroke-dashoffset:0}
 .aq-an-screen{fill:var(--sx-surface)}
 .aq-an-notch,.aq-an-thumb{fill:var(--sx-surface-3)}
 .aq-an-brand{fill:var(--sx-accent-strong)}
@@ -80,11 +78,15 @@
 .aq-an-t--s{fill:var(--sx-text-muted);font-size:12px;font-weight:600}
 .aq-an-t--h{font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:25px;letter-spacing:-.01em}
 .aq-an-t--cta{fill:var(--sx-on-cta);font-size:12.5px;font-weight:700}
-.aq-an-zone{fill:color-mix(in srgb,var(--sx-signal) 7%,transparent);stroke:var(--sx-signal);stroke-width:1.5;stroke-dasharray:4 4}
-.aq-an-lead{fill:none;stroke:var(--sx-signal);stroke-width:1.5}
-.aq-an-mark{transform-box:fill-box;transform-origin:center}
-.aq-an-mark circle{fill:var(--sx-signal)}
-.aq-an-mark text{fill:var(--sx-on-cta);font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:15px}
+/* Couche de repères en HTML (composités), positionnée en pourcentages du viewBox. */
+.aq-an-wrap{position:relative;width:min(100%,320px);margin-inline:auto;aspect-ratio:320/470}
+.aq-an-wrap>.aq-an{width:100%;max-width:none;height:100%}
+.aq-an-zone,.aq-an-lead,.aq-an-mark,.aq-an-scan{position:absolute;display:block;pointer-events:none}
+.aq-an-zone{border:1.5px dashed var(--sx-signal);border-radius:10px;background:color-mix(in srgb,var(--sx-signal) 7%,transparent)}
+.aq-an-lead{height:2px;margin-top:-1px;background:var(--sx-signal);transform-origin:left center}
+.aq-an-mark{display:grid;place-items:center;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;background:var(--sx-signal);color:var(--sx-on-cta);font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:15px;line-height:1;box-shadow:0 0 0 5px color-mix(in srgb,var(--sx-signal) 18%,transparent)}
+/* Balayage de l'écran (scène seulement ; invisible à l'état final). */
+.aq-an-scan{left:5.625%;width:70%;top:3.4%;height:12%;border-radius:18px;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--sx-signal) 22%,transparent) 70%,color-mix(in srgb,var(--sx-signal) 55%,transparent));opacity:0}
 .aq-an-scene .sx-scene-bar{padding-top:var(--sx-space-2)}
 .aq-marks{display:grid;gap:var(--sx-space-3);margin:0;padding:0;list-style:none;counter-reset:none}
 .aq-mark{display:grid;grid-template-columns:40px minmax(0,1fr);gap:var(--sx-space-4);align-items:start;padding:var(--sx-space-4) var(--sx-space-4) var(--sx-space-4) var(--sx-space-3);border:1px solid var(--sx-edge);border-radius:var(--sx-radius-lg);background:color-mix(in srgb,var(--sx-surface) 82%,transparent)}
@@ -292,28 +294,47 @@
 @media (min-width:900px){.aq-change{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
 /* ------------------------------------------------------------------ Scène de la planche annotée */
-@keyframes aq-trace{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
-@keyframes aq-fade{from{opacity:0}to{opacity:1}}
-@keyframes aq-pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
-@keyframes aq-light{from{opacity:.35;transform:translateX(-6px)}to{opacity:1;transform:none}}
+/* Toutes les animations de la scène DÉMARRENT ENSEMBLE (aucun délai) : le décalage des repères est écrit
+   dans les images clés. Mesuré (CPU × 4) : avec des délais échelonnés, chaque départ différé réveillait le
+   fil principal (environ 140 ms/s de tâches) ; un seul départ commun reste sous le plafond. */
+@keyframes aq-wake{0%{opacity:.25}21.4%,100%{opacity:1}}
+@keyframes aq-scan{0%{opacity:0;transform:translateY(0)}4%{opacity:1}26.2%,100%{opacity:0;transform:translateY(680%)}}
+@keyframes aq-z1{0%,21.4%{opacity:0}32.1%,100%{opacity:1}}
+@keyframes aq-l1{0%,21.4%{transform:scaleX(0)}32.1%,100%{transform:scaleX(1)}}
+@keyframes aq-m1{0%,29.8%{opacity:0;transform:scale(.4)}39.3%,100%{opacity:1;transform:scale(1)}}
+@keyframes aq-i1{0%,29.8%{opacity:.35;transform:translateX(-6px)}41.7%,100%{opacity:1;transform:none}}
+@keyframes aq-z2{0%,40.5%{opacity:0}51.2%,100%{opacity:1}}
+@keyframes aq-l2{0%,40.5%{transform:scaleX(0)}51.2%,100%{transform:scaleX(1)}}
+@keyframes aq-m2{0%,48.8%{opacity:0;transform:scale(.4)}58.3%,100%{opacity:1;transform:scale(1)}}
+@keyframes aq-i2{0%,48.8%{opacity:.35;transform:translateX(-6px)}60.7%,100%{opacity:1;transform:none}}
+@keyframes aq-z3{0%,59.5%{opacity:0}70.2%,100%{opacity:1}}
+@keyframes aq-l3{0%,59.5%{transform:scaleX(0)}70.2%,100%{transform:scaleX(1)}}
+@keyframes aq-m3{0%,67.9%{opacity:0;transform:scale(.4)}77.4%,100%{opacity:1;transform:scale(1)}}
+@keyframes aq-i3{0%,67.9%{opacity:.35;transform:translateX(-6px)}79.8%,100%{opacity:1;transform:none}}
+@keyframes aq-z4{0%,78.6%{opacity:0}89.3%,100%{opacity:1}}
+@keyframes aq-l4{0%,78.6%{transform:scaleX(0)}89.3%,100%{transform:scaleX(1)}}
+@keyframes aq-m4{0%,86.9%{opacity:0;transform:scale(.4)}96.4%,100%{opacity:1;transform:scale(1)}}
+@keyframes aq-i4{0%,86.9%{opacity:.35;transform:translateX(-6px)}98.8%,100%{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){
-  .sx-scene.is-playing .aq-an-phone{animation:aq-trace 1.1s cubic-bezier(.65,0,.35,1) both}
-  .sx-scene.is-playing .aq-an-zone{animation:aq-fade .45s ease-out both}
-  .sx-scene.is-playing .aq-an-lead{animation:aq-trace .5s cubic-bezier(.65,0,.35,1) both}
-  .sx-scene.is-playing .aq-an-mark{animation:aq-pop .4s cubic-bezier(.2,.7,.2,1) both}
-  .sx-scene.is-playing .aq-an-k1 .aq-an-zone,.sx-scene.is-playing .aq-an-k1 .aq-an-lead{animation-delay:.8s}
-  .sx-scene.is-playing .aq-an-k2 .aq-an-zone,.sx-scene.is-playing .aq-an-k2 .aq-an-lead{animation-delay:1.6s}
-  .sx-scene.is-playing .aq-an-k3 .aq-an-zone,.sx-scene.is-playing .aq-an-k3 .aq-an-lead{animation-delay:2.4s}
-  .sx-scene.is-playing .aq-an-k4 .aq-an-zone,.sx-scene.is-playing .aq-an-k4 .aq-an-lead{animation-delay:3.2s}
-  .sx-scene.is-playing .aq-an-k1 .aq-an-mark{animation-delay:1.15s}
-  .sx-scene.is-playing .aq-an-k2 .aq-an-mark{animation-delay:1.95s}
-  .sx-scene.is-playing .aq-an-k3 .aq-an-mark{animation-delay:2.75s}
-  .sx-scene.is-playing .aq-an-k4 .aq-an-mark{animation-delay:3.55s}
-  /* L'annotation s'allume en même temps que son repère (:has() à argument de classe). */
-  .aq-board:has(.sx-scene.is-playing) .aq-mark{animation:aq-light .5s cubic-bezier(.2,.7,.2,1) both}
-  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(1){animation-delay:1.15s}
-  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(2){animation-delay:1.95s}
-  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(3){animation-delay:2.75s}
-  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(4){animation-delay:3.55s}
+  .sx-scene.is-playing .aq-an-wrap{animation:aq-wake 4.2s ease-out both}
+  .sx-scene.is-playing .aq-an-scan{animation:aq-scan 4.2s ease-in-out both}
+  .sx-scene.is-playing .aq-an-zone,.sx-scene.is-playing .aq-an-lead,.sx-scene.is-playing .aq-an-mark,.aq-board:has(.sx-scene.is-playing) .aq-mark{animation-duration:4.2s;animation-timing-function:ease-out;animation-fill-mode:both}
+  .sx-scene.is-playing .aq-an-k1 .aq-an-zone{animation-name:aq-z1}
+  .sx-scene.is-playing .aq-an-k1 .aq-an-lead{animation-name:aq-l1}
+  .sx-scene.is-playing .aq-an-k1 .aq-an-mark{animation-name:aq-m1}
+  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(1){animation-name:aq-i1}
+  .sx-scene.is-playing .aq-an-k2 .aq-an-zone{animation-name:aq-z2}
+  .sx-scene.is-playing .aq-an-k2 .aq-an-lead{animation-name:aq-l2}
+  .sx-scene.is-playing .aq-an-k2 .aq-an-mark{animation-name:aq-m2}
+  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(2){animation-name:aq-i2}
+  .sx-scene.is-playing .aq-an-k3 .aq-an-zone{animation-name:aq-z3}
+  .sx-scene.is-playing .aq-an-k3 .aq-an-lead{animation-name:aq-l3}
+  .sx-scene.is-playing .aq-an-k3 .aq-an-mark{animation-name:aq-m3}
+  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(3){animation-name:aq-i3}
+  .sx-scene.is-playing .aq-an-k4 .aq-an-zone{animation-name:aq-z4}
+  .sx-scene.is-playing .aq-an-k4 .aq-an-lead{animation-name:aq-l4}
+  .sx-scene.is-playing .aq-an-k4 .aq-an-mark{animation-name:aq-m4}
+  .aq-board:has(.sx-scene.is-playing) .aq-mark:nth-child(4){animation-name:aq-i4}
+  /* L'annotation s'allume avec son repère (:has() à argument de classe) ; elle se fige avec la scène. */
   .aq-board:has(.sx-scene.is-paused) .aq-mark{animation-play-state:paused}
 }

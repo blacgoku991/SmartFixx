@@ -1,14 +1,15 @@
 import { ScenePlayer } from "@/components/sx/scene-player";
 import type { Item } from "@/lib/content/acquisition";
 /* Planche annotée « Anatomie d'un site qui fait appeler » (serveur ; ScenePlayer est le seul client).
-   - Un téléphone en SVG (320 × 470, sous la limite de 400 × 500 de la charte R2 pour stroke-dashoffset),
-     rendu dans son état final par le serveur : contour, zones repérées en pointillés ambre, repères ①–④
-     et lignes de rappel.
-   - Scène unique (ScenePlayer, 4,2 s, une fois, puis état final) : le contour se trace, puis chaque zone
-     s'allume avec sa ligne de rappel tracée et son repère, et l'annotation correspondante de la liste
-     passe de l'ombre à la lumière. stroke-dashoffset (pathLength = 1) et opacity/transform seulement,
-     aucune var() dans les images clés, aucun effet de mise en page.
-   - Le SVG est un décor aria-hidden (dans la scène) ; la liste ordonnée porte le contenu. Étiquette
+   - Un téléphone en SVG STATIQUE (320 × 470) : contour et contenu de la maquette.
+   - Les repères sont une couche HTML posée sur le SVG, en pourcentages du viewBox : zone en pointillés ambre,
+     ligne de rappel, pastille numérotée ①–④. Rendus dans leur état final par le serveur.
+   - Scène unique (ScenePlayer, une fois, puis état final) : le téléphone s'éclaire et un balayage descend
+     l'écran, puis chaque zone s'allume avec sa ligne de rappel (scaleX) et sa pastille (scale), et
+     l'annotation correspondante de la liste passe de l'ombre à la lumière. Transform et opacity seulement,
+     sur des éléments HTML (composités). Mesuré : un tracé stroke-dashoffset sur le SVG provoquait une mise
+     en page par image (LayoutCount 40 sur la fenêtre de la scène, motion-cost) ; il est donc abandonné.
+   - La maquette est un décor aria-hidden (dans la scène) ; la liste ordonnée porte le contenu. Étiquette
      « Démonstration : maquette fictive ». Aucun texte sous 12 px à partir de 360 px de large. */
 const PHONE = "M44 6H216A36 36 0 0 1 252 42V428A36 36 0 0 1 216 464H44A36 36 0 0 1 8 428V42A36 36 0 0 1 44 6Z";
 const ZONES = [
@@ -17,13 +18,15 @@ const ZONES = [
   { x: 26, y: 212, w: 212, h: 68, cy: 246 },
   { x: 26, y: 290, w: 212, h: 156, cy: 368 },
 ];
+const pc = (v: number, total: number) => `${((v / total) * 100).toFixed(3)}%`;
 export function Anatomy({ marks, caption, description }: { marks: Item[]; caption: string; description: string }) {
   return (
     <div className="aq-board">
       <div className="aq-board-stage">
-        <ScenePlayer label={caption} description={description} duration={4200} className="aq-an-scene">
+        <ScenePlayer label={caption} description={description} duration={4400} className="aq-an-scene">
+          <div className="aq-an-wrap">
           <svg className="aq-an" viewBox="0 0 320 470" width="320" height="470" focusable="false">
-            <path className="aq-an-phone aq-an-trace" d={PHONE} pathLength={1} />
+            <path className="aq-an-phone" d={PHONE} />
             <rect className="aq-an-screen" x="18" y="16" width="224" height="438" rx="28" />
             <rect className="aq-an-notch" x="105" y="24" width="50" height="8" rx="4" />
             {/* En-tête : marque et bouton d'appel */}
@@ -54,18 +57,16 @@ export function Anatomy({ marks, caption, description }: { marks: Item[]; captio
             <rect className="aq-an-field" x="32" y="370" width="196" height="28" rx="6" />
             <rect className="aq-an-cta" x="32" y="408" width="196" height="30" rx="8" />
             <text className="aq-an-t aq-an-t--cta" x="130" y="428" textAnchor="middle">Demander un devis</text>
-            {/* Repères ①–④ : zone en pointillés, ligne de rappel tracée, pastille numérotée */}
-            {ZONES.map((z, i) => (
-              <g className={`aq-an-k aq-an-k${i + 1}`} key={i}>
-                <rect className="aq-an-zone" x={z.x} y={z.y} width={z.w} height={z.h} rx="10" />
-                <path className="aq-an-lead aq-an-trace" d={`M${z.x + z.w} ${z.cy}H277`} pathLength={1} />
-                <g className="aq-an-mark">
-                  <circle cx="292" cy={z.cy} r="14" />
-                  <text x="292" y={z.cy + 5} textAnchor="middle">{i + 1}</text>
-                </g>
-              </g>
-            ))}
           </svg>
+          <span className="aq-an-scan" />
+          {ZONES.map((z, i) => (
+            <span className={`aq-an-k aq-an-k${i + 1}`} key={i}>
+              <span className="aq-an-zone" style={{ left: pc(z.x, 320), top: pc(z.y, 470), width: pc(z.w, 320), height: pc(z.h, 470) }} />
+              <span className="aq-an-lead" style={{ left: pc(z.x + z.w, 320), top: pc(z.cy, 470), width: pc(277 - z.x - z.w, 320) }} />
+              <span className="aq-an-mark" style={{ left: pc(292, 320), top: pc(z.cy, 470) }}>{i + 1}</span>
+            </span>
+          ))}
+          </div>
         </ScenePlayer>
       </div>
       <ol className="aq-marks">

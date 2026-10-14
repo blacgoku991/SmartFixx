@@ -154,7 +154,7 @@ export const refonte: AcquisitionContent & {
     titleKeyword: "moderniser",
     titleAfter: " votre présence",
     tagline: "sans perdre ce qui fonctionne déjà",
-    lead: "Modernisez votre site internet et valorisez vos services, sur un site adapté au mobile. Présentez-moi votre projet : je vous réponds moi-même.",
+    lead: "Modernisez votre site internet et valorisez vos services, sur un site adapté au mobile. Présentez-moi votre projet.",
     cta: "Présenter mon projet",
     proofs: ["État des lieux avant toute maquette", "Redirections préparées pour vos pages utiles", "Un seul interlocuteur : moi, Mohamed"],
   },

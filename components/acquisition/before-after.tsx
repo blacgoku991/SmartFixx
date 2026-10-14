@@ -10,7 +10,8 @@ import { ScenePlayer } from "@/components/sx/scene-player";
    - Rendu : deux calques en translateX contre-translatés (la fenêtre de la nouvelle version avance de
      N - 100 %, son contenu recule d'autant) et une poignée en translateX : transform seulement, jamais
      clip-path animé ni @property (989 ms mesurés contre 37-40 ms).
-   - Coup de pouce : une seule fois, de 34 % à 52 % puis retour, 1,4 s, déclenché par ScenePlayer (après
+   - Coup de pouce : une seule fois, de 34 % à 52 % puis retour, 1,4 s, déclenché par ScenePlayer (scène de
+     1,8 s : la fin de scène, qui réécrit le libellé du bouton, tombe après l’animation ; après
      load + idle, visible à 40 %, jamais en mouvement réduit ni pendant la pause globale). Les images clés
      n'emploient aucune var(). Dès que le visiteur touche au curseur, le coup de pouce est retiré (classe
      is-touched) : l'animation ne masque jamais la valeur choisie. « Rejouer » remet la séparation à 34 %.
@@ -32,7 +33,7 @@ export function BeforeAfter({ caption, description }: { caption: string; descrip
         <span className="aq-ba-legend" aria-hidden="true"><span>← Après</span><span>Avant →</span></span>
       </div>
       <div className="aq-ba-box">
-        <ScenePlayer label={caption} description={description} duration={1400} className="aq-ba-scene">
+        <ScenePlayer label={caption} description={description} duration={1800} className="aq-ba-scene">
           <div className="aq-ba-frame">
             <OldSite />
             <div className="aq-ba-clip" style={{ transform: `translateX(${value - 100}%)` }}>
