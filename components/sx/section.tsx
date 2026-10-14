@@ -9,10 +9,11 @@ type SectionProps = {
   /* Décor d'ambiance (Glow, Skyline…) rendu derrière le contenu, aria-hidden. */
   ambient?: ReactNode;
 };
+/* tone="night" : section nocturne dans les DEUX thèmes (portée [data-sx-tone=night], jetons sombres). */
 export function Section({ tone = "bg", id, labelledBy, className, children, ambient }: SectionProps) {
   const cls = ["sx-section", tone === "surface" ? "sx-section--surface" : tone === "night" ? "sx-section--night" : "", className].filter(Boolean).join(" ");
   return (
-    <section id={id} aria-labelledby={labelledBy} className={cls}>
+    <section id={id} aria-labelledby={labelledBy} className={cls} data-sx-tone={tone === "night" ? "night" : undefined}>
       {ambient ? <div className="sx-ambient" aria-hidden="true" data-sx-ambient="">{ambient}</div> : null}
       {children}
     </section>
@@ -22,9 +23,10 @@ export function Container({ size = "default", className, children, as: Tag = "di
   const cls = ["sx-container", size === "narrow" ? "sx-container--narrow" : size === "wide" ? "sx-container--wide" : "", className].filter(Boolean).join(" ");
   return <Tag className={cls}>{children}</Tag>;
 }
-/* Surtitre ; dot = point ambre (signal de conversion). */
+/* Surtitre ; dot = point ambre (signal de conversion). Le texte est UN seul élément flex (span) : un contenu
+   mixte (texte + <Place>) s'écoule en ligne au lieu de former des colonnes. */
 export function Eyebrow({ dot = false, children, className }: { dot?: boolean; children: ReactNode; className?: string }) {
-  return <p className={["sx-eyebrow", className].filter(Boolean).join(" ")}>{dot ? <span className="sx-dot" aria-hidden="true" /> : null}{children}</p>;
+  return <p className={["sx-eyebrow", className].filter(Boolean).join(" ")}>{dot ? <span className="sx-dot" aria-hidden="true" /> : null}<span>{children}</span></p>;
 }
 /* En-tête de section : surtitre facultatif, H2 et texte d'introduction. */
 export function SectionHead({ eyebrow, title, text, id, level = 2 }: { eyebrow?: ReactNode; title: ReactNode; text?: ReactNode; id?: string; level?: 2 | 3 }) {

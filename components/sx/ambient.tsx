@@ -12,17 +12,23 @@ export function Glow({ tone = "blue", size = 620, top, left, right, bottom, alt 
    - un ciel (--sx-horizon) ;
    - un plan lointain (façades --sx-facade-far, petites fenêtres) et un plan proche (--sx-facade-near,
      liseré de toit --sx-rim), avec deux gabarits de fenêtres (A : 9 × 12, B : 8 × 14 en étages hauts) ;
+   - une silhouette locale : immeubles de rapport à toit mansardé, souches de cheminée, portes-fenêtres 1:2
+     et balcons filants (2e et 5e étages), pavillons bas à deux pans, entre les tours (clip-path statique) ;
    - des étages entiers allumés en bandes et des fenêtres allumées fixes (environ 10 % de lumière) ;
    - quelques fenêtres qui s'allument et s'éteignent (ambiance, data-motion=on, suspendues hors écran) ;
-   - signal : la fenêtre ambre « la demande qui s'allume » (voir .sx-win--signal et data-sx-signal-on).
+   - signal : la fenêtre ambre « la demande qui s'allume », 16 × 22 px, halo qui respire (voir .sx-win--signal
+     et data-sx-signal-on).
    Sous data-motion=on, les deux plans s'enfoncent à des vitesses différentes quand la section sort de
    l'écran (parallaxe au défilement, transform seulement). depth={false} : un seul plan, plus léger. */
 const HEIGHTS = [58, 82, 46, 70, 94, 52, 76, 64, 88, 40, 72, 60, 84, 50, 68];
 const WIDTHS = [1.2, 0.8, 1.4, 1, 0.9, 1.3, 1.1, 0.7, 1.2, 1, 0.9, 1.3, 0.8, 1.1, 1];
 type Win = { c: number; r: number; d?: string; dur?: number };
-type Building = { h: number; w: number; b: boolean; twinkle: Win[]; on: Win[]; floor?: number };
-function plan(count: number, seed: number, near: boolean): Building[] {
+type Kind = "tower" | "mansard" | "pavillon";
+type Building = { h: number; w: number; b: boolean; kind: Kind; twinkle: Win[]; on: Win[]; floor?: number };
+function plan(count: number, seed: number, near: boolean, signalAt?: number): Building[] {
   return Array.from({ length: count }, (_, i) => {
+    // Silhouette locale, déterministe : la fenêtre signal reste sur une tour (son halo déborde du bâtiment).
+    const kind: Kind = i === signalAt ? "tower" : near && (i + seed) % 6 === 4 ? "pavillon" : (i + seed) % (near ? 4 : 3) === 1 ? "mansard" : "tower";
     const k = (i * (near ? 1 : 7) + seed * 5 + (near ? 0 : 3)) % HEIGHTS.length;
     const v = (i * 7 + seed) % 5;
     // Délais NÉGATIFS (départ en cours de cycle) et cycles longs : un délai positif réveille le fil
@@ -30,14 +36,15 @@ function plan(count: number, seed: number, near: boolean): Building[] {
     const twinkle: Win[] = near && i % 2 === seed % 2 ? [{ c: v % 4, r: (v * 2) % 3, d: (-((i * 3.7 + seed * 1.3) % 17) - 1).toFixed(1), dur: 22 + ((i * 3 + seed) % 13) }] : [];
     const on: Win[] = [{ c: (v + 2) % 4, r: (i + seed) % 4 }];
     if ((i + seed) % 3 === 0) on.push({ c: (v + 1) % 3, r: ((i + seed) % 3) + 1 });
-    return { h: near ? HEIGHTS[k] : Math.min(98, HEIGHTS[k] + 6), w: near ? WIDTHS[k] : WIDTHS[k] * 0.8, b: (i + seed) % 3 === 1, twinkle, on, floor: (i * 5 + seed) % 4 === 2 ? ((i + seed) % 3) + 1 : undefined };
+    if (kind === "pavillon") return { h: 24 + ((i + seed) % 3) * 4, w: 0.9, b: false, kind, twinkle: [], on: [{ c: v % 2, r: 0 }] };
+    return { h: near ? HEIGHTS[k] : Math.min(98, HEIGHTS[k] + 6), w: near ? WIDTHS[k] : WIDTHS[k] * 0.8, b: kind === "tower" && (i + seed) % 3 === 1, kind, twinkle, on, floor: kind === "tower" && (i * 5 + seed) % 4 === 2 ? ((i + seed) % 3) + 1 : undefined };
   });
 }
 function Plane({ items, near, signalAt }: { items: Building[]; near: boolean; signalAt?: number }) {
   return (
     <div className={`sx-skyline-plane sx-skyline-plane--${near ? "near" : "far"}`}>
       {items.map((b, i) => (
-        <span className={b.b ? "sx-skyline-b sx-skyline-b--b" : "sx-skyline-b"} key={i} style={{ "--h": `${b.h}%`, "--w": b.w } as CSSProperties}>
+        <span className={["sx-skyline-b", b.b ? "sx-skyline-b--b" : "", b.kind !== "tower" ? `sx-skyline-b--${b.kind}` : ""].filter(Boolean).join(" ")} key={i} style={{ "--h": `${b.h}%`, "--w": b.w } as CSSProperties}>
           {b.floor !== undefined ? <i className="sx-floor" style={{ "--r": b.floor } as CSSProperties} /> : null}
           {b.on.map((w, j) => <i key={`o${j}`} className="sx-win is-on" style={{ "--c": w.c, "--r": w.r } as CSSProperties} />)}
           {b.twinkle.map((w, j) => <i key={`t${j}`} className="sx-win" style={{ "--c": w.c, "--r": w.r, "--sx-delay": `${w.d}s`, "--sx-twinkle-dur": `${w.dur}s` } as CSSProperties} />)}
@@ -52,7 +59,7 @@ export function Skyline({ seed = 0, buildings = 11, signal = false, depth = true
   return (
     <div className={["sx-skyline", className].filter(Boolean).join(" ")} style={height ? ({ "--sx-skyline-h": height } as CSSProperties) : undefined}>
       {depth ? <Plane items={plan(Math.round(buildings * 1.5), seed + 2, false)} near={false} /> : null}
-      <Plane items={plan(buildings, seed, true)} near signalAt={signalAt} />
+      <Plane items={plan(buildings, seed, true, signalAt)} near signalAt={signalAt} />
     </div>
   );
 }

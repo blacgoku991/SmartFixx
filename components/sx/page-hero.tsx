@@ -23,10 +23,13 @@ export type PageHeroProps = {
   backdrop?: ReactNode;
   id?: string;
   className?: string;
+  /* "auto" (défaut) : suit le thème — nuit en sombre, aube (ciel pêche, façades encrées) en clair.
+     "night" : reste nocturne dans les deux thèmes (portée [data-sx-tone=night]). */
+  tone?: "auto" | "night";
 };
-export function PageHero({ eyebrow, eyebrowDot = true, title, tagline, lead, proofs, actions, aside, breadcrumbs, backdrop, id = "hero-titre", className }: PageHeroProps) {
+export function PageHero({ eyebrow, eyebrowDot = true, title, tagline, lead, proofs, actions, aside, breadcrumbs, backdrop, id = "hero-titre", className, tone = "auto" }: PageHeroProps) {
   return (
-    <section className={["sx-hero", className].filter(Boolean).join(" ")} data-sx-hero="" aria-labelledby={id}>
+    <section className={["sx-hero", className].filter(Boolean).join(" ")} data-sx-hero="" data-sx-tone={tone === "night" ? "night" : undefined} aria-labelledby={id}>
       {backdrop ? <div className="sx-hero-backdrop" aria-hidden="true" data-sx-ambient="">{backdrop}</div> : null}
       <div className={["sx-container", "sx-hero-grid", aside ? "sx-hero-grid--aside" : ""].filter(Boolean).join(" ")}>
         <div className="sx-hero-copy">

@@ -8,6 +8,7 @@ import { Pause, Play } from "lucide-react";
    - Pose html[data-motion-paused] selon le choix mémorisé (localStorage 'smartfixx-motion-paused').
    - Observe chaque [data-sx-ambient] : data-sx-visible quand il est à l'écran (sinon ses animations sont
      suspendues par le CSS), y compris pour les éléments ajoutés après navigation.
+   - Pose html[data-sx-scrolling] pendant un défilement : l'ambiance temporelle s'y suspend.
    Aucun script en ligne : ce code est bundlé (nonce assuré sur le VPS). */
 const PAUSE_KEY = "smartfixx-motion-paused";
 type Nav = Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
@@ -43,7 +44,18 @@ export function MotionGate() {
     let pending = 0;
     const mo = new MutationObserver(() => { if (!pending) pending = requestAnimationFrame(() => { pending = 0; scan(); }); });
     mo.observe(document.body, { childList: true, subtree: true });
-    return () => { cancelled = true; mq.removeEventListener("change", onChange); io.disconnect(); mo.disconnect(); window.removeEventListener("load", idle); };
+    // Pendant un défilement, l'ambiance temporelle est suspendue (html[data-sx-scrolling], retiré 200 ms
+    // après le dernier événement) : chaque animation qui tourne pendant le défilement coûte un recalcul de
+    // style par image (mesuré : +60 ms/s sous CPU × 4 à 1440 px). Les animations liées au défilement
+    // (révélations, mots, parallaxe, ville qui s'enfonce) ne sont pas concernées.
+    let scrollTimer = 0;
+    const onScroll = () => {
+      if (!html.hasAttribute("data-sx-scrolling")) html.setAttribute("data-sx-scrolling", "");
+      window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(() => html.removeAttribute("data-sx-scrolling"), 200);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { cancelled = true; mq.removeEventListener("change", onChange); io.disconnect(); mo.disconnect(); window.removeEventListener("load", idle); window.removeEventListener("scroll", onScroll); window.clearTimeout(scrollTimer); html.removeAttribute("data-sx-scrolling"); };
   }, []);
   return null;
 }

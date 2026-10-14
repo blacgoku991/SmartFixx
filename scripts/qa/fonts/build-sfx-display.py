@@ -10,7 +10,8 @@ récupéré HORS du dépôt (il n'est jamais ajouté au package.json du site) :
 1. fontTools.varLib.instancer : instance statique wght=700 opsz=96 wdth=<largeur> du fichier latin ;
 2. ajout de Ÿ (U+0178) depuis l'instance latin-ext du même paquet ;
 3. glyphes absents de la police et exigés par le sous-ensemble (contrôle cmap des juges) :
-   U+202F espace fine insécable (même chasse que U+2009), U+00AD (glyphe du trait d'union),
+   U+202F espace fine insécable (même chasse que U+2009), U+00AD, U+2010 et U+2011 (glyphe du trait
+   d'union : U+2011 = trait d'union insécable des noms de lieux),
    U+201B (glyphe de U+2018), U+00A4 ¤ et les flèches ← → ↗ dessinés ici, à la graisse du titre ;
 4. tables name renommées en « SFX Display » (version modifiée ; la licence ne déclare pas de
    Reserved Font Name, le renommage évite toute confusion avec la police d'origine) ;
@@ -26,7 +27,7 @@ from fontTools.pens.recordingPen import DecomposingRecordingPen
 
 SRC = Path(sys.argv[1] if len(sys.argv) > 1 else "/tmp/package")
 OUT = Path(sys.argv[2] if len(sys.argv) > 2 else "public/fonts")
-UNICODES = "U+0020-007E,U+00A0-00FF,U+0152-0153,U+0178,U+2009,U+202F,U+2013-2014,U+2018-201E,U+2022,U+2026,U+20AC,U+2190,U+2192,U+2197"
+UNICODES = "U+0020-007E,U+00A0-00FF,U+0152-0153,U+0178,U+2009,U+202F,U+2010-2011,U+2013-2014,U+2018-201E,U+2022,U+2026,U+20AC,U+2190,U+2192,U+2197"
 def codepoints(spec):
     out = []
     for part in spec.split(","):
@@ -78,7 +79,7 @@ def build(wdth):
     add_glyph(f, "Ydieresis", pen.glyph(), ext["hmtx"][yname][0]); map_cp(f, 0x178, "Ydieresis")
     # espace fine insécable : même chasse que l'espace fine
     pen = TTGlyphPen(None); add_glyph(f, "uni202F", pen.glyph(), f["hmtx"][cm[0x2009]][0], 0); map_cp(f, 0x202F, "uni202F")
-    map_cp(f, 0x00AD, cm[0x2D]); map_cp(f, 0x201B, cm[0x2018])
+    map_cp(f, 0x00AD, cm[0x2D]); map_cp(f, 0x2010, cm[0x2D]); map_cp(f, 0x2011, cm[0x2D]); map_cp(f, 0x201B, cm[0x2018])
     # flèches
     adv = 760
     pen = TTGlyphPen(None); poly(pen, arrow_right(f)); add_glyph(f, "arrowright", pen.glyph(), adv); map_cp(f, 0x2192, "arrowright")

@@ -1,4 +1,4 @@
-// Variantes AVIF et WebP 240/480/768 des objets chrome et cobalt, pour la primitive <Media>.
+// Variantes AVIF et WebP 240/480/768/1024 des objets chrome et cobalt, pour la primitive <Media>.
 //   cd /tmp && npm install sharp@0.34.4      (HORS du dépôt : sharp n'entre pas dans le package.json du site)
 //   SHARP=/tmp/node_modules/sharp node scripts/qa/media/build-studio-variants.mjs
 // Les originaux restent à leur URL (/studio-web.webp est exigé sur l'accueil par les tests ; les emails
@@ -13,7 +13,7 @@ const bases = ["studio-web", "studio-automation", "studio-security", "mail-sculp
 let total = 0;
 for (const base of bases) {
   const src = path.join(root, "public", `${base}.webp`);
-  for (const w of [240, 480, 768]) {
+  for (const w of [240, 480, 768, 1024]) {
     const img = sharp(src).resize({ width: w, withoutEnlargement: true });
     const webp = path.join(out, `${base}-${w}.webp`);
     const avif = path.join(out, `${base}-${w}.avif`);

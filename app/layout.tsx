@@ -25,7 +25,10 @@ export const viewport: Viewport = {
 
 /* Chaînes protégées par vps/prepare.py strict (liste dans docs/DESIGN_SYSTEM.md) : signature du layout
    non async, retour unique, une seule balise de script en ligne sans attribut avant son contenu.
-   Le script pose le thème et l'état du consentement avant le premier rendu (data-consent). */
+   Le script pose le thème et l'état du consentement avant le premier rendu (data-consent).
+   Ordre du DOM = ordre du clavier (WCAG 2.4.3) : lien d'évitement, interrupteur de thème (affiché dans
+   l'en-tête public), page, puis consentement. Le lien d'évitement est masqué sans <main id="contenu">
+   (panel, connexion, pages email). */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,7 +36,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" data-theme="dark" suppressHydrationWarning>
-      <body className="antialiased"><script dangerouslySetInnerHTML={{__html:"try{var t=localStorage.getItem('smartfixx-theme');document.documentElement.dataset.theme=t==='light'?'light':'dark';var c=JSON.parse(localStorage.getItem('smartfixx-statistics-preference-v1')||'null');document.documentElement.dataset.consent=c&&Date.now()-c.at<15552000000&&(c.value==='yes'||c.value==='no')?'set':'pending'}catch(e){document.documentElement.dataset.consent='pending'}"}}/><JsonLd data={{"@context":"https://schema.org","@graph":[organization,{"@type":"WebSite","@id":`${SITE_URL}/#website`,url:SITE_URL,name:"SmartFixx",inLanguage:"fr-FR",publisher:{"@id":`${SITE_URL}/#organization`}}]}}/>{children}<AudienceMeasurement/><ThemeControl/></body>
+      <body className="antialiased"><script dangerouslySetInnerHTML={{__html:"try{var t=localStorage.getItem('smartfixx-theme');document.documentElement.dataset.theme=t==='light'?'light':'dark';var c=JSON.parse(localStorage.getItem('smartfixx-statistics-preference-v1')||'null');document.documentElement.dataset.consent=c&&Date.now()-c.at<15552000000&&(c.value==='yes'||c.value==='no')?'set':'pending'}catch(e){document.documentElement.dataset.consent='pending'}"}}/><JsonLd data={{"@context":"https://schema.org","@graph":[organization,{"@type":"WebSite","@id":`${SITE_URL}/#website`,url:SITE_URL,name:"SmartFixx",inLanguage:"fr-FR",publisher:{"@id":`${SITE_URL}/#organization`}}]}}/><a className="skip-link" href="#contenu">Aller au contenu</a><ThemeControl/>{children}<AudienceMeasurement/></body>
     </html>
   );
 }

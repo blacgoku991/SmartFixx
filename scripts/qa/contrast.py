@@ -15,7 +15,8 @@ def block(selector_re):
     body = re.sub(r"/\*.*?\*/", "", m.group(1), flags=re.S)
     return dict((k.strip(), v.strip()) for k, v in re.findall(r"(--[\w-]+)\s*:\s*([^;]+);", body))
 
-dark = block(r":root")
+# Bloc des couleurs sombres, partagé avec la portée nuit (« :root,[data-sx-tone='night'] »).
+dark = block(r":root,\[data-sx-tone='night'\]")
 light = {**dark, **block(r":root\[data-theme='light'\]")}
 
 def hexrgb(v):
@@ -88,6 +89,15 @@ def pairs(theme, t):
     for s in ["--sx-surface", "--sx-surface-2"]:
         fg = "--sx-text-muted" if theme == "clair" else "--sx-neutral"
         out.append((f"pastille neutre {fg} ({pct:g} %) sur {s}", col(t, fg, s)[0], chip(t, "--sx-neutral", s, pct), 4.5))
+    # ciel du hero et du bandeau d'appel (arrêts du dégradé --sx-sky) : texte, liens, CTA, focus
+    for bg in ["--sx-sky-top", "--sx-sky-mid", "--sx-sky-low"]:
+        for fg in ["--sx-text", "--sx-text-muted", "--sx-accent", "--sx-signal-text"]:
+            out.append((f"{fg} sur {bg} (ciel)", col(t, fg, bg)[0], col(t, bg)[0], 4.5))
+        for fg, what in [("--sx-cta", "contour du CTA"), ("--sx-focus", "anneau"), ("--sx-line-strong", "bordure")]:
+            out.append((f"{fg} ({what}) sur {bg} (ciel)", col(t, fg)[0], col(t, bg)[0], 3))
+    if theme == "sombre":  # l'indigo est une surface de nuit (portée nuit, interrupteur coché = sombre)
+        out.append(("--sx-text sur --sx-indigo", col(t, "--sx-text")[0], col(t, "--sx-indigo")[0], 4.5))
+        out.append(("--sx-accent (bord de l'interrupteur actif) sur --sx-bg", col(t, "--sx-accent")[0], col(t, "--sx-bg")[0], 3))
     # pastille « Nouvelle » : texte encre sur signal plein
     out.append(("--sx-on-cta sur --sx-signal (pastille Nouvelle)", col(t, "--sx-on-cta" if theme == "sombre" else "--sx-text")[0], col(t, "--sx-signal")[0], 4.5))
     return out

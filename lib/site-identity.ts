@@ -3,7 +3,9 @@
    L'adresse du domicile n'est JAMAIS publiée : seul le siège social (domiciliation) apparaît ; le lieu de
    travail est la ville seule. */
 export type Area={'@type':'City'|'AdministrativeArea'|'Country';name:string};
-const NBSP=' ';
+/* PHONE_DISPLAY sépare les paires par U+00A0 (espace insécable) : un test doit utiliser
+   /06[\s\u00A0]18[\s\u00A0]74[\s\u00A0]51[\s\u00A0]80/, jamais la chaîne à espaces simples. */
+const NBSP='\u00A0';
 export const SITE_IDENTITY={
   NAME:'Mohamed',
   BRAND:'SmartFixx',
@@ -19,6 +21,7 @@ export const SITE_IDENTITY={
   REGISTERED_ON:'2025-04-11',
   SIEGE:{street:'18 avenue Victoria',postalCode:'75001',city:'Paris',country:'FR',label:'18 avenue Victoria, 75001 Paris',short:'Paris 1er'},
   WORK_BASE:'Asnières-sur-Seine (92)',
+  WORK_CITY:'Asnières-sur-Seine',
   PUBLICATION_DIRECTOR:'Mohamed Maatoug',
   /* Hébergeur du VPS : non confirmé par le propriétaire. Ne rien inventer (mentions : « Information en
      cours de mise à jour », point bloquant pour la mise en production). */
@@ -40,5 +43,8 @@ export const SITE_IDENTITY={
   /* Auteur des guides : Person « Mohamed » seulement si le propriétaire l'accepte (décision n° 12). */
   personAuthorAccepted:false,
 } as const;
+/* Noms de lieux insécables : traits d'union U+2011 (présents dans SFX Display) et espaces insécables. Pour un
+   titre ou un texte : nb(SITE_IDENTITY.WORK_CITY) ; en JSX, préférer <Place> (components/sx/place.tsx). */
+export const nb=(s:string)=>s.replace(/-/g,'\u2011').replace(/ /g,NBSP);
 export const telHref=`tel:${SITE_IDENTITY.PHONE_E164}`;
 export const mailHref=`mailto:${SITE_IDENTITY.EMAIL}`;

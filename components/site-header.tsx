@@ -6,7 +6,7 @@ import Link from "@/components/campaign-link";
 import { Brand } from "@/components/brand";
 import { ButtonLink, PhoneLink } from "@/components/sx/actions";
 import { MotionToggle } from "@/components/sx/motion-gate";
-/* En-tête public. Mobile (60 px) : marque « par Mohamed », téléphone compact, pause des animations,
+/* En-tête public (le lien d'évitement et le ThemeControl sont rendus avant lui par le layout racine). Mobile (60 px) : marque « par Mohamed », téléphone compact, pause des animations,
    menu, emplacement réservé au ThemeControl (rendu par le layout, positionné en fixed dans
    .sx-theme-slot). Navigation complète à partir de 1380 px (sous-menu Prestations), menu en dessous ;
    téléphone en toutes lettres de 768 à 1379 px ; CTA « Parler de mon projet » à partir de 1024 px.
@@ -56,8 +56,6 @@ export function SiteHeader() {
     e.currentTarget.setAttribute("aria-expanded", String(open));
   }
   return (
-    <>
-    <a className="skip-link" href="#contenu">Aller au contenu</a>
     <header className="sx-header">
       <div className="sx-container sx-container--wide sx-header-inner">
         <Brand />
@@ -100,6 +98,5 @@ export function SiteHeader() {
         </div>
       </div>
     </header>
-    </>
   );
 }

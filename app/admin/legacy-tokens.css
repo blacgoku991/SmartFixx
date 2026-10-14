@@ -15,3 +15,15 @@
 /* Transition : les intertitres du panel (h2, h3) restent en police de texte ; seul le H1 d'écran est en
    SFX Display, en attendant la refonte du panel aux jetons --sx- (lots 5 et 6). */
 :where(.studio-admin,.admin-app,.camp-app,.email-action-card,[data-slot=sheet-content],[data-slot=dialog-content],[data-slot=alert-dialog-content]) :is(h2,h3){font-family:var(--sx-font-text);font-stretch:normal;letter-spacing:normal}
+/* Transition (jusqu'aux lots 5 et 6) : le texte du panel, de la connexion et des pages email reste en Arial,
+   police sur laquelle leurs largeurs fixes ont été calées (avec la pile système, le tableau des demandes
+   déborde à 1280-1440 px et le bouton « Ouvrir » sort du cadre). Les titres gardent SFX Display (règle h1
+   de la base, sur l'élément lui-même). */
+:where(.studio-admin,.admin-app,.admin-gate,.email-action-page,.camp-app,[data-slot=sheet-content],[data-slot=dialog-content],[data-slot=alert-dialog-content]){font-family:Arial,Helvetica,sans-serif}
+/* H1 d'écran en SFX Display (chasse 82-92 %) : l'interlettrage négatif de l'ancien CSS (-0,045 à -0,05 em,
+   calé sur Arial) faisait se toucher les lettres, y compris sur la page STOP vue par des destinataires
+   externes. Spécificité (0,1,2) : bat les règles (0,1,1) d'admin.css, campaigns.css, sending.css,
+   workspace.css et email-action.css. */
+html :is(.admin-heading,.admin-login-card,.camp-header,.sending-header,.workspace-heading,.email-action-card) h1{letter-spacing:var(--sx-tracking-title)}
+/* H1 sans style propre (/admin/transfert-vps, /admin/logout) : à l'échelle des titres, pas du texte courant. */
+:is(main.section)>h1{font-size:var(--sx-step-3)}

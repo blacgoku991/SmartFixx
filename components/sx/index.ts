@@ -7,6 +7,7 @@ export { Breadcrumbs } from "./breadcrumbs";
 export { ButtonLink, PhoneLink } from "./actions";
 export { CtaBand } from "./cta-band";
 export { ProofList } from "./proof-list";
+export { Place } from "./place";
 export { Cartouche } from "./cartouche";
 export { FaqList } from "./faq-list";
 export { KineticHeading } from "./kinetic-heading";
