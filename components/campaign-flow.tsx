@@ -1,43 +1,211 @@
 "use client";
-import { useState, type FormEvent } from "react";
-import Link from "@/components/campaign-link";
-import { ArrowRight, ArrowUpRight, Check, CheckCheck, ChevronRight, Target, Database, Send, ShieldCheck, BarChart3, Building2, Users, FileCheck2, SlidersHorizontal, Sparkles, Menu, Mail, CircleCheck, LoaderCircle, Plus, Layers, LockKeyhole, Crosshair } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { MailScene } from "@/components/mail-scene";
-import { Brand, Footer } from "@/components/brand";
-import { plans, volumes, quotePrice, formatNumber, formatEuro, type Audience, type DataSource, type PlanId } from "@/lib/offers";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { ArrowRight, Check, LoaderCircle, Mail, PencilLine } from "lucide-react";
+import CampaignLink from "@/components/campaign-link";
+import { plans, volumes, formatNumber, type PlanId } from "@/lib/offers";
 import { cleanCampaign } from "@/lib/project-options";
-import { useRouter } from "next/navigation";
 import { campaignHref, type CampaignConfig } from "@/lib/campaign-config";
-export function CampaignFlow({kind, initial}:{kind:"pricing"|"contact";initial:CampaignConfig}) {
- const router = useRouter();
-  const [audience, setAudience] = useState<Audience>(initial.audience);
-  const [source, setSource] = useState<DataSource>(initial.source);
+import { postJson, frenchError } from "@/lib/fetch-json";
+/* Parcours emailing (lot 8) : formules sur /tarifs (kind="pricing") et demande de devis sur
+   /contact?service=emailing (kind="contact"). Styles : components/secondary/secondary.css (sc-cf-…),
+   chargée par les pages du lot (composants serveur).
+   - AUCUN montant affiché : ni quotePrice côté client, ni formatEuro, ni « HT », ni badge, ni
+     caractéristique de lib/offers.ts. Le prix reste calculé par le serveur (/api/devis) comme estimation
+     interne visible dans le panel. Seuls s'affichent le nom de la formule, le volume, l'audience et la source.
+   - Offres non confirmées masquées : l'audience B2C et la source « data incluse » ne sont plus proposées.
+     Un ancien lien qui les porte reste accepté (la charge utile les transmet telles quelles), et l'écran
+     l'annonce honnêtement comme « à préciser au devis ».
+   - Charge utile STRICTEMENT inchangée : name, company, email, phone, message, website, consent, audience,
+     source, volume, plan, service "emailing", campaign.
+   - Envoi par lib/fetch-json : jamais d'exception, messages français ; succès UNIQUEMENT sur un 201 portant
+     une référence SF-XXXXXXXX (la demande est alors en base, visible dans le panel). En cas d'échec, la
+     saisie reste dans le formulaire. Contrôles natifs (select, case à cocher) : ni Radix ni JS superflu. */
+const REFERENCE_RE = /^SF-[0-9A-F]{8}$/;
+const audienceLabel = (c: CampaignConfig) => (c.audience === "b2b" ? "Professionnels (B2B)" : "À préciser au devis");
+const sourceLabel = (c: CampaignConfig) => (c.source === "client" ? "Votre fichier de contacts" : "À étudier ensemble au devis");
+
+/* Tour de fenêtres d'un volume : plus le volume est grand, plus la tour est haute et allumée (décor). */
+const TOWER: Record<number, number> = { 5000: 2, 10000: 4, 25000: 7, 50000: 10 };
+function Tower({ volume }: { volume: number }) {
+  const n = TOWER[volume] ?? 4;
+  return <span className="sc-vol-tower" aria-hidden="true">{Array.from({ length: 10 }, (_, i) => <i key={i} className={i < n ? "sc-vol-w is-on" : "sc-vol-w"} />)}</span>;
+}
+
+export function CampaignFlow({ kind, initial }: { kind: "pricing" | "contact"; initial: CampaignConfig }) {
+  return kind === "pricing" ? <Pricing initial={initial} /> : <ContactForm initial={initial} />;
+}
+
+function Pricing({ initial }: { initial: CampaignConfig }) {
   const [volume, setVolume] = useState(initial.volume);
+  const config: CampaignConfig = { ...initial, volume };
+  return (
+    <div className="sc-cf sc-cf--pricing">
+      <fieldset className="sc-vol">
+        <legend className="sc-cf-legend"><span className="sc-cf-step" aria-hidden="true">1</span>Volume d’envois</legend>
+        <p className="sc-cf-hint">Le volume compte tous les emails envoyés, relances comprises.</p>
+        <div className="sc-vol-grid">
+          {volumes.map((v) => (
+            <label className="sc-vol-opt" key={v}>
+              <input className="sc-vol-input" type="radio" name="volume" value={v} checked={volume === v} onChange={() => setVolume(v)} />
+              <span className="sc-vol-box">
+                <Tower volume={v} />
+                <span className="sc-vol-num sx-tabular">{formatNumber(v)}</span>
+                <span className="sc-vol-unit">envois</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <div className="sc-cf-plans-head">
+        <p className="sc-cf-legend"><span className="sc-cf-step" aria-hidden="true">2</span>Formule</p>
+        <p className="sc-cf-hint" aria-live="polite">{formatNumber(volume)} envois · {audienceLabel(config)} · {sourceLabel(config)}</p>
+      </div>
+      <ul className="sc-plans" role="list">
+        {plans.map((p, i) => (
+          <li className="sc-plan sc-lit" key={p.id}>
+            <span className="sc-plan-level" aria-hidden="true">{[0, 1, 2].map((k) => <i key={k} className={k <= i ? "sc-w sc-w--signal" : "sc-w"} />)}</span>
+            <h3 className="sc-plan-name">{p.name}</h3>
+            <dl className="sc-plan-facts">
+              <div><dt>Volume</dt><dd className="sx-tabular">{formatNumber(volume)} envois</dd></div>
+              <div><dt>Audience</dt><dd>{audienceLabel(config)}</dd></div>
+              <div><dt>Contacts</dt><dd>{sourceLabel(config)}</dd></div>
+            </dl>
+            <p className="sc-plan-note">Contenu et prix détaillés dans le devis.</p>
+            <a className="sx-btn sx-btn--primary sc-plan-btn" href={campaignHref("/contact", { ...config, plan: p.id })} data-analytics="contact" data-service="emailing"><span>Demander un devis {p.name}</span><ArrowRight className="sx-btn-icon" aria-hidden="true" /></a>
+          </li>
+        ))}
+      </ul>
+      <p className="sc-cf-more">Plus de 50 000 envois ou un besoin particulier&#8239;? <a className="sc-textlink" href={campaignHref("/contact", { ...config, plan: "performance" })} data-analytics="contact" data-service="emailing">Décrivez-le-moi</a></p>
+    </div>
+  );
+}
+
+type Field = "name" | "company" | "email" | "message" | "consent";
+const FIELD_ORDER: Field[] = ["name", "company", "email", "message", "consent"];
+function validate(data: FormData, consent: boolean): Partial<Record<Field, string>> {
+  const e: Partial<Record<Field, string>> = {};
+  const v = (k: string) => String(data.get(k) ?? "").trim();
+  if (v("name").length < 2) e.name = "Indiquez votre nom (2 caractères au moins).";
+  if (v("company").length < 2) e.company = "Indiquez le nom de votre entreprise.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("email"))) e.email = "Indiquez une adresse email valide, par exemple vous@entreprise.fr.";
+  if (v("message").length < 15) e.message = "Décrivez votre activité et votre objectif en une ou deux phrases (15 caractères au moins).";
+  if (!consent) e.consent = "Cochez la case pour que je puisse vous recontacter au sujet de cette demande.";
+  return e;
+}
+
+function ContactForm({ initial }: { initial: CampaignConfig }) {
   const [plan, setPlan] = useState<PlanId>(initial.plan);
+  const [volume, setVolume] = useState(initial.volume);
   const [consent, setConsent] = useState(false);
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
+  const [general, setGeneral] = useState("");
   const [reference, setReference] = useState("");
-  const price = quotePrice(plan, volume, source, audience);
-  function choosePlan(id: PlanId) {router.push(campaignHref("/contact", { audience, source, volume, plan: id, campaign:initial.campaign }));}
-  async function submitQuote(event: FormEvent<HTMLFormElement>) {
+  const sending = useRef(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const doneRef = useRef<HTMLHeadingElement>(null);
+  const config: CampaignConfig = { ...initial, plan, volume };
+  useEffect(() => { if (reference) doneRef.current?.focus(); }, [reference]);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!consent) { setError("Veuillez confirmer que nous pouvons vous recontacter pour cette demande."); setStatus("error"); return; }
+    if (sending.current) return;
     const data = new FormData(event.currentTarget);
-    setStatus("loading"); setError("");
-    try {
-      const response = await fetch("/api/devis", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: data.get("name"), company: data.get("company"), email: data.get("email"), phone: data.get("phone"), message: data.get("message"), website: data.get("website"), consent, audience, source, volume, plan, service:"emailing", campaign:cleanCampaign(initial.campaign) }) });
-      const result = await response.json() as { error?: string; reference?: string };
-      if (!response.ok) throw new Error(result.error || "Votre demande n’a pas pu être enregistrée.");
-      if (typeof result.reference !== "string") throw new Error("La confirmation n’a pas pu être lue. Contactez-nous pour vérifier la réception de votre demande.");
-      setReference(result.reference); setStatus("success");
-    } catch (err) {setError(err instanceof Error ? err.message : "Une erreur est survenue. Réessayez dans un instant."); setStatus("error");}
+    const local = validate(data, consent);
+    setGeneral("");
+    if (Object.keys(local).length) {
+      setErrors(local);
+      const first = FIELD_ORDER.find((f) => local[f]);
+      formRef.current?.querySelector<HTMLElement>(`#cf-${first}`)?.focus();
+      return;
+    }
+    setErrors({});
+    const text = (k: string) => String(data.get(k) ?? "");
+    sending.current = true; setPending(true);
+    const result = await postJson<{ reference?: unknown }>("/api/devis", { name: text("name"), company: text("company"), email: text("email"), phone: text("phone"), message: text("message"), website: text("website"), consent, audience: initial.audience, source: initial.source, volume, plan, service: "emailing", campaign: cleanCampaign(initial.campaign) });
+    sending.current = false; setPending(false);
+    const ref = result.ok && result.data && typeof result.data.reference === "string" ? result.data.reference : "";
+    if (result.ok && result.status === 201 && REFERENCE_RE.test(ref)) {
+      setReference(ref);
+      try { document.documentElement.setAttribute("data-sx-signal-on", ""); } catch { /* sans effet */ }
+      window.dispatchEvent(new CustomEvent("smartfixx-lead", { detail: { reference: ref, service: "emailing" } }));
+      return;
+    }
+    setGeneral(result.ok ? frenchError("invalid-json", result.status) : frenchError(result.kind, result.status, result.data));
   }
 
- return kind === "pricing" ? <section id="tarifs" className="section pricing-section"><div className="container"><div className="center-heading"><p className="eyebrow">03 / VOTRE AMBITION. VOTRE FORMAT.</p><h1>Prêt à passer<br/><span>à la vitesse supérieure ?</span></h1><p>Choisissez votre audience et votre quota. Votre formule s’adapte.</p></div><div className="pricing-controls"><div><label htmlFor="pricing-audience">Je souhaite toucher</label><Select value={audience} onValueChange={v=>setAudience(v as Audience)}><SelectTrigger id="pricing-audience" className="select-control"><SelectValue/></SelectTrigger><SelectContent><SelectItem value="b2b">Des professionnels · B2B</SelectItem><SelectItem value="b2c">Des particuliers · B2C</SelectItem></SelectContent></Select></div><div><label htmlFor="pricing-volume">Mon quota d’emails</label><Select value={String(volume)} onValueChange={v=>setVolume(Number(v))}><SelectTrigger id="pricing-volume" className="select-control"><SelectValue/></SelectTrigger><SelectContent>{volumes.map(v=><SelectItem value={String(v)} key={v}>{formatNumber(v)} envois</SelectItem>)}</SelectContent></Select></div><div className="data-control"><label id="source-label">Mes données</label><Tabs value={source} onValueChange={v=>setSource(v as DataSource)}><TabsList aria-labelledby="source-label" className="source-tabs"><TabsTrigger value="client">J’ai mon fichier</TabsTrigger><TabsTrigger value="included">Data incluse <Plus size={14}/></TabsTrigger></TabsList></Tabs></div></div><div className="pricing-context" aria-live="polite"><ShieldCheck size={15}/>{audience==="b2c" ? "Particuliers : consentement documenté requis. La fourniture d’une audience B2C est chiffrée sur devis." : source==="included" ? "Ciblage B2B inclus dans les montants affichés, sous réserve de disponibilité et du périmètre validé." : "Vous fournissez le fichier. Son contrôle et sa préparation sont inclus dans chaque formule."}</div><div className="pricing-grid">{plans.map((p,index)=>{const amount=quotePrice(p.id,volume,source,audience);return <article className={`price-card ${index===1?"price-featured":""}`} key={p.id}>{index===1&&<div className="featured-label"><Sparkles size={14}/> LE BON ÉQUILIBRE POUR GRANDIR</div>}<div className="plan-heading"><span className="plan-icon">{index===0?<Send size={23}/>:index===1?<Layers size={23}/>:<Crosshair size={23}/>}</span><h3>{p.name}</h3><p>{p.tagline}</p></div><div className="price-amount" aria-live="polite">{amount===null?<strong className="quote-only">Sur devis</strong>:<><strong>{formatEuro(amount)}</strong><span>HT / campagne</span></>}</div><div className="quota-line"><Mail size={16}/><strong>{formatNumber(volume)} emails</strong><span>au total</span></div><button className={`button ${index===1?"button-primary":"button-outline"} full-width`} data-analytics="contact" data-service="emailing" onClick={()=>choosePlan(p.id)}>Choisir {p.name} <ArrowUpRight size={18}/></button><ul>{p.features.map(f=><li key={f}><Check size={16}/><span>{f}</span></li>)}</ul>{source==="included"&&<div className="included-note"><Database size={14}/>{audience==="b2b"?"Sélection de contacts B2B incluse":"Audience B2C soumise à validation"}</div>}</article>})}</div><div className="pricing-bottom"><p>Campagnes ponctuelles · Quota total, relances comprises · TVA applicable précisée au devis</p><a href={campaignHref("/contact",{audience,source,volume,plan:"performance",campaign:initial.campaign})}>Plus de 50 000 emails ou un besoin spécifique ? <span>Parlons-en <ArrowUpRight size={15}/></span></a></div></div></section> : <section id="contact" className="section contact-section"><div className="container contact-layout"><div className="contact-copy"><p className="eyebrow">LE PROCHAIN PAS COMMENCE ICI.</p><h1>Et si on parlait<br/>de vos <span>prochains<br/>clients ?</span></h1><p>Décrivez-nous votre activité et votre objectif. Nous revenons vers vous avec une proposition adaptée.</p><div className="contact-points"><span><CircleCheck size={19}/> Devis personnalisé, sans engagement</span><span><ShieldCheck size={19}/> Aucun envoi avant votre validation</span><span><Mail size={19}/> contact@smartfixx.fr</span></div><img className="contact-mail" src="/mail-sculpture.webp" alt="" width="1254" height="1254" loading="lazy"/><div className="contact-signature"><span className="brand-mark"><ArrowUpRight size={25}/></span><div><strong>Votre ambition mérite d’être vue.</strong><span>L’équipe SmartFixx Reach</span></div></div></div><div className="contact-form-card">{status==="success"?<div className="success-state" role="status"><span><Check size={35}/></span><p className="eyebrow">C’EST BIEN REÇU</p><h3>Votre projet est enregistré.</h3><p>Votre demande porte la référence <strong>{reference}</strong>. Conservez-la pour vos échanges avec notre équipe.</p><p>Aucun paiement ni envoi de campagne n’a été déclenché.</p><button className="button button-outline" onClick={()=>{setStatus("idle");setConsent(false);}}>Préparer une autre demande <ArrowRight size={17}/></button></div>:<form onSubmit={submitQuote}><div className="form-title"><h3>Parlez-nous de votre projet.</h3><span>ENVIRON 2 MINUTES</span></div><div className="form-grid"><div className="field"><label htmlFor="name">Votre nom *</label><input id="name" name="name" autoComplete="name" placeholder="Prénom et nom" required minLength={2} maxLength={100}/></div><div className="field"><label htmlFor="company">Votre entreprise *</label><input id="company" name="company" autoComplete="organization" placeholder="Nom de l’entreprise" required minLength={2} maxLength={150}/></div><div className="field"><label htmlFor="email">Email professionnel *</label><input id="email" name="email" type="email" autoComplete="email" placeholder="vous@entreprise.fr" required maxLength={254}/></div><div className="field"><label htmlFor="phone">Téléphone <span>(facultatif)</span></label><input id="phone" name="phone" type="tel" autoComplete="tel" placeholder="06 00 00 00 00" maxLength={30}/></div></div><div className="field"><label htmlFor="quote-plan">La formule qui vous intéresse</label><Select value={plan} onValueChange={v=>setPlan(v as PlanId)}><SelectTrigger id="quote-plan" className="select-control"><SelectValue/></SelectTrigger><SelectContent>{plans.map(p=><SelectItem value={p.id} key={p.id}>{p.name}</SelectItem>)}</SelectContent></Select></div><div className="quote-summary"><div><span>{audience==="b2b"?"Professionnels":"Particuliers"} · {formatNumber(volume)} emails</span><strong>{price===null?"Sur devis":`${formatEuro(price)} HT`}</strong></div><div><span>{source==="client"?"Votre fichier fourni":"Data ciblée incluse"}</span><a href={campaignHref("/tarifs",{audience,source,volume,plan,campaign:initial.campaign})}>Modifier <ChevronRight size={13}/></a></div></div><div className="field"><label htmlFor="message">Votre activité et votre objectif *</label><textarea id="message" name="message" placeholder="Que proposez-vous ? Qui souhaitez-vous toucher, dans quelle zone, et pour quel objectif ?" rows={4} required minLength={15} maxLength={3000}/></div><div className="honeypot" aria-hidden="true"><label htmlFor="website">Ne pas remplir</label><input id="website" name="website" tabIndex={-1} autoComplete="off"/></div><div className="consent-field"><Checkbox id="consent" checked={consent} onCheckedChange={v=>setConsent(v===true)} required/><label htmlFor="consent">J’accepte d’être recontacté au sujet de cette demande. <Link href="/confidentialite">Utilisation de mes données</Link>.</label></div>{status==="error"&&<p className="form-error" role="alert">{error} Vos informations sont conservées dans le formulaire.</p>}<button type="submit" className="button button-primary full-width" disabled={status==="loading"}>{status==="loading"?<><LoaderCircle size={18} className="spin"/> Enregistrement…</>:<>Recevoir ma proposition <ArrowUpRight size={19}/></>}</button><p className="form-footnote"><LockKeyhole size={12}/> Vos coordonnées servent uniquement au suivi de votre demande.</p></form>}</div></div></section>;
+  const describedBy = (f: Field, extra?: string) => [errors[f] ? `cf-${f}-erreur` : "", extra ?? ""].filter(Boolean).join(" ") || undefined;
+  const err = (f: Field) => (errors[f] ? <p className="sc-cf-error" id={`cf-${f}-erreur`}>{errors[f]}</p> : null);
+
+  if (reference) return (
+    <div className="sc-cf sc-cf--contact sc-cf-done" role="status">
+      <span className="sc-cf-done-win" aria-hidden="true"><Check /></span>
+      <h2 className="sc-cf-title" ref={doneRef} tabIndex={-1}>Votre demande est enregistrée.</h2>
+      <p>Elle porte la référence <strong className="sx-ref">{reference}</strong>. Je la lis moi-même et je reviens vers vous pour en parler.</p>
+      <p className="sc-cf-muted">Aucun paiement ni envoi de campagne n’a été déclenché.</p>
+      <p className="sc-cf-sign">Mohamed — SmartFixx</p>
+      <button type="button" className="sx-btn sx-btn--ghost" onClick={() => { setReference(""); setConsent(false); }}><span>Préparer une autre demande</span></button>
+    </div>
+  );
+
+  return (
+    <div className="sc-cf sc-cf--contact contact-form-card">
+      <form ref={formRef} className="sc-cf-form" onSubmit={submit} noValidate aria-labelledby="cf-titre">
+        <div className="sc-cf-head">
+          <h2 className="sc-cf-title" id="cf-titre">Votre campagne</h2>
+          <p className="sc-cf-muted">Je lis chaque demande moi-même. Les champs marqués * sont obligatoires.</p>
+        </div>
+        <div className="sc-cf-ticket">
+          <div className="sc-cf-field">
+            <label htmlFor="cf-plan">Formule</label>
+            <select id="cf-plan" value={plan} onChange={(e) => setPlan(e.target.value as PlanId)}>{plans.map((p) => <option value={p.id} key={p.id}>{p.name}</option>)}</select>
+          </div>
+          <div className="sc-cf-field">
+            <label htmlFor="cf-volume">Volume d’envois</label>
+            <select id="cf-volume" value={volume} onChange={(e) => setVolume(Number(e.target.value))}>{volumes.map((v) => <option value={v} key={v}>{formatNumber(v)} envois</option>)}</select>
+          </div>
+          <p className="sc-cf-ticket-facts"><span>Audience&#8239;: {audienceLabel(config)}</span><span>Contacts&#8239;: {sourceLabel(config)}</span></p>
+          <a className="sc-textlink sc-cf-edit" href={campaignHref("/tarifs", config)}><PencilLine aria-hidden="true" />Voir les formules</a>
+        </div>
+        <div className="sc-cf-grid">
+          <div className="sc-cf-field">
+            <label htmlFor="cf-name">Votre nom *</label>
+            <input id="cf-name" name="name" autoComplete="name" maxLength={100} aria-invalid={errors.name ? true : undefined} aria-describedby={describedBy("name")} />
+            {err("name")}
+          </div>
+          <div className="sc-cf-field">
+            <label htmlFor="cf-company">Votre entreprise *</label>
+            <input id="cf-company" name="company" autoComplete="organization" maxLength={150} aria-invalid={errors.company ? true : undefined} aria-describedby={describedBy("company")} />
+            {err("company")}
+          </div>
+          <div className="sc-cf-field">
+            <label htmlFor="cf-email">Email professionnel *</label>
+            <input id="cf-email" name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} aria-invalid={errors.email ? true : undefined} aria-describedby={describedBy("email")} />
+            {err("email")}
+          </div>
+          <div className="sc-cf-field">
+            <label htmlFor="cf-phone">Téléphone <span className="sc-cf-opt">(facultatif)</span></label>
+            <input id="cf-phone" name="phone" type="tel" autoComplete="tel" maxLength={30} />
+          </div>
+        </div>
+        <div className="sc-cf-field">
+          <label htmlFor="cf-message">Votre activité et votre objectif *</label>
+          <textarea id="cf-message" name="message" rows={4} maxLength={3000} aria-invalid={errors.message ? true : undefined} aria-describedby={describedBy("message", "cf-message-aide")} />
+          <p className="sc-cf-help" id="cf-message-aide">Ce que vous proposez, qui vous souhaitez toucher, dans quelle zone, et d’où viennent vos contacts.</p>
+          {err("message")}
+        </div>
+        <div className="honeypot" aria-hidden="true"><label htmlFor="cf-website">Ne pas remplir</label><input id="cf-website" name="website" tabIndex={-1} autoComplete="off" /></div>
+        <div className="sc-cf-consent">
+          <input id="cf-consent" type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} aria-invalid={errors.consent ? true : undefined} aria-describedby={describedBy("consent")} />
+          <label htmlFor="cf-consent">J’accepte d’être recontacté au sujet de cette demande. <CampaignLink href="/confidentialite">Comment j’utilise vos données</CampaignLink>.</label>
+        </div>
+        {err("consent")}
+        {general ? <p className="sc-cf-alert" role="alert">{general} Vos informations restent dans le formulaire.</p> : null}
+        <button type="submit" className="sx-btn sx-btn--cta sx-btn--lg sc-cf-submit" disabled={pending} aria-busy={pending || undefined}>
+          {pending ? <><LoaderCircle className="sx-btn-icon spin" aria-hidden="true" /><span>Enregistrement…</span></> : <><span>Envoyer ma demande</span><ArrowRight className="sx-btn-icon" aria-hidden="true" /></>}
+        </button>
+        <p className="sc-cf-foot"><Mail aria-hidden="true" />Aucun paiement ni envoi de campagne n’est déclenché par cette demande. <span className="sc-cf-sign">Mohamed — SmartFixx</span></p>
+      </form>
+    </div>
+  );
 }
