@@ -78,6 +78,13 @@
       "when": 1789487414386,
       "tag": "0010_woozy_sunfire",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1791983135081,
+      "tag": "0011_giant_anthem",
+      "breakpoints": true
     }
   ]
 }

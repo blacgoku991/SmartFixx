@@ -67,6 +67,28 @@ test('Production routes, owner authorization, persistent requests and security c
    const detail=await(await call(`/api/admin/requests/${list.requests[0].id}`,{headers:owner})).json();assert.equal(detail.request.website_url,project.websiteUrl);assert.equal(detail.request.budget,project.budget);
    const site=await(await call('/referencement-seo')).text();assert.match(site,/application\/ld\+json/);assert.match(site,/rel="canonical"/);
   });
+  await t.test('short form: email or phone, detailed 400, per-contact limits, activity and normalized site persisted',async()=>{
+   // Charge utile EXACTE du formulaire court (components/forms/short-quote-form-client.tsx) : chaînes, jamais null.
+   // IP de documentation propre à ce bloc : la limite par IP (12 par quart d'heure) reste celle des autres tests.
+   const ip={'cf-connecting-ip':'192.0.2.51'},burstIp={'cf-connecting-ip':'192.0.2.52'};
+   const short={service:'creation',name:'Camille Court',activity:'Plombier chauffagiste',email:'',phone:'06 11 22 33 44',websiteUrl:'monsite.fr',message:'',requestedServices:['seo'],consent:true,website:'',campaign:'site'};
+   const none=await call('/api/devis',mutation({...short,phone:''},ip));assert.equal(none.status,400);const noneBody=await none.json();assert.equal(typeof noneBody.fields.email,'string');assert.ok(!JSON.stringify(noneBody).includes('Camille'),'400 never echoes submitted values');
+   const badPhone=await(await call('/api/devis',mutation({...short,phone:'12'},ip))).json();assert.equal(typeof badPhone.fields.phone,'string');
+   assert.equal((await call('/api/devis',mutation({...short,websiteUrl:'javascript:alert(1)'},ip))).status,400);
+   assert.equal((await call('/api/devis',mutation({...short,websiteUrl:'data:text/html,x'},ip))).status,400);
+   assert.equal((await call('/api/devis',mutation({...short,city:null},ip))).status,400,'null stays refused (documented): the form never sends null');
+   const trap=await call('/api/devis',mutation({...short,website:'https://spam.example'},ip));assert.equal(trap.status,400);assert.equal((await trap.json()).fields,undefined);
+   const phoneOnly=await call('/api/devis',mutation(short,ip));assert.equal(phoneOnly.status,201,await phoneOnly.clone().text());const ref=(await phoneOnly.json()).reference;assert.match(ref,/^SF-[0-9A-F]{8}$/);
+   const found=await(await call(`/api/admin/requests?q=${encodeURIComponent(ref)}`,{headers:owner})).json();assert.equal(found.total,1);const row=found.requests[0];assert.equal(row.phone,'+33611223344');assert.equal(row.activity,short.activity);assert.equal(row.website_url,'https://monsite.fr');assert.equal(row.email,'');assert.equal(row.company,'');
+   const detail=await(await call(`/api/admin/requests/${row.id}`,{headers:owner})).json();assert.equal(detail.request.activity,short.activity);assert.equal(detail.request.website_url,'https://monsite.fr');assert.match(detail.request.message,/^Autres besoins : Référencement SEO$/);
+   assert.equal((await(await call('/api/admin/requests?q=0611223344',{headers:owner})).json()).total,1,'phone search on normalized digits');
+   assert.equal((await(await call('/api/admin/requests?q=chauffagiste',{headers:owner})).json()).total,1,'activity search');
+   const emailOnly=await call('/api/devis',mutation({...short,phone:'',email:'Court@Example.TEST',activity:'Restaurant'},ip));assert.equal(emailOnly.status,201,await emailOnly.clone().text());
+   const savedEmail=await db.prepare('SELECT email,phone,activity FROM quote_requests WHERE email=?').bind('court@example.test').first();assert.deepEqual({...savedEmail},{email:'court@example.test',phone:'',activity:'Restaurant'});
+   const burst=await Promise.all(Array.from({length:7},()=>call('/api/devis',mutation({...short,phone:'+33 6 99 88 77 66'},burstIp))));assert.equal(burst.filter(r=>r.status===201).length,5);assert.equal(burst.filter(r=>r.status===429).length,2);
+   const other=await call('/api/devis',mutation({...short,phone:'07 99 88 77 66'},ip));assert.equal(other.status,201,'a different phone has its own counter');
+   const legacy=await db.prepare("SELECT activity FROM quote_requests WHERE email='projet@example.test'").first();assert.equal(legacy.activity,'','older requests read activity=\'\'');
+  });
   await t.test('consent-gated aggregate measurements and owner-only reporting',async()=>{
    for(const headers of [{},visitor])assert.equal((await call('/api/admin/analytics',{headers})).status,403);
    assert.equal((await call('/api/admin/analytics?days=120',{headers:owner})).status,400);
@@ -218,12 +240,12 @@ test('Production routes, owner authorization, persistent requests and security c
    const before=await runDetail(sendRun),code=before.campaign.code;assert.equal(before.counts.requests,0);
    await call('/services?utm_campaign='+code);assert.equal((await runDetail(sendRun)).counts.requests,0);
    const project={name:'Camille Projet',company:'Atelier Formulaire',email:'campaign-project@example.test',phone:'0600000000',service:'refonte',requestedServices:['automatisation','emailing','automatisation','refonte'],campaign:code,message:'Nous souhaitons refaire notre site et mieux gérer les demandes entrantes.',consent:true};
-   assert.equal((await call('/api/devis',mutation({...project,email:''}))).status,400);
+   const noContact=await call('/api/devis',mutation({...project,email:'',phone:''}));assert.equal(noContact.status,400);assert.equal(typeof (await noContact.json()).fields.email,'string');
    assert.equal((await call('/api/devis',mutation({...project,requestedServices:['unknown']}))).status,400);
    assert.equal((await call('/api/devis',mutation({...project,consent:false}))).status,400);
    assert.equal((await runDetail(sendRun)).counts.requests,0);
    assert.equal((await call('/api/devis',mutation(project))).status,201);
-   const saved=await db.prepare('SELECT * FROM quote_requests WHERE email=?').bind(project.email).first();assert.equal(saved.phone,project.phone);assert.equal(saved.service,'refonte');assert.match(saved.message,/Autres besoins :/);assert.match(saved.message,/Automatisation/);assert.match(saved.message,/emailing/i);assert.ok(saved.message.endsWith(project.message));
+   const saved=await db.prepare('SELECT * FROM quote_requests WHERE email=?').bind(project.email).first();assert.equal(saved.phone,'+33600000000');assert.equal(saved.service,'refonte');assert.match(saved.message,/Autres besoins :/);assert.match(saved.message,/Automatisation/);assert.match(saved.message,/emailing/i);assert.ok(saved.message.endsWith(project.message));
    assert.equal((await runDetail(sendRun)).counts.requests,1);
    const list=await(await call('/api/admin/campaigns',{headers:owner})).json();assert.equal(list.campaigns.find(c=>c.id===sendRun).requests,1);
    await db.prepare('UPDATE quote_requests SET expires_at=0 WHERE id=?').bind(saved.id).run();assert.equal((await runDetail(sendRun)).counts.requests,0);

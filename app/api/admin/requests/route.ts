@@ -18,13 +18,28 @@ export async function GET(request:Request){
   const now=Date.now();const args:(string|number)[]=[now];let where="expires_at > ?";
   if(status!=="all"){where+=" AND status = ?";args.push(status);}
   if(service!=="all"){where+=" AND service = ?";args.push(service);}
-  if(q){where+=" AND (instr(lower(name),lower(?))>0 OR instr(lower(company),lower(?))>0 OR instr(lower(email),lower(?))>0 OR instr(lower(reference),lower(?))>0)";args.push(q,q,q,q);}
+  if(q){
+   /* Recherche : nom, entreprise, email, référence, activité ; et téléphone sur chiffres normalisés quand q
+      ressemble à un numéro (4 chiffres au moins). « 06… » est aussi cherché sous la forme « 336… » (stockage
+      +33 du formulaire court). */
+   let clause="instr(lower(name),lower(?))>0 OR instr(lower(company),lower(?))>0 OR instr(lower(email),lower(?))>0 OR instr(lower(reference),lower(?))>0 OR instr(lower(activity),lower(?))>0";args.push(q,q,q,q,q);
+   const digits=q.replace(/\D/g,"");
+   if(/^[\d\s.+()-]+$/.test(q)&&digits.length>=4){
+    const phoneDigits="replace(replace(replace(replace(replace(replace(coalesce(phone,''),' ',''),'.',''),'-',''),'+',''),'(',''),')','')";
+    clause+=` OR instr(${phoneDigits},?)>0`;args.push(digits);
+    if(digits.startsWith("0")){clause+=` OR instr(${phoneDigits},?)>0`;args.push("33"+digits.slice(1));}
+   }
+   where+=` AND (${clause})`;
+  }
   const db=getQuoteDb();
   const results=await db.batch([
-   db.prepare(`SELECT id,reference,created_at,name,company,email,audience,data_source,volume,plan,quoted_amount_euros,status,service,city,budget,campaign FROM quote_requests WHERE ${where} ORDER BY created_at DESC,id DESC LIMIT 20 OFFSET ?`).bind(...args,(page-1)*20),
+   db.prepare(`SELECT id,reference,created_at,name,company,email,phone,activity,website_url,audience,data_source,volume,plan,quoted_amount_euros,status,service,city,budget,campaign FROM quote_requests WHERE ${where} ORDER BY created_at DESC,id DESC LIMIT 20 OFFSET ?`).bind(...args,(page-1)*20),
    db.prepare(`SELECT count(*) AS total FROM quote_requests WHERE ${where}`).bind(...args),
    db.prepare("SELECT status,count(*) AS total FROM quote_requests WHERE expires_at > ? GROUP BY status").bind(now),
+   /* Bande « À traiter » : la plus ancienne demande encore « Nouvelle » et le nombre de nouvelles de plus de 48 h. */
+   db.prepare("SELECT id,reference,created_at,(SELECT count(*) FROM quote_requests WHERE expires_at > ? AND status='new' AND created_at < ?) AS stale FROM quote_requests WHERE expires_at > ? AND status='new' ORDER BY created_at ASC,id ASC LIMIT 1").bind(now,now-48*3600000,now),
   ]);
-  return Response.json({requests:results[0].results,total:(results[1].results[0] as {total:number}).total,counts:results[2].results,page,pageSize:20},{headers:privateHeaders});
+  const oldest=(results[3].results[0] as {id:string;reference:string;created_at:number;stale:number}|undefined)||null;
+  return Response.json({requests:results[0].results,total:(results[1].results[0] as {total:number}).total,counts:results[2].results,page,pageSize:20,pending:oldest?{oldestId:oldest.id,oldestReference:oldest.reference,oldestAt:oldest.created_at,stale:oldest.stale}:null},{headers:privateHeaders});
  }catch{console.error("Admin list unavailable");return jsonError("Les demandes sont momentanément indisponibles.",503);}
 }

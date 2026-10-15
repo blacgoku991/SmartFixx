@@ -1,0 +1,1 @@
+ALTER TABLE `quote_requests` ADD `activity` text DEFAULT '' NOT NULL;
