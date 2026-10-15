@@ -11,8 +11,12 @@ const PLATES = { dev: DevPlate, auto: AutoPlate, secu: SecuPlate, seo: SeoPlate 
 export function PlateScene({ kind, label, description }: { kind: PlateKind; label: string; description: string }) {
   const Plate = PLATES[kind];
   return (
-    <div className="sv-hero-plate">
-      <ScenePlayer label={label} description={description} duration={6600} className="sv-scene">
+    // data-sx-ambient : MotionGate y pose data-sx-visible et data-sx-hold ; les règles du socle figent alors
+    // la scène hors écran et pendant un défilement (mesuré : une scène qui continuait hors écran coûtait
+    // jusqu'à 200 ms/s sous CPU × 4 pendant le défilement vers le bas de la page). ScenePlayer garde la main
+    // sur le départ, la pause et « Rejouer ».
+    <div className="sv-hero-plate" data-sx-ambient="">
+      <ScenePlayer label={label} description={description} duration={7200} className="sv-scene">
         <Plate />
       </ScenePlayer>
     </div>

@@ -12,7 +12,7 @@
 @media (min-width:1024px){.sv-hero-plate{margin-inline:auto 0}}
 
 /* =========================================================== PLANCHES */
-.sv-plate{position:relative;aspect-ratio:360/320;width:100%;container-type:inline-size;border-radius:20px;box-shadow:0 24px 48px -18px rgba(0,0,0,.45)}
+.sv-plate{position:relative;aspect-ratio:360/320;width:100%;container-type:inline-size;contain:layout paint style;border-radius:20px;box-shadow:0 24px 48px -18px rgba(0,0,0,.45)}
 .sv-plate>svg,.sv-ly svg{display:block;width:100%;height:100%;overflow:visible}
 .sv-ly{position:absolute;inset:0;pointer-events:none}
 /* Libellés HTML calés sur le viewBox : 14 unités = 14/360 de la largeur de la planche (cqw). (x, y) est le
