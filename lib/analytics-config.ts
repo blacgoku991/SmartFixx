@@ -6,4 +6,7 @@ import {measuredPaths} from './measured-paths';
    seul fichier que le composant client AudienceMeasurement a le droit d'importer. */
 export {measuredPaths};
 export const analyticsEvents=['view','service','contact','form_start','lead'] as const;
-export const pageLabel=(path:string)=>({'/':'Accueil','/services':'Expertises','/prospection-emailing':'Prospection emailing','/solutions':'Data & fichiers','/methode':'Méthode emailing','/tarifs':'Tarifs emailing','/garanties':'Garanties','/contact':'Contact','/diagnostic':'Diagnostic','/conseils':'Conseils','/confidentialite':'Confidentialité','/mentions-legales':'Mentions légales'}[path]||services.find(s=>`/${s.slug}`===path)?.title||locations.find(l=>`/${l.slug}`===path)?.title||guides.find(g=>`/conseils/${g.slug}`===path)?.title||path);
+/* Libellés du panel (statistiques), alignés sur les titres de la refonte : plus aucun « Tarifs » (aucun prix
+   publié), « Prestations » comme dans la navigation. Une nouvelle route publique s'ajoute ici et dans
+   lib/measured-paths.ts. */
+export const pageLabel=(path:string)=>({'/':'Accueil','/services':'Prestations','/prospection-emailing':'Prospection emailing','/solutions':'Fichier et audience emailing','/methode':'Méthode emailing','/tarifs':'Formules emailing','/garanties':'Engagements emailing','/contact':'Contact','/diagnostic':'Diagnostic','/conseils':'Conseils','/confidentialite':'Confidentialité','/mentions-legales':'Mentions légales'}[path]||services.find(s=>`/${s.slug}`===path)?.title||locations.find(l=>`/${l.slug}`===path)?.title||guides.find(g=>`/conseils/${g.slug}`===path)?.title||path);
