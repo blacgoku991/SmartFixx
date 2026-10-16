@@ -138,15 +138,19 @@
 @keyframes sv-flash-40-56{0%,40%{opacity:0}46%,50%{opacity:1}56%,100%{opacity:0}}
 @keyframes sv-flash-58-76{0%,58%{opacity:0}64%,70%{opacity:1}76%,100%{opacity:0}}
 /* Trajet de la demande (automatisation) : point de départ (152, 88) ; +56 u → sortie du formulaire,
-   +124 u → tableur, +150 u en y → contrôle humain, x = 84 u → notification. */
+   +124 u → tableur, +112 u en y → bord du contrôle humain (le point s'y arrête sans couvrir le texte),
+   puis il reparaît au départ de la flèche (208, 238) et la suit jusqu'au bord de la notification (152, 238). */
 @keyframes sv-au-dot{
   0%,24%{opacity:0;transform:none}
   27%{opacity:1;transform:none}
   36%{opacity:1;transform:translate3d(15.56%,0,0)}
   42%,48%{opacity:1;transform:translate3d(34.44%,0,0)}
-  60%,70%{opacity:1;transform:translate3d(34.44%,46.88%,0)}
-  84%{opacity:1;transform:translate3d(-18.89%,46.88%,0)}
-  92%,100%{opacity:0;transform:translate3d(-18.89%,46.88%,0)}
+  60%,68%{opacity:1;transform:translate3d(34.44%,35%,0)}
+  71%{opacity:0;transform:translate3d(34.44%,35%,0)}
+  73%{opacity:0;transform:translate3d(15.56%,46.88%,0)}
+  75%{opacity:1;transform:translate3d(15.56%,46.88%,0)}
+  84%{opacity:1;transform:translate3d(0,46.88%,0)}
+  92%,100%{opacity:0;transform:translate3d(0,46.88%,0)}
 }
 @keyframes sv-se-scan{
   0%,32%{opacity:0;transform:none}

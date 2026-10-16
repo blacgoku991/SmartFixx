@@ -1,7 +1,8 @@
 import { Layer, PlateFrame, T } from "./plate";
 /* Planche « formulaire → tableur → contrôle humain → notification » (automatisation), cas fictif.
    Récit (6,4 s, une fois) : les quatre étapes se posent ; une demande (point ambre) part du formulaire,
-   entre dans le tableur, descend jusqu'au contrôle humain qui s'allume, puis rejoint la notification.
+   entre dans le tableur, descend jusqu'au bord du contrôle humain qui s'allume, puis suit la dernière
+   flèche jusqu'à la notification (il ne passe jamais sur un libellé).
    Chaque flèche se trace juste avant le passage (calque qui grandit depuis son origine). La branche
    « erreur » reste visible : une étape qui échoue déclenche une alerte et une reprise à la main.
    Le point est un calque plein cadre déplacé en pourcentage (translate) : composité. État final : point
