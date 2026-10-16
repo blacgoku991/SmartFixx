@@ -16,6 +16,7 @@ export function CampaignMessageEditor({run,busy,onSave,onNext,onDirty}:{run:Camp
  const[base,setBase]=useState(run),[name,setName]=useState(run.name),[subject,setSubject]=useState(run.subject),[content,setContent]=useState<CampaignContent>({...JSON.parse(run.content_json),cta:discoveryCta}),[preview,setPreview]=useState(false),[device,setDevice]=useState<'desktop'|'phone'>('desktop');
  useEffect(()=>{if(run.name===base.name&&run.subject===base.subject&&run.content_json===base.content_json&&run.updated_at!==base.updated_at)setBase(run)},[run,base]);
  const editable=run.status==='draft';
+ const frameClass=device==='phone'?'pn-device pn-device--phone':'pn-device pn-device--desktop';
  const dirty=content.customHtml!==JSON.parse(base.content_json).customHtml||name!==base.name||subject!==base.subject||content.headline!==JSON.parse(base.content_json).headline||content.intro!==JSON.parse(base.content_json).intro||(content.style||'designed')!==(JSON.parse(base.content_json).style||'designed');
  function change(update:()=>void){update();onDirty(true)}
  const sample=(s:string)=>s.replaceAll('{{prenom}}','Camille').replaceAll('{{entreprise}}','votre entreprise');
@@ -38,7 +39,7 @@ export function CampaignMessageEditor({run,busy,onSave,onNext,onDirty}:{run:Camp
  <Dialog open={preview} onOpenChange={setPreview}><DialogContent className="pn-dialog pn-preview" showCloseButton={false}>
   <div className="pn-preview-head"><div><DialogTitle className="pn-dialog-title">Aperçu de votre email</DialogTitle><DialogDescription className="pn-muted">Exemple avec des coordonnées fictives. Aucun suivi dans cet aperçu.</DialogDescription></div><button type="button" className="pn-close" onClick={()=>setPreview(false)}><X size={18} aria-hidden="true"/><span>Fermer</span></button></div>
   <div className="pn-segment" role="group" aria-label="Largeur de l’aperçu"><button type="button" aria-pressed={device==='desktop'} onClick={()=>setDevice('desktop')}><Monitor size={16} aria-hidden="true"/>Ordinateur</button><button type="button" aria-pressed={device==='phone'} onClick={()=>setDevice('phone')}><Smartphone size={16} aria-hidden="true"/>Téléphone</button></div>
-  <div className={device==="phone"?"pn-device pn-device--phone":"pn-device pn-device--desktop"}><iframe sandbox="" referrerPolicy="no-referrer" title="Aperçu de votre email SmartFixx" srcDoc={html}/></div>
+  <div className={frameClass}><iframe sandbox="" referrerPolicy="no-referrer" title="Aperçu de votre email SmartFixx" srcDoc={html}/></div>
  </DialogContent></Dialog>
  </section>
 }
