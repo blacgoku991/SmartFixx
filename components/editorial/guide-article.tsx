@@ -28,13 +28,13 @@ export function GuideArticle({ guide }: { guide: Guide }) {
         className="ed-hero ed-hero--guide"
         breadcrumbs={[{ name: "Conseils", path: "/conseils" }, { name: guide.title, path }]}
         title={fr(guide.title)}
-        lead={<>{fr(guide.description)}<span className="ed-meta">
-          <span className="ed-meta-item"><span className="ed-meta-k">Guide</span> <span className="sx-ref">{num(index + 1)}</span> · {guide.category}</span>
-          <span className="ed-meta-item"><span className="ed-meta-k">Lecture</span> {readingMinutes(guide)} min</span>
-          <span className="ed-meta-item"><span className="ed-meta-k">Publié le</span> <time dateTime={guide.datePublished}>{frenchDate(guide.datePublished)}</time></span>
-          {updated ? <span className="ed-meta-item"><span className="ed-meta-k">Mis à jour le</span> <time dateTime={guide.dateModified}>{frenchDate(guide.dateModified)}</time></span> : null}
-          <span className="ed-meta-item"><span className="ed-meta-k">Par</span> {author}</span>
-        </span></>}
+        lead={fr(guide.description)}
+        actions={<><ButtonLink href={guide.cta.href} size="lg">{guide.cta.short ?? guide.cta.label}</ButtonLink><PhoneLink compact="sm" /></>}
+        proofs={[
+          `Guide ${num(index + 1)} · ${guide.category}`,
+          `Lecture ${readingMinutes(guide)} min · par ${author}`,
+          `Publié le ${frenchDate(guide.datePublished)}${updated ? ` · mis à jour le ${frenchDate(guide.dateModified)}` : ""}`,
+        ]}
         backdrop={
           <>
             <Glow tone="blue" size={720} top="-320px" right="-220px" />

@@ -13,13 +13,14 @@
 
 /* ---------- Hero de lecture ---------- */
 .ed-hero .sx-hero-copy{max-width:min(100%,50rem)}
-.ed-hero--guide .sx-h1-main,.ed-hero--legal .sx-h1-main{font-size:var(--sx-step-4)}
+/* LCP = H1 (layout-check) : sous 768 px, le titre d’un guide doit couvrir plus que le chapeau, et un titre
+   légal court plus que le texte du consentement (17 800 px² à 390 px). Mesuré : 33 000 contre 28 500 px²
+   (guide), 21 000 contre 17 800 px² (« Mentions légales » en 56 px). */
+.ed-hero--guide .sx-h1-main{font-size:clamp(2.5rem,1.6rem + 3vw,4rem)}
+.ed-hero--legal .sx-h1-main{font-size:clamp(3.5rem,2rem + 4.6vw,6rem)}
+@media (max-width:767.98px){.ed-hero--guide .sx-lead{font-size:1rem}}
 .ed-hero--guide .sx-hero-copy{max-width:min(100%,44rem)}
 .ed-hero .sx-lead{max-width:56ch}
-.ed-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:var(--sx-space-5);font-size:var(--sx-step--1);line-height:1.5;color:var(--sx-text)}
-.ed-meta-item{display:inline-flex;align-items:baseline;gap:6px}
-.ed-meta-k{color:var(--sx-text-muted)}
-.ed-meta .sx-ref{font-size:1rem}
 
 /* Fenêtre de lecture (décor du hero d'un guide, ≥ 1100 px) : fenêtre cintrée de façade parisienne, quatre
    carreaux dont la lumière passe d'une pièce à l'autre, balcon filant, plaque émaillée du numéro. */

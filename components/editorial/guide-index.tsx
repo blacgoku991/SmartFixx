@@ -1,5 +1,5 @@
 import "./editorial.css";
-import { Container, CtaBand, Glow, PageHero, Place, Section, SectionHead, Skyline } from "@/components/sx";
+import { ButtonLink, Container, CtaBand, Glow, PageHero, PhoneLink, Place, Section, SectionHead, Skyline } from "@/components/sx";
 import CampaignLink from "@/components/campaign-link";
 import { guides } from "@/lib/guides";
 import { GuideCard } from "./guide-card";
@@ -25,7 +25,8 @@ export function GuideIndex() {
         breadcrumbs={[{ name: "Conseils", path: "/conseils" }]}
         title="Conseils pour votre site internet,"
         tagline="vos outils et votre prospection"
-        lead="Trois guides pour préparer une décision : ce qu’il faut trancher avant de refaire un site, d’automatiser le suivi des demandes ou de lancer une première campagne d’emailing."
+        lead={"Trois guides pour préparer une décision\u202F: refaire un site, automatiser le suivi des demandes ou lancer une première campagne d’emailing."}
+        actions={<><ButtonLink href="/contact?service=conseil" size="lg">Poser ma question</ButtonLink><PhoneLink compact="sm" /></>}
         backdrop={
           <>
             <Glow tone="blue" size={760} top="-360px" right="-240px" />

@@ -30,11 +30,10 @@ export default function MentionsLegales() {
     <LegalLayout
       title="Mentions légales"
       path="/mentions-legales"
-      lead="Qui édite ce site, qui en répond et comment me joindre. Les informations ci-dessous sont celles de l’entreprise SmartFixx."
+      lead="Qui édite ce site et comment me joindre."
       toc={TOC}
     >
       <Chapter id="editeur" n={1} title="Éditeur du site">
-        <p>Le site est édité par l’entreprise de Mohamed, SmartFixx, qui présente ses prestations de création et de refonte de sites internet, de développement, d’automatisation, de sécurité web, de référencement et de prospection emailing.</p>
         <div className="ed-plate">
           <p className="ed-plate-head"><span className="ed-plate-dot" aria-hidden="true" />Fiche d’identité</p>
           <dl className="ed-plate-list">
@@ -49,6 +48,7 @@ export default function MentionsLegales() {
             <div><dt>Email</dt><dd><a href={mailHref}>{SITE_IDENTITY.EMAIL}</a></dd></div>
           </dl>
         </div>
+        <p>Le site est édité par l’entreprise de Mohamed, SmartFixx, qui présente ses prestations de création et de refonte de sites internet, de développement, d’automatisation, de sécurité web, de référencement et de prospection emailing.</p>
         <p>Ces informations sont celles présentées sur la page <Link href="/mentions-legales">mentions légales</Link> du site principal de SmartFixx.</p>
       </Chapter>
       <Chapter id="publication" n={2} title="Directeur de la publication">

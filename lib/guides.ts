@@ -26,7 +26,8 @@ export type Guide = {
   dateModified: string;
   sections: GuideSection[];
   source: { label: string; url: string } | null;
-  cta: { title: string; text: string; label: string; href: string; secondary: { href: string; label: string } };
+  /* short : libellé du bouton du hero (≤ 270 px à 360 px, budget de lignes du hero mobile). */
+  cta: { title: string; text: string; label: string; short?: string; href: string; secondary: { href: string; label: string } };
 };
 export const guides: Guide[] = [
   {
@@ -147,6 +148,7 @@ export const guides: Guide[] = [
       title: "Une première campagne en vue ?",
       text: "Je vous aide à choisir la cible, le sujet et le volume, puis je prépare un message que vous validez avant tout envoi.",
       label: "Voir les formules emailing",
+      short: "Voir les formules",
       href: "/tarifs",
       secondary: { href: "/prospection-emailing", label: "Comment je prépare une campagne d’emailing" },
     },

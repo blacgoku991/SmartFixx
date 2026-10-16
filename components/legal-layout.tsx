@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Glow, PageHero, PublicShell, Section } from "@/components/sx";
+import { ButtonLink, Glow, PageHero, PhoneLink, PublicShell, Section } from "@/components/sx";
 import { ReadingLayout, type TocItem } from "@/components/editorial/reading";
 import { SITE_IDENTITY, mailHref, telHref } from "@/lib/site-identity";
 /* Pages légales (lot 9) : PublicShell, hero de lecture (fil d'Ariane, H1, chapeau), puis le gabarit de
@@ -33,6 +33,7 @@ export function LegalLayout({ title, eyebrow, lead, path, crumb, toc, children }
         eyebrowDot={false}
         title={title}
         lead={lead}
+        actions={<><ButtonLink variant="ghost" href={mailHref} size="lg">Écrire à Mohamed</ButtonLink><PhoneLink compact="sm" /></>}
         backdrop={<><Glow tone="blue" size={640} top="-320px" right="-200px" /><span className="ed-legal-grid" /></>}
       />
       <Section className="ed-reading-section ed-reading-section--legal">

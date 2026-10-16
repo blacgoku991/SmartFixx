@@ -39,7 +39,7 @@ export default function Confidentialite() {
       title="Politique de confidentialité"
       path="/confidentialite"
       crumb="Confidentialité"
-      lead="Ce que deviennent les informations que vous m’envoyez, la mesure d’audience facultative du site et la manière d’exercer vos droits."
+      lead="Vos informations, leur usage, leur durée de conservation et vos droits."
       toc={TOC}
     >
       <Chapter id="responsable" n={1} title="Qui traite vos données">
