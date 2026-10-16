@@ -4,13 +4,12 @@
    Ordre : demandes à traiter, indicateurs de la période, courbe (recharts chargé par import() différé,
    place de 240 px réservée), suivi commercial, mesures détaillées. Une erreur garde l'en-tête et les
    blocs déjà chargés. Aucun compteur animé. */
-import { useEffect, useState, type ComponentType } from "react";
+import { useEffect, useRef, useState, type ComponentType } from "react";
 import { ArrowRight, ArrowUpRight, Eye, FileInput, Info, MousePointer2, RefreshCw, Send } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { StateError } from "./sx/states";
 import { serviceLabels, type ServiceId } from "@/lib/services";
 import type { RequestStatus } from "@/lib/admin-policy";
-import { pageLabel } from "@/lib/analytics-config";
 import { panelApi, errorText } from "./admin-panel/api";
 import { fmt, plural } from "./admin-panel/format";
 import type { Inbox } from "./admin-panel/shell";
@@ -48,14 +47,31 @@ export function AdminAnalytics({ inbox, onInbox }: { inbox: Inbox; onInbox: () =
     return () => controller.abort();
   }, [key, days]);
 
-  /* La courbe arrive après le premier rendu, hors du chemin critique. */
+  /* La courbe (recharts, ≈ 100 Ko gzip) n'est chargée que lorsque sa carte approche de l'écran, puis au
+     repos du fil principal : hors du chemin critique, et pas sur mobile tant qu'on ne défile pas. */
+  const chartRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let alive = true;
+    const el = chartRef.current;
     const start = () => void loadChart().then(m => { if (alive) setChart(() => m.default); }).catch(() => {});
     const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
-    if (w.requestIdleCallback) w.requestIdleCallback(start, { timeout: 2000 }); else setTimeout(start, 400);
-    return () => { alive = false; };
+    const later = () => { if (w.requestIdleCallback) w.requestIdleCallback(start, { timeout: 2000 }); else setTimeout(start, 400); };
+    if (!el || !("IntersectionObserver" in window)) { later(); return () => { alive = false; }; }
+    const io = new IntersectionObserver(entries => { if (entries.some(e => e.isIntersecting)) { io.disconnect(); later(); } }, { rootMargin: "120px 0px" });
+    io.observe(el);
+    return () => { alive = false; io.disconnect(); };
   }, []);
+
+  /* Libellés des pages (titres des services, villes et conseils) : chargés seulement s'il y a des pages à
+     nommer, pour garder ces contenus éditoriaux hors du JS initial du panel. */
+  const [label, setLabel] = useState<((path: string) => string) | null>(null);
+  const needLabels = !!report?.pages.length;
+  useEffect(() => {
+    if (!needLabels || label) return;
+    let alive = true;
+    void import("@/lib/analytics-config").then(m => { if (alive) setLabel(() => m.pageLabel); }).catch(() => {});
+    return () => { alive = false; };
+  }, [needLabels, label]);
 
   const sum = (event: string) => report?.activity.filter(x => x.event === event).reduce((s, x) => s + x.total, 0) || 0;
   const total = report?.projects.reduce((s, x) => s + x.total, 0) || 0;
@@ -130,7 +146,7 @@ export function AdminAnalytics({ inbox, onInbox }: { inbox: Inbox; onInbox: () =
           <h2 id="pn-chart-title" className="pn-h2">L’activité de votre site</h2>
           <p className="pn-legend"><span><i className="pn-legend-views" aria-hidden="true" />Vues mesurées</span><span><i className="pn-legend-leads" aria-hidden="true" />Demandes enregistrées</span></p>
         </div>
-        <div className="pn-chart" role="img" aria-label={report ? `Évolution sur ${report.days} jours : ${sum("view")} pages consultées avec accord, ${total} demandes enregistrées.` : "Graphique en cours de chargement"}>
+        <div ref={chartRef} className="pn-chart" role="img" aria-label={report ? `Évolution sur ${report.days} jours : ${sum("view")} pages consultées avec accord, ${total} demandes enregistrées.` : "Graphique en cours de chargement"}>
           {report && Chart ? <Chart data={timeline} /> : <span className="pn-chart-wait" aria-hidden="true" />}
         </div>
         <p className="pn-chart-foot"><span>{report ? `${report.startDay} → ${report.today} · UTC` : " "}</span><span>{report && sum("view") === 0 ? "La courbe se remplira avec les premières visites acceptant la mesure." : "Les vues ne correspondent pas à des visiteurs uniques."}</span></p>
@@ -172,7 +188,7 @@ export function AdminAnalytics({ inbox, onInbox }: { inbox: Inbox; onInbox: () =
             <h3 id="pn-pages-title" className="pn-h3">Pages consultées</h3>
             {report?.pages.length ? (
               <div className="pn-table-wrap"><table className="pn-table"><thead><tr><th scope="col">Page</th><th scope="col">Vues</th><th scope="col">Vers contact</th></tr></thead>
-                <tbody>{report.pages.map(p => <tr key={p.path}><td><a href={p.path} target="_blank" rel="noreferrer" className="pn-link">{pageLabel(p.path)}</a></td><td>{fmt(p.views)}</td><td>{fmt(p.contacts)}</td></tr>)}</tbody></table></div>
+                <tbody>{report.pages.map(p => <tr key={p.path}><td><a href={p.path} target="_blank" rel="noreferrer" className="pn-link">{label ? label(p.path) : p.path}</a></td><td>{fmt(p.views)}</td><td>{fmt(p.contacts)}</td></tr>)}</tbody></table></div>
             ) : <p className="pn-empty">{busy ? "Chargement…" : "Les premières pages mesurées apparaîtront ici."}</p>}
           </section>
           <section className="pn-card" aria-labelledby="pn-camps-title">

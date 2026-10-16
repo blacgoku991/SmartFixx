@@ -5,17 +5,24 @@
    contenu est dans un <main id="contenu"> (le lien d'évitement du layout y mène). html.sx-admin, posé et
    retiré ici, place le ThemeControl du layout dans l'emplacement réservé de la barre du haut.
    Seul l'onglet ouvert est monté : les sondages (5 s Campagnes, 60 s Emails) ne tournent qu'à l'écran. */
-import { useEffect, useLayoutEffect, useState, type ComponentType } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useState, type ComponentType, type ReactNode } from "react";
 import Link from "next/link";
 import { Tabs as TabsPrimitive } from "radix-ui";
 import { ArrowUpRight, ChartNoAxesCombined, Inbox, LogOut, Menu, Radio, Search, ShieldCheck, X } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "../ui/sheet";
-import { AdminDashboard } from "../admin-dashboard";
 import { AdminAnalytics } from "../admin-analytics";
-import { AdminCampaigns } from "../admin-campaigns";
-import { AdminEmailCampaigns } from "../admin-email-campaigns";
-import { Acquisition } from "./acquisition";
+import { StateLoading } from "../sx/states";
 import { configurePanel, sessionLost, type PanelTab } from "./api";
+
+/* Écrans chargés à la demande (React.lazy) : rendus par le serveur pour l'onglet demandé, mais leur JS
+   (zod des campagnes, modèles d'email, diagnostics SMTP…) ne part plus avec le tableau de bord. */
+const AdminDashboard = lazy(() => import("../admin-dashboard").then(m => ({ default: m.AdminDashboard })));
+const AdminCampaigns = lazy(() => import("../admin-campaigns").then(m => ({ default: m.AdminCampaigns })));
+const AdminEmailCampaigns = lazy(() => import("../admin-email-campaigns").then(m => ({ default: m.AdminEmailCampaigns })));
+const Acquisition = lazy(() => import("./acquisition").then(m => ({ default: m.Acquisition })));
+function Screen({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<div className="pn-screen"><StateLoading rows={4} rowHeight={64} label="Chargement de l’écran…" /></div>}>{children}</Suspense>;
+}
 import { getJson } from "@/lib/fetch-json";
 import { fmt } from "./format";
 
@@ -116,10 +123,10 @@ export function PanelShell({ name, initialTab, signoutHref, hostingNote, vps }: 
           </header>
           <main id="contenu" className="pn-main" tabIndex={-1}>
             <TabsPrimitive.Content value="overview" className="pn-panel"><AdminAnalytics inbox={inbox} onInbox={() => go("requests")} /></TabsPrimitive.Content>
-            <TabsPrimitive.Content value="requests" className="pn-panel"><AdminDashboard name={name} /></TabsPrimitive.Content>
-            <TabsPrimitive.Content value="campaigns" className="pn-panel"><AdminCampaigns onFollowup={() => go("emails", "stop")} onInbox={() => go("requests")} /></TabsPrimitive.Content>
-            <TabsPrimitive.Content value="emails" className="pn-panel"><AdminEmailCampaigns onInbox={() => go("requests")} onCampaigns={() => go("campaigns")} /></TabsPrimitive.Content>
-            <TabsPrimitive.Content value="acquisition" className="pn-panel"><Acquisition hostingNote={hostingNote} /></TabsPrimitive.Content>
+            <TabsPrimitive.Content value="requests" className="pn-panel"><Screen><AdminDashboard name={name} /></Screen></TabsPrimitive.Content>
+            <TabsPrimitive.Content value="campaigns" className="pn-panel"><Screen><AdminCampaigns onFollowup={() => go("emails", "stop")} onInbox={() => go("requests")} /></Screen></TabsPrimitive.Content>
+            <TabsPrimitive.Content value="emails" className="pn-panel"><Screen><AdminEmailCampaigns onInbox={() => go("requests")} onCampaigns={() => go("campaigns")} /></Screen></TabsPrimitive.Content>
+            <TabsPrimitive.Content value="acquisition" className="pn-panel"><Screen><Acquisition hostingNote={hostingNote} /></Screen></TabsPrimitive.Content>
           </main>
         </div>
       </TabsPrimitive.Root>

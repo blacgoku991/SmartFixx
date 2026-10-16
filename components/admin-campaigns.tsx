@@ -70,6 +70,7 @@ export function AdminCampaigns({onFollowup,onInbox}:{onFollowup:()=>void;onInbox
  {notice&&<p className="pn-alert pn-alert--success" role="status">{notice}</p>}
 
  {view==='list'?<>
+  <h2 className="pn-sr">Vos campagnes</h2>
   {!loadedOnce?(loading?<StateLoading rows={3} rowHeight={64} label="Chargement des campagnes…"/>:<StateError message={`Les campagnes n’ont pas pu être chargées ; elles restent enregistrées. ${syncError}`} onRetry={retryList}/>)
   :runs.length===0?<div className="pn-empty-state"><span className="pn-empty-mark" aria-hidden="true"><Send size={26}/></span><StateEmpty title="Votre première campagne commence ici." text="Un modèle prêt à l’emploi, une liste d’emails et trois étapes pour envoyer." action={<button type="button" className="pn-btn pn-btn--primary" disabled={blocked} onClick={startCreate}>Créer ma campagne <ArrowRight size={18} aria-hidden="true"/></button>}/></div>
   :<section className="pn-card pn-card--flush" aria-label="Vos campagnes">
