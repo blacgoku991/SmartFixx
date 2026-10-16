@@ -21,6 +21,8 @@
 .sv-tx--m{transform:translate(-50%,-84%)}
 .sv-tx--e{transform:translate(-100%,-84%)}
 .sv-tx--b{font-weight:650}
+/* Libellé serré (cases étroites : nœuds de la sécurité, priorités, compteurs) : 12,5 unités. */
+.sv-tx--sm{font-size:12.5px;font-size:calc(100cqw * 12.5 / 360)}
 .sv-tx--muted{color:var(--sx-text-muted)}
 .sv-tx--signal{color:var(--sx-signal-text)}
 .sv-tx--accent{color:var(--sx-accent)}

@@ -18,8 +18,9 @@ import type { Service } from "@/lib/services";
    quand (objet chrome en vignette lazy ≤ 320 px), livrables et limites, exemple illustratif (guide lié cité
    dans le texte), déroulement, FAQ, pour aller plus loin (related), bandeau d'appel, JSON-LD Service (le
    BreadcrumbList est rendu par le fil d'Ariane du hero).
-   Création et refonte passent par AcquisitionPage (lot 2) ; tant que son bouchon rend cette page, une
-   version générique (sans planche ni exemple) est servie pour ces deux slugs.
+   Création et refonte passent par AcquisitionPage (lot 2, branché dans app/[slug]/page.tsx) ; si un jour
+   une prestation sans contenu dédié arrivait ici, une version générique (sans planche ni exemple) est
+   servie plutôt qu'une erreur.
    Graines de ville : 6, 7, 9, 10 (accueil 0, bandeau 5, création 3, refonte 8). */
 const SEEDS: Record<string, number> = { developpement: 6, automatisation: 7, cybersecurite: 9, seo: 10 };
 function Hero({ s, c }: { s: Service; c: ServicePageContent }) {
@@ -38,7 +39,7 @@ function Hero({ s, c }: { s: Service; c: ServicePageContent }) {
     />
   );
 }
-/* Repli générique (création et refonte, jusqu'au branchement d'AcquisitionPage). */
+/* Repli générique : prestation sans contenu dédié dans components/services/content.ts. */
 function fallback(s: Service): ServicePageContent {
   const e = getExperience(s.id);
   return {

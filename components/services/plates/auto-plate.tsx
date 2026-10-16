@@ -11,7 +11,7 @@ function Arrow({ d, head }: { d: string; head: string }) {
 }
 export function AutoPlate() {
   return (
-    <PlateFrame kind="auto" heading="Planche · Flux">
+    <PlateFrame kind="auto" heading="Flux automatisé">
       <Layer className="sv-au-n sv-au-n1" svg={<>
         <rect className="sv-p-card" x="16" y="50" width="136" height="76" rx="12" />
         <rect className="sv-p-field" x="30" y="84" width="108" height="12" rx="4" />

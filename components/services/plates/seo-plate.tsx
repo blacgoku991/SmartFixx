@@ -11,7 +11,7 @@ const PAGES = [
 ];
 export function SeoPlate() {
   return (
-    <PlateFrame kind="seo" heading="Planche · Référencement">
+    <PlateFrame kind="seo" heading="Référencement">
       <Layer className="sv-so-q" svg={<>
         <rect className="sv-p-query" x="16" y="48" width="328" height="40" rx="20" />
         <circle className="sv-p-lens" cx="36" cy="66" r="6" />

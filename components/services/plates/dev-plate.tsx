@@ -16,7 +16,7 @@ const ROLES = [
 const TILES: [string, number][] = [["À traiter", 72], ["En cours", 164], ["Terminés", 256]];
 export function DevPlate() {
   return (
-    <PlateFrame kind="dev" heading="Planche · Outil métier">
+    <PlateFrame kind="dev" heading="Outil métier">
       <Layer className="sv-dev-win" svg={<>
         <rect className="sv-p-card" x="16" y="46" width="328" height="150" rx="12" />
         <path className="sv-p-bar" d="M28 46H332A12 12 0 0 1 344 58V70H16V58A12 12 0 0 1 28 46Z" />
@@ -26,7 +26,7 @@ export function DevPlate() {
         <T x={72} y={63} c="sv-tx--b">Interventions</T>
       </Layer>
       <Layer className="sv-dev-tiles" svg={<>{TILES.map(([t, x]) => <rect key={t} className="sv-p-tile" x={x} y="78" width="80" height="30" rx="8" />)}</>}>
-        {TILES.map(([t, x]) => <T key={t} x={x + 40} y={98} a="m">{t}</T>)}
+        {TILES.map(([t, x]) => <T key={t} x={x + 40} y={98} a="m" c="sv-tx--sm">{t}</T>)}
       </Layer>
       {ROWS.map((r, i) => (
         <Layer className={`sv-dev-row sv-dev-row${i + 1}`} key={r.name} svg={<rect className="sv-p-row" x="72" y={r.y} width="260" height="22" rx="6" />}>
