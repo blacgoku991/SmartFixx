@@ -38,7 +38,7 @@ export function CampaignMessageEditor({run,busy,onSave,onNext,onDirty}:{run:Camp
  <Dialog open={preview} onOpenChange={setPreview}><DialogContent className="pn-dialog pn-preview" showCloseButton={false}>
   <div className="pn-preview-head"><div><DialogTitle className="pn-dialog-title">Aperçu de votre email</DialogTitle><DialogDescription className="pn-muted">Exemple avec des coordonnées fictives. Aucun suivi dans cet aperçu.</DialogDescription></div><button type="button" className="pn-close" onClick={()=>setPreview(false)}><X size={18} aria-hidden="true"/><span>Fermer</span></button></div>
   <div className="pn-segment" role="group" aria-label="Largeur de l’aperçu"><button type="button" aria-pressed={device==='desktop'} onClick={()=>setDevice('desktop')}><Monitor size={16} aria-hidden="true"/>Ordinateur</button><button type="button" aria-pressed={device==='phone'} onClick={()=>setDevice('phone')}><Smartphone size={16} aria-hidden="true"/>Téléphone</button></div>
-  <div className={`pn-device pn-device--${device}`}><iframe sandbox="" referrerPolicy="no-referrer" title="Aperçu de votre email SmartFixx" srcDoc={html}/></div>
+  <div className={device==="phone"?"pn-device pn-device--phone":"pn-device pn-device--desktop"}><iframe sandbox="" referrerPolicy="no-referrer" title="Aperçu de votre email SmartFixx" srcDoc={html}/></div>
  </DialogContent></Dialog>
  </section>
 }

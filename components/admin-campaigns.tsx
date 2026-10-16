@@ -56,7 +56,7 @@ export function AdminCampaigns({onFollowup,onInbox}:{onFollowup:()=>void;onInbox
  function submitName(e:FormEvent){e.preventDefault();if(nameValid)void create(draftName.trim())}
  const retryList=()=>{setLoading(true);void refresh()};
 
- return <div className="pn-screen pn-camp">
+ return <div className="pn-screen">
  <header className="pn-head">
   <div className="pn-head-text"><p className="pn-eyebrow">Envois depuis votre compte SMTP</p><h1 className="pn-title">Campagnes</h1><p className="pn-lead">{view==='list'?'Vos messages, vos contacts et les demandes qu’ils génèrent.':'Un message clair. Les bons contacts. Un envoi maîtrisé.'}</p></div>
   <div className="pn-head-actions">

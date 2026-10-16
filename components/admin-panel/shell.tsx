@@ -109,9 +109,9 @@ export function PanelShell({ name, initialTab, signoutHref, hostingNote, vps }: 
             ))}
           </TabsPrimitive.List>
           <div className="pn-rail-foot">
-            <Link className="pn-nav-item pn-nav-link" href="/" target="_blank" rel="noreferrer"><ArrowUpRight size={20} aria-hidden="true" /><span className="pn-nav-label">Voir le site</span></Link>
+            <Link className="pn-nav-item" href="/" target="_blank" rel="noreferrer"><ArrowUpRight size={20} aria-hidden="true" /><span className="pn-nav-label">Voir le site</span></Link>
             <div className="pn-owner"><span className="pn-avatar" aria-hidden="true">{first.slice(0, 1).toUpperCase()}</span><span className="pn-owner-text"><span>{first}</span><small>Propriétaire</small></span></div>
-            <a className="pn-nav-item pn-nav-link" href={signoutHref} target="_top"><LogOut size={20} aria-hidden="true" /><span className="pn-nav-label">Se déconnecter</span></a>
+            <a className="pn-nav-item" href={signoutHref} target="_top"><LogOut size={20} aria-hidden="true" /><span className="pn-nav-label">Se déconnecter</span></a>
           </div>
         </aside>
 

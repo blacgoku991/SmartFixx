@@ -289,6 +289,7 @@ html.sx-admin{--sx-admin-theme-top:6px;--sx-admin-theme-right:12px}
 .pn-summary dd{margin:4px 0 0;font-weight:620;overflow-wrap:anywhere}
 .pn-device{display:flex;justify-content:center;padding:16px;border:1px solid var(--sx-line);border-radius:var(--sx-radius-md);background:var(--sx-surface-2)}
 .pn-device iframe{display:block;width:100%;max-width:680px;height:min(68vh,720px);border:0;border-radius:8px;background:var(--sx-surface);color-scheme:light}
+.pn-device--desktop iframe{max-width:680px}
 .pn-device--phone iframe{width:375px;max-width:100%;height:min(68vh,700px);border:8px solid var(--sx-surface-3);border-radius:28px}
 .pn-preview{width:min(940px,calc(100% - 24px));max-height:calc(100dvh - 24px);overflow-y:auto}
 .pn-preview-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
