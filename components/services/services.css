@@ -233,8 +233,9 @@
 @media (min-width:640px){.sv-signs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .sv-signs li{display:grid;grid-template-columns:12px minmax(0,1fr);gap:14px;align-items:start;padding:18px 20px;border:1px solid var(--sx-line);border-radius:var(--sx-radius-md);background:var(--sx-surface);line-height:1.45;box-shadow:var(--sx-shadow-1)}
 .sv-who-side{display:grid;gap:var(--sx-space-5);justify-items:center}
-.sv-object{position:relative;display:grid;place-items:center;width:100%;max-width:340px;aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--sx-accent-strong) 26%,transparent),transparent 72%)}
-.sv-object .sx-media{width:min(100%,320px);border-radius:var(--sx-radius-lg)}
+.sv-object{position:relative;display:grid;place-items:center;width:100%;max-width:280px;aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--sx-accent-strong) 26%,transparent),transparent 72%)}
+.sv-object .sx-media{width:min(100%,240px);border-radius:var(--sx-radius-lg)}
+@media (min-width:1024px){.sv-object{max-width:340px}.sv-object .sx-media{width:min(100%,320px)}}
 .sv-who-problem{margin:0;padding:var(--sx-space-5);border-left:3px solid var(--sx-signal);border-radius:0 var(--sx-radius-md) var(--sx-radius-md) 0;background:var(--sx-surface-2);color:var(--sx-text-muted);line-height:var(--sx-leading-body)}
 
 /* --- Livrables et limites (nuit) --- */

@@ -27,7 +27,10 @@ function Head({ id, eyebrow, title, text, light }: { id: string; eyebrow: string
   );
 }
 
-/* Pour qui et quand : signes concrets du besoin (fenêtres qui s'allument) et objet chrome en vignette. */
+/* Pour qui et quand : signes concrets du besoin (fenêtres qui s'allument) et objet chrome en vignette.
+   Vignette de 240 px sous 1024 px, 320 px au-delà : sur mobile, le fichier de 768 px (45 Ko) partait en
+   même temps que la police du H1 (chargement paresseux déclenché à moins de 1 250 px) et retardait le LCP
+   mesuré par Lighthouse ; à 240 px, c'est celui de 480 px (26 Ko). */
 export function Audience({ s, c }: { s: Service; c: ServicePageContent }) {
   return (
     <Section id="pour-qui" labelledBy="sv-pour-qui-titre" className="sv-who" ambient={<Glow tone="blue" size={640} top="-120px" right="-260px" duration={24} />}>
@@ -42,7 +45,7 @@ export function Audience({ s, c }: { s: Service; c: ServicePageContent }) {
           </div>
           <div className="sv-who-side">
             <div className="sv-object">
-              <Media src={c.media.src} base={c.media.base} alt={c.media.alt} width={1024} height={1024} maxWidth={320} sheen />
+              <Media src={c.media.src} base={c.media.base} alt={c.media.alt} width={1024} height={1024} maxWidth={320} sizes="(min-width: 1024px) 320px, 240px" sheen />
             </div>
             <p className="sv-who-problem">{s.problem}</p>
           </div>
