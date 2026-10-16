@@ -244,13 +244,13 @@
 @media (min-width:640px){.sv-deliv-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .sv-deliv-card{position:relative;display:grid;gap:var(--sx-space-3);align-content:start;padding:var(--sx-space-5);padding-right:56px;border-radius:var(--sx-radius-lg);background:linear-gradient(170deg,color-mix(in srgb,var(--sx-surface-2) 80%,var(--sx-indigo)),var(--sx-surface) 70%);box-shadow:var(--sx-shadow-1)}
 .sv-deliv-num{font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:2.25rem;line-height:1;letter-spacing:var(--sx-tracking-title);color:var(--sx-accent)}
-.sv-deliv-title{margin:0;font-size:var(--sx-step-1);line-height:1.25}
+.sv-deliv-title{margin:0;font-size:var(--sx-step-2);line-height:1.12}
 .sv-deliv-card p{margin:0;color:var(--sx-text-muted);line-height:var(--sx-leading-body)}
 /* Lampe : fenêtre allumée de la carte, qui respire très lentement (ambiance, data-sx-ambient). */
 .sv-lamp{position:absolute;top:var(--sx-space-5);right:var(--sx-space-5);width:16px;height:22px;border-radius:3px;border:1px solid color-mix(in srgb,var(--sx-window-on) 55%,transparent);background:color-mix(in srgb,var(--sx-window-on) 12%,transparent)}
 .sv-lamp i{position:absolute;inset:2px;border-radius:2px;background:var(--sx-window-on);box-shadow:0 0 14px 3px color-mix(in srgb,var(--sx-window-on) 50%,transparent)}
 .sv-limits{padding:var(--sx-space-5);border:1px dashed var(--sx-line-strong);border-radius:var(--sx-radius-lg);background:color-mix(in srgb,var(--sx-surface) 70%,transparent)}
-.sv-limits-title{margin:0 0 var(--sx-space-4);font-size:var(--sx-step-1);line-height:1.25}
+.sv-limits-title{margin:0 0 var(--sx-space-4);font-size:var(--sx-step-2);line-height:1.12}
 .sv-limits ul{display:grid;gap:var(--sx-space-4);margin:0;padding:0;list-style:none}
 .sv-limits li{display:grid;grid-template-columns:12px minmax(0,1fr);gap:14px;color:var(--sx-text-muted);line-height:var(--sx-leading-body)}
 @keyframes sv-lamp{0%,100%{opacity:1}45%{opacity:.55}60%{opacity:.9}}
@@ -274,7 +274,7 @@
 .sv-beat{position:relative;display:grid;gap:var(--sx-space-3);align-content:start;padding:var(--sx-space-5);border:1px solid var(--sx-line);border-radius:var(--sx-radius-lg);background:var(--sx-bg)}
 .sv-beat-step{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:2px solid var(--sx-signal);background:var(--sx-bg);color:var(--sx-text);font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:1.125rem;line-height:1}
 .sv-beat:first-child .sv-beat-step{border-color:var(--sx-line-strong)}
-.sv-beat-label{margin:0;font-size:var(--sx-step-1);line-height:1.25}
+.sv-beat-label{margin:0;font-size:var(--sx-step-2);line-height:1.12}
 .sv-beat p{margin:0;color:var(--sx-text-muted);line-height:var(--sx-leading-body)}
 .sv-guide-note{max-width:72ch;margin:var(--sx-space-7) 0 0;padding-top:var(--sx-space-5);border-top:1px solid var(--sx-line);color:var(--sx-text-muted);line-height:var(--sx-leading-body)}
 
