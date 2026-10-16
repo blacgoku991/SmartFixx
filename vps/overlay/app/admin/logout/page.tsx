@@ -1,3 +1,5 @@
-import '../legacy-tokens.css';
+import '../legacy-tokens.css';import '../workspace.css';
 export const metadata={title:'Déconnexion — SmartFixx',robots:{index:false,follow:false}};
-export default function Logout(){return <main className="section" style={{paddingTop:140}}><h1>Fermer votre session</h1><form action="/api/admin/logout" method="post"><button className="button button-primary">Se déconnecter</button></form></main>}
+/* Déconnexion (VPS) : même POST /api/admin/logout (contrôle d'origine, cookie effacé, 303 vers /admin/login).
+   « Annuler » ramène au panel sans rien changer. */
+export default function Logout(){return <main className="pn-gate"><div className="pn-gate-top"><a href="/" className="pn-gate-brand" aria-label="SmartFixx, retour au site"><img src="/smartfixx-logo.webp" width="40" height="40" alt=""/><span>SmartFixx</span></a></div><section className="pn-gate-card" aria-labelledby="pn-gate-title"><p className="pn-eyebrow">Administration</p><h1 id="pn-gate-title" className="pn-gate-title">Fermer votre session ?</h1><p className="pn-gate-text">Vos demandes et vos campagnes restent enregistrées. Les envois déjà lancés continuent avec le relais.</p><form action="/api/admin/logout" method="post" className="pn-gate-form"><button type="submit" className="pn-btn pn-btn--primary pn-btn--block pn-btn--lg">Se déconnecter</button><a href="/admin" className="pn-btn pn-btn--ghost pn-btn--block pn-btn--lg">Annuler</a></form></section><div className="pn-gate-city" aria-hidden="true"><span/><span/><span/><span/><span/><span/><span/><span/></div></main>}

@@ -1,19 +1,192 @@
-'use client';
-import {useEffect,useState} from 'react';
-import {AreaChart,Area,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer} from 'recharts';
-import {Eye,MousePointer2,Inbox,CheckCircle2,RefreshCw,ArrowUpRight,Clock3,ChartNoAxesCombined,Info} from 'lucide-react';
-import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from './ui/select';
-import {Table,TableHeader,TableHead,TableRow,TableBody,TableCell} from './ui/table';
-import {serviceLabels,type ServiceId} from '@/lib/services';
-import {statusLabels,type RequestStatus} from '@/lib/admin-policy';
-import {pageLabel} from '@/lib/analytics-config';
-import {formatNumber} from '@/lib/offers';
-type Report={days:number;startDay:string;today:string;generatedAt:number;activity:{day:string;event:string;total:number}[];pages:{path:string;views:number;contacts:number}[];interests:{service:string;total:number}[];projects:{service:ServiceId;status:RequestStatus;total:number}[];dailyProjects:{day:string;total:number}[];campaigns:{campaign:string;total:number;won:number}[];awaiting48h:{total:number};firstAction:{hours:number|null;total:number}};
-export function AdminAnalytics({detail=false,onInbox}:{detail?:boolean;onInbox:()=>void}){const[days,setDays]=useState('30'),[report,setReport]=useState<Report|null>(null),[loading,setLoading]=useState(true),[error,setError]=useState(''),[tick,setTick]=useState(0);
- useEffect(()=>{const c=new AbortController();setLoading(true);setError('');fetch(`/api/admin/analytics?days=${days}`,{cache:'no-store',signal:c.signal}).then(async r=>{const data=await r.json();if(!r.ok)throw new Error((data as {error?:string}).error||'Impossible de charger les statistiques.');return data as Report;}).then(setReport).catch(e=>{if(e.name!=='AbortError')setError(e.message)}).finally(()=>{if(!c.signal.aborted)setLoading(false)});return()=>c.abort()},[days,tick]);
- const fmt=(n:number)=>formatNumber(n);const sum=(event:string)=>report?.activity.filter(x=>x.event===event).reduce((s,x)=>s+x.total,0)||0;
- const total=report?.projects.reduce((s,x)=>s+x.total,0)||0,won=report?.projects.filter(x=>x.status==='won').reduce((s,x)=>s+x.total,0)||0;
- const timeline=report?Array.from({length:report.days},(_,i)=>{const day=new Date(new Date(`${report.startDay}T00:00:00Z`).getTime()+i*86400000).toISOString().slice(0,10);return {day:day.slice(8)+'/'+day.slice(5,7),views:report.activity.filter(x=>x.day===day&&x.event==='view').reduce((s,x)=>s+x.total,0),leads:report.dailyProjects.find(x=>x.day===day)?.total||0}}):[];
- const metric=loading?'—':null;
- return <div className="analytics-workspace"><div className="workspace-heading"><div><p className="eyebrow">SMARTFIXX / {detail?'MESURE & ACQUISITION':'VUE D’ENSEMBLE'}</p><h1>{detail?'Comprendre ce qui attire.':'Votre activité, en clair.'}</h1><p>{detail?'Pages, expertises et campagnes : observez où se crée l’intérêt.':'Les demandes reçues et les actions mesurées sur votre site.'}</p></div><div className="report-controls"><Select value={days} onValueChange={setDays}><SelectTrigger aria-label="Période des statistiques"><SelectValue/></SelectTrigger><SelectContent>{['7','30','90'].map(d=><SelectItem key={d} value={d}>{d} derniers jours</SelectItem>)}</SelectContent></Select><button onClick={()=>setTick(x=>x+1)} aria-label="Actualiser les statistiques" disabled={loading}><RefreshCw size={18} className={loading?'spin':''}/></button></div></div>{error?<div className="admin-error" role="alert">{error}<button onClick={()=>setTick(x=>x+1)}>Réessayer</button></div>:<><div className="report-metrics">{[{label:'Pages consultées',value:sum('view'),icon:Eye,note:'Vues mesurées avec accord'},{label:'Clics vers le contact',value:sum('contact'),icon:MousePointer2,note:'Actions mesurées avec accord'},{label:'Demandes reçues',value:total,icon:Inbox,note:'Formulaires enregistrés',accent:true},{label:'Projets gagnés',value:won,icon:CheckCircle2,note:'Statut renseigné dans l’admin'}].map(m=><article className={m.accent?'metric-accent':''} key={m.label}><div><span>{m.label}</span><m.icon size={21}/></div><strong>{metric||fmt(m.value)}</strong><small>{m.note}</small></article>)}</div><div className="report-main-grid"><section className="report-card chart-card"><div className="report-card-heading"><div><p className="eyebrow">SUR LA PÉRIODE</p><h2>L’activité de votre site</h2></div><span><i/> Vues mesurées</span></div><div className="report-chart" role="img" aria-label={loading?'Chargement du graphique':`Évolution sur ${days} jours. ${sum('view')} pages consultées avec accord. ${total} demandes reçues.`}>{loading?<div className="chart-loading">Chargement des statistiques…</div>:<ResponsiveContainer width="100%" height="100%"><AreaChart data={timeline} margin={{top:15,right:12,bottom:0,left:-22}}><defs><linearGradient id="views-gradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#698aff" stopOpacity={.4}/><stop offset="100%" stopColor="#698aff" stopOpacity={0}/></linearGradient></defs><CartesianGrid stroke="#293449" strokeDasharray="3 5" vertical={false}/><XAxis dataKey="day" stroke="#a0aec5" tickLine={false} axisLine={false} minTickGap={35} tick={{fontSize:12}}/><YAxis stroke="#a0aec5" tickLine={false} axisLine={false} allowDecimals={false} tick={{fontSize:12}}/><Tooltip contentStyle={{background:'#182339',border:'1px solid #415374',borderRadius:12,color:'#fff'}} labelStyle={{color:'#b9c8df'}}/><Area type="monotone" dataKey="views" name="Vues mesurées" stroke="#819bff" strokeWidth={2.5} fill="url(#views-gradient)" isAnimationActive={false}/></AreaChart></ResponsiveContainer>}</div><div className="chart-foot"><span>{report?.startDay} → {report?.today} · UTC</span><span>{sum('view')===0&&!loading?'La courbe se remplira avec les premières visites acceptant la mesure.':'Les vues ne correspondent pas à des visiteurs uniques.'}</span></div></section><section className="report-card followup-card"><p className="eyebrow">LA PROCHAINE ACTION COMPTE</p><span className="followup-icon"><Clock3 size={28}/></span><strong>{metric||fmt(report?.awaiting48h.total||0)}</strong><h2>demande{report?.awaiting48h.total===1?'':'s'} nouvelle{report?.awaiting48h.total===1?'':'s'} depuis plus de 48 h</h2><p>Sur l’ensemble des demandes conservées. Faites le point sur les contacts qui attendent un premier suivi.</p><button onClick={onInbox} className="button button-primary">Ouvrir les demandes <ArrowUpRight size={18}/></button></section></div><div className="report-secondary-grid"><section className="report-card"><div className="report-card-heading"><div><p className="eyebrow">CE QUE L’ON VOUS DEMANDE</p><h2>Les expertises sollicitées</h2></div><ChartNoAxesCombined size={23}/></div><div className="service-bars">{Object.entries(serviceLabels).map(([id,label])=>{const n=report?.projects.filter(x=>x.service===id).reduce((s,x)=>s+x.total,0)||0;return <div key={id}><div><span>{label}</span><strong>{loading?'—':fmt(n)}</strong></div><div className="metric-track"><span style={{width:`${total?n/total*100:0}%`}}/></div></div>})}</div></section><section className="report-card"><p className="eyebrow">DU PREMIER MESSAGE AU PROJET</p><h2>Le suivi commercial</h2><div className="status-distribution">{Object.entries(statusLabels).map(([status,label])=><div key={status}><span className={`request-status status-${status}`}>{label}</span><strong>{loading?'—':fmt(report?.projects.filter(x=>x.status===status).reduce((s,x)=>s+x.total,0)||0)}</strong></div>)}</div><div className="conversion-note"><strong>{!loading&&total?`${Math.round(won/total*100)} %`:'—'}</strong><span>des demandes reçues sur la période sont actuellement marquées « gagnées ».</span></div><p className="report-small">Premier suivi enregistré : {report?.firstAction.hours!=null?`${report.firstAction.hours.toFixed(1)} h en moyenne (${report.firstAction.total} demande${report.firstAction.total>1?'s':''})`:'pas encore de données'}.</p></section></div>{detail&&<section className="report-card interest-card"><p className="eyebrow">DANS L’EXPLORATEUR ET LES LIENS D’EXPERTISE</p><h2>Les choix mesurés</h2><div className="interest-grid">{Object.entries(serviceLabels).filter(([id])=>id!=='conseil').map(([id,label])=><div key={id}><span>{label}</span><strong>{loading?'—':fmt(report?.interests.find(i=>i.service===id)?.total||0)}</strong><small>clics avec accord</small></div>)}</div></section>}<div className="report-secondary-grid"><section className="report-card report-table"><div className="report-card-heading"><div><p className="eyebrow">LES PORTES D’ENTRÉE</p><h2>Pages consultées</h2></div></div>{report?.pages.length?<Table><TableHeader><TableRow><TableHead>Page</TableHead><TableHead>Vues</TableHead><TableHead>Vers contact</TableHead></TableRow></TableHeader><TableBody>{report.pages.map(p=><TableRow key={p.path}><TableCell><a href={p.path} target="_blank" rel="noreferrer">{pageLabel(p.path)}</a></TableCell><TableCell>{fmt(p.views)}</TableCell><TableCell>{fmt(p.contacts)}</TableCell></TableRow>)}</TableBody></Table>:<div className="report-empty">{loading?'Chargement…':'Les premières pages mesurées apparaîtront ici.'}</div>}</section><section className="report-card report-table"><div className="report-card-heading"><div><p className="eyebrow">ORIGINE DÉCLARÉE DES DEMANDES</p><h2>Vos campagnes</h2></div></div>{report?.campaigns.length?<Table><TableHeader><TableRow><TableHead>Campagne</TableHead><TableHead>Demandes</TableHead><TableHead>Gagnées</TableHead></TableRow></TableHeader><TableBody>{report.campaigns.map(c=><TableRow key={c.campaign}><TableCell>{c.campaign==='site'?'Site / non renseignée':c.campaign}</TableCell><TableCell>{fmt(c.total)}</TableCell><TableCell>{fmt(c.won)}</TableCell></TableRow>)}</TableBody></Table>:<div className="report-empty">{loading?'Chargement…':'Les demandes provenant de vos liens identifiés apparaîtront ici.'}</div>}</section></div><div className="report-explainer"><Info size={20}/><p>Les vues, clics et {sum('form_start')} débuts de formulaire concernent uniquement les visiteurs ayant accepté la mesure. Toutes les demandes enregistrées sont comptées séparément : ces volumes ne forment pas un entonnoir individuel. Les campagnes proviennent du code présent dans le lien soumis. Les emails préparés, leurs mesures autorisées et les désinscriptions figurent dans « Emails & STOP ». Les envois SMTP sont pilotés dans « Campagnes ». Les positions Google et le chiffre d’affaires ne sont pas connectés.</p></div>{report&&<p className="report-updated">Mis à jour à {new Date(report.generatedAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Paris'})} · Les rapports ne contiennent aucune donnée de démonstration.</p>}</>}</div>;
+"use client";
+/* Panel (lot 6) : Tableau de bord, fusion de l'ancienne Vue d'ensemble et des Statistiques (?tab=analytics
+   s'ouvre ici, ancré sur « Mesures détaillées »). Appel inchangé : GET /api/admin/analytics?days=7|30|90.
+   Ordre : demandes à traiter, indicateurs de la période, courbe (recharts chargé par import() différé,
+   place de 240 px réservée), suivi commercial, mesures détaillées. Une erreur garde l'en-tête et les
+   blocs déjà chargés. Aucun compteur animé. */
+import { useEffect, useState, type ComponentType } from "react";
+import { ArrowRight, ArrowUpRight, Eye, FileInput, Info, MousePointer2, RefreshCw, Send } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { StateError } from "./sx/states";
+import { serviceLabels, type ServiceId } from "@/lib/services";
+import type { RequestStatus } from "@/lib/admin-policy";
+import { pageLabel } from "@/lib/analytics-config";
+import { panelApi, errorText } from "./admin-panel/api";
+import { fmt, plural } from "./admin-panel/format";
+import type { Inbox } from "./admin-panel/shell";
+import type { ChartPoint } from "./admin-panel/activity-chart";
+
+type Report = { days: number; startDay: string; today: string; generatedAt: number; activity: { day: string; event: string; total: number }[]; pages: { path: string; views: number; contacts: number }[]; interests: { service: string; total: number }[]; projects: { service: ServiceId; status: RequestStatus; total: number }[]; dailyProjects: { day: string; total: number }[]; campaigns: { campaign: string; total: number; won: number }[]; awaiting48h: { total: number }; firstAction: { hours: number | null; total: number } };
+
+/* Statuts au féminin, comme l'onglet Demandes (API inchangée). Pastille point + texte, jamais la couleur seule. */
+const STATUS: { id: RequestStatus; label: string; chip: string }[] = [
+  { id: "new", label: "Nouvelles", chip: "sx-chip sx-chip--signal" },
+  { id: "in_progress", label: "En cours", chip: "sx-chip sx-chip--accent" },
+  { id: "quoted", label: "Devis envoyé", chip: "sx-chip sx-chip--violet" },
+  { id: "won", label: "Gagnées", chip: "sx-chip sx-chip--success" },
+  { id: "archived", label: "Archivées", chip: "sx-chip" },
+];
+const WINDOWS = 12;
+
+let chartModule: Promise<{ default: ComponentType<{ data: ChartPoint[] }> }> | null = null;
+const loadChart = () => (chartModule ??= import("./admin-panel/activity-chart"));
+
+export function AdminAnalytics({ inbox, onInbox }: { inbox: Inbox; onInbox: () => void }) {
+  const [days, setDays] = useState("30"), [tick, setTick] = useState(0);
+  const key = `${days}|${tick}`;
+  const [report, setReport] = useState<Report | null>(null);
+  const [loaded, setLoaded] = useState<{ key: string; error: string } | null>(null);
+  const loading = loaded?.key !== key;
+  const error = loaded?.key === key ? loaded.error : "";
+  const [Chart, setChart] = useState<ComponentType<{ data: ChartPoint[] }> | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController(), current = key;
+    panelApi<Report>(`/api/admin/analytics?days=${days}`, undefined, "POST", controller.signal)
+      .then(data => { if (!controller.signal.aborted) { setReport(data); setLoaded({ key: current, error: "" }); } })
+      .catch(e => { if (!controller.signal.aborted) setLoaded({ key: current, error: errorText(e, "Les statistiques sont momentanément indisponibles.") }); });
+    return () => controller.abort();
+  }, [key, days]);
+
+  /* La courbe arrive après le premier rendu, hors du chemin critique. */
+  useEffect(() => {
+    let alive = true;
+    const start = () => void loadChart().then(m => { if (alive) setChart(() => m.default); }).catch(() => {});
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    if (w.requestIdleCallback) w.requestIdleCallback(start, { timeout: 2000 }); else setTimeout(start, 400);
+    return () => { alive = false; };
+  }, []);
+
+  const sum = (event: string) => report?.activity.filter(x => x.event === event).reduce((s, x) => s + x.total, 0) || 0;
+  const total = report?.projects.reduce((s, x) => s + x.total, 0) || 0;
+  const won = report?.projects.filter(x => x.status === "won").reduce((s, x) => s + x.total, 0) || 0;
+  const byStatus = (status: RequestStatus) => report?.projects.filter(x => x.status === status).reduce((s, x) => s + x.total, 0) || 0;
+  const timeline: ChartPoint[] = report ? Array.from({ length: report.days }, (_, i) => {
+    const day = new Date(new Date(`${report.startDay}T00:00:00Z`).getTime() + i * 86400000).toISOString().slice(0, 10);
+    return { day: day.slice(8) + "/" + day.slice(5, 7), views: report.activity.filter(x => x.day === day && x.event === "view").reduce((s, x) => s + x.total, 0), leads: report.dailyProjects.find(x => x.day === day)?.total || 0 };
+  }) : [];
+  const show = (n: number) => (report ? fmt(n) : null);
+  const busy = loading && !report;
+  const fresh = inbox?.fresh ?? null, stale48 = report?.awaiting48h.total ?? inbox?.stale ?? null;
+  const lit = Math.min(WINDOWS, fresh || 0);
+
+  const metrics: { label: string; value: number; icon: ComponentType<{ size?: number; "aria-hidden"?: boolean }>; note: string }[] = [
+    { label: "Pages consultées", value: sum("view"), icon: Eye, note: "Vues mesurées avec accord" },
+    { label: "Clics vers le contact", value: sum("contact"), icon: MousePointer2, note: "Actions mesurées avec accord" },
+    { label: "Débuts de formulaire", value: sum("form_start"), icon: FileInput, note: "Premiers champs remplis, avec accord" },
+    { label: "Demandes enregistrées mesurées", value: sum("lead"), icon: Send, note: "Formulaires enregistrés par des visiteurs ayant accepté la mesure" },
+  ];
+
+  return (
+    <div className="pn-screen" aria-busy={busy || undefined}>
+      <header className="pn-head">
+        <div className="pn-head-text">
+          <p className="pn-eyebrow">Tableau de bord</p>
+          <h1 className="pn-title">Votre activité, en clair.</h1>
+          <p className="pn-lead">Les demandes à traiter d’abord, puis ce que mesure le site.</p>
+        </div>
+        <div className="pn-controls">
+          <Select value={days} onValueChange={setDays}>
+            <SelectTrigger className="pn-select" aria-label="Période des statistiques"><SelectValue /></SelectTrigger>
+            <SelectContent>{["7", "30", "90"].map(d => <SelectItem key={d} value={d}>{d} derniers jours</SelectItem>)}</SelectContent>
+          </Select>
+          <button type="button" className="pn-btn pn-btn--ghost" onClick={() => setTick(x => x + 1)} disabled={loading}>
+            <RefreshCw size={18} aria-hidden="true" className={loading ? "pn-spin" : undefined} /><span>Actualiser</span>
+          </button>
+        </div>
+      </header>
+
+      {error ? <StateError message={report ? `${error} Les dernières données reçues restent affichées.` : error} onRetry={() => setTick(x => x + 1)} /> : null}
+
+      <section className={`pn-todo${fresh ? " pn-todo--on" : ""}`} aria-labelledby="pn-todo-title">
+        <div className="pn-todo-city" aria-hidden="true">
+          {Array.from({ length: WINDOWS }, (_, i) => <span key={i} className={i < lit ? "pn-win pn-win--on" : "pn-win"} />)}
+        </div>
+        <div className="pn-todo-text">
+          <h2 id="pn-todo-title" className="pn-h2">À traiter <span className="pn-count">{fresh === null ? "–" : fmt(fresh)}</span></h2>
+          <p>{fresh === null ? "Lecture des demandes…" : fresh ? <>{fresh > 1 ? `${fmt(fresh)} nouvelles demandes attendent` : "1 nouvelle demande attend"} un premier suivi{stale48 ? <>, dont <strong>{stale48 > 1 ? `${fmt(stale48)} depuis plus de 48 h` : "1 depuis plus de 48 h"}</strong></> : null}.</> : "Aucune nouvelle demande en attente. Chaque fenêtre s’allumera à l’arrivée d’une demande."}</p>
+        </div>
+        <button type="button" onClick={onInbox} className={`pn-btn ${fresh ? "pn-btn--signal" : "pn-btn--ghost"}`}>Ouvrir les demandes <ArrowRight size={18} aria-hidden="true" /></button>
+      </section>
+
+      <section aria-labelledby="pn-kpi-title">
+        <div className="pn-section-head">
+          <h2 id="pn-kpi-title" className="pn-h2">Sur les {days} derniers jours</h2>
+          <p className="pn-muted">Mesures du site, uniquement pour les visiteurs ayant accepté la mesure d’audience.</p>
+        </div>
+        <div className="pn-metrics">
+          {metrics.map(m => (
+            <article key={m.label} className="pn-metric">
+              <div className="pn-metric-top"><span>{m.label}</span><m.icon size={18} aria-hidden={true} /></div>
+              <strong className="pn-metric-value">{show(m.value) ?? <span className="pn-skel" aria-hidden="true" />}</strong>
+              <small>{m.note}</small>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="pn-card pn-chart-card" aria-labelledby="pn-chart-title">
+        <div className="pn-card-head pn-card-head--split">
+          <h2 id="pn-chart-title" className="pn-h2">L’activité de votre site</h2>
+          <p className="pn-legend"><span><i className="pn-legend-views" aria-hidden="true" />Vues mesurées</span><span><i className="pn-legend-leads" aria-hidden="true" />Demandes enregistrées</span></p>
+        </div>
+        <div className="pn-chart" role="img" aria-label={report ? `Évolution sur ${report.days} jours : ${sum("view")} pages consultées avec accord, ${total} demandes enregistrées.` : "Graphique en cours de chargement"}>
+          {report && Chart ? <Chart data={timeline} /> : <span className="pn-chart-wait" aria-hidden="true" />}
+        </div>
+        <p className="pn-chart-foot"><span>{report ? `${report.startDay} → ${report.today} · UTC` : " "}</span><span>{report && sum("view") === 0 ? "La courbe se remplira avec les premières visites acceptant la mesure." : "Les vues ne correspondent pas à des visiteurs uniques."}</span></p>
+      </section>
+
+      <div className="pn-grid-2">
+        <section className="pn-card" aria-labelledby="pn-followup-title">
+          <p className="pn-kicker">Du premier message au projet</p>
+          <h2 id="pn-followup-title" className="pn-h2">Le suivi commercial</h2>
+          <div className="pn-figures">
+            <div><span>Demandes reçues</span><strong>{show(total) ?? "–"}</strong><small>Toutes les demandes enregistrées sur la période, avec ou sans mesure</small></div>
+            <div><span>Projets gagnés</span><strong>{show(won) ?? "–"}</strong><small>{report && total ? `${Math.round(won / total * 100)} % des demandes de la période` : "Statut renseigné dans l’onglet Demandes"}</small></div>
+          </div>
+          <ul className="pn-status-list">{STATUS.map(s => <li key={s.id}><span className={s.chip}>{s.label}</span><strong>{show(byStatus(s.id)) ?? "–"}</strong></li>)}</ul>
+          <p className="pn-small">Premier suivi enregistré : {report?.firstAction.hours != null ? `${report.firstAction.hours.toFixed(1).replace(".", ",")} h en moyenne (${report.firstAction.total} ${plural(report.firstAction.total, "demande", "demandes")})` : "pas encore de données"}. Nouvelles demandes depuis plus de 48 h, toutes périodes : {stale48 === null ? "–" : fmt(stale48)}.</p>
+        </section>
+        <section className="pn-card" aria-labelledby="pn-needs-title">
+          <p className="pn-kicker">Ce que l’on vous demande</p>
+          <h2 id="pn-needs-title" className="pn-h2">Les besoins exprimés</h2>
+          <ul className="pn-bars">{Object.entries(serviceLabels).map(([id, label]) => {
+            const n = report?.projects.filter(x => x.service === id).reduce((s, x) => s + x.total, 0) || 0;
+            return <li key={id}><div><span>{label}</span><strong>{show(n) ?? "–"}</strong></div><span className="pn-track" aria-hidden="true"><span style={{ transform: `scaleX(${total ? n / total : 0})` }} /></span></li>;
+          })}</ul>
+        </section>
+      </div>
+
+      <section id="mesures-detaillees" className="pn-detail" aria-labelledby="pn-detail-title">
+        <div className="pn-section-head">
+          <h2 id="pn-detail-title" className="pn-h2">Mesures détaillées</h2>
+          <p className="pn-muted">Pages d’entrée, choix d’expertise et campagnes déclarées, sur la même période.</p>
+        </div>
+        <div className="pn-card">
+          <h3 className="pn-h3">Les choix mesurés</h3>
+          <p className="pn-muted">Clics sur les expertises dans l’explorateur et les liens du site, avec accord.</p>
+          <div className="pn-interests">{Object.entries(serviceLabels).filter(([id]) => id !== "conseil").map(([id, label]) => <div key={id}><span>{label}</span><strong>{show(report?.interests.find(i => i.service === id)?.total || 0) ?? "–"}</strong></div>)}</div>
+        </div>
+        <div className="pn-grid-2">
+          <section className="pn-card" aria-labelledby="pn-pages-title">
+            <h3 id="pn-pages-title" className="pn-h3">Pages consultées</h3>
+            {report?.pages.length ? (
+              <div className="pn-table-wrap"><table className="pn-table"><thead><tr><th scope="col">Page</th><th scope="col">Vues</th><th scope="col">Vers contact</th></tr></thead>
+                <tbody>{report.pages.map(p => <tr key={p.path}><td><a href={p.path} target="_blank" rel="noreferrer" className="pn-link">{pageLabel(p.path)}</a></td><td>{fmt(p.views)}</td><td>{fmt(p.contacts)}</td></tr>)}</tbody></table></div>
+            ) : <p className="pn-empty">{busy ? "Chargement…" : "Les premières pages mesurées apparaîtront ici."}</p>}
+          </section>
+          <section className="pn-card" aria-labelledby="pn-camps-title">
+            <h3 id="pn-camps-title" className="pn-h3">Vos campagnes</h3>
+            {report?.campaigns.length ? (
+              <div className="pn-table-wrap"><table className="pn-table"><thead><tr><th scope="col">Campagne</th><th scope="col">Demandes</th><th scope="col">Gagnées</th></tr></thead>
+                <tbody>{report.campaigns.map(c => <tr key={c.campaign}><td>{c.campaign === "site" ? "Site / non renseignée" : c.campaign}</td><td>{fmt(c.total)}</td><td>{fmt(c.won)}</td></tr>)}</tbody></table></div>
+            ) : <p className="pn-empty">{busy ? "Chargement…" : "Les demandes venues de vos liens identifiés apparaîtront ici."}</p>}
+          </section>
+        </div>
+      </section>
+
+      <aside className="pn-explainer"><Info size={18} aria-hidden="true" /><p>Les vues, clics, débuts de formulaire et demandes mesurées concernent uniquement les visiteurs ayant accepté la mesure. Toutes les demandes enregistrées sont comptées à part, dans le suivi commercial : ces volumes ne forment pas un entonnoir individuel. Les campagnes proviennent du code présent dans le lien soumis. Les désinscriptions et les emails préparés sont dans « Désinscriptions & emails », les envois SMTP dans « Campagnes ». Les positions Google et le chiffre d’affaires ne sont pas connectés. <a className="pn-link" href="/sitemap.xml" target="_blank" rel="noreferrer">Sitemap <ArrowUpRight size={14} aria-hidden="true" /></a></p></aside>
+      {report ? <p className="pn-updated">Mis à jour à {new Date(report.generatedAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Paris" })} · Les rapports ne contiennent aucune donnée de démonstration.</p> : null}
+    </div>
+  );
 }
