@@ -30,4 +30,6 @@
 @media (max-width:599.98px){
   .email-action-home{font-size:.875rem}
   .email-action-card{border-radius:var(--sx-radius-lg)}
+  /* Pied empilé à gauche : le sélecteur de thème flottant (bas droite) ne recouvre aucun lien. */
+  .email-action-foot{flex-direction:column;align-items:flex-start;width:min(100%,640px)}
 }
