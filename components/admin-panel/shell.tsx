@@ -6,6 +6,7 @@
    retiré ici, place le ThemeControl du layout dans l'emplacement réservé de la barre du haut.
    Seul l'onglet ouvert est monté : les sondages (5 s Campagnes, 60 s Emails) ne tournent qu'à l'écran. */
 import { useEffect, useLayoutEffect, useState, type ComponentType } from "react";
+import Link from "next/link";
 import { Tabs as TabsPrimitive } from "radix-ui";
 import { ArrowUpRight, ChartNoAxesCombined, Inbox, LogOut, Menu, Radio, Search, ShieldCheck, X } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "../ui/sheet";
@@ -87,10 +88,10 @@ export function PanelShell({ name, initialTab, signoutHref, hostingNote, vps }: 
     <div className="pn-app">
       <TabsPrimitive.Root value={view} onValueChange={v => go(v)} orientation="vertical" className="pn-layout">
         <aside className="pn-rail" aria-label="Menu de l’administration">
-          <a className="pn-brand" href="/" aria-label="SmartFixx Administration, voir le site">
+          <Link className="pn-brand" href="/" aria-label="SmartFixx Administration, voir le site">
             <img src="/smartfixx-logo.webp" width="36" height="36" alt="" />
             <span className="pn-brand-text"><span>SmartFixx</span><small>Administration</small></span>
-          </a>
+          </Link>
           <TabsPrimitive.List className="pn-nav" aria-label="Sections de l’administration">
             {NAV.map(item => (
               <TabsPrimitive.Trigger key={item.id} value={item.id} className="pn-nav-item">
@@ -101,7 +102,7 @@ export function PanelShell({ name, initialTab, signoutHref, hostingNote, vps }: 
             ))}
           </TabsPrimitive.List>
           <div className="pn-rail-foot">
-            <a className="pn-nav-item pn-nav-link" href="/" target="_blank" rel="noreferrer"><ArrowUpRight size={20} aria-hidden="true" /><span className="pn-nav-label">Voir le site</span></a>
+            <Link className="pn-nav-item pn-nav-link" href="/" target="_blank" rel="noreferrer"><ArrowUpRight size={20} aria-hidden="true" /><span className="pn-nav-label">Voir le site</span></Link>
             <div className="pn-owner"><span className="pn-avatar" aria-hidden="true">{first.slice(0, 1).toUpperCase()}</span><span className="pn-owner-text"><span>{first}</span><small>Propriétaire</small></span></div>
             <a className="pn-nav-item pn-nav-link" href={signoutHref} target="_top"><LogOut size={20} aria-hidden="true" /><span className="pn-nav-label">Se déconnecter</span></a>
           </div>
@@ -109,7 +110,7 @@ export function PanelShell({ name, initialTab, signoutHref, hostingNote, vps }: 
 
         <div className="pn-canvas">
           <header className="pn-topbar">
-            <a className="pn-topbar-brand" href="/" aria-label="SmartFixx, voir le site"><img src="/smartfixx-logo.webp" width="32" height="32" alt="" /></a>
+            <Link className="pn-topbar-brand" href="/" aria-label="SmartFixx, voir le site"><img src="/smartfixx-logo.webp" width="32" height="32" alt="" /></Link>
             <p className="pn-crumb"><span className="pn-crumb-root">Administration</span><span className="pn-crumb-sep" aria-hidden="true">/</span><span className="pn-crumb-here">{current.label}</span></p>
             <span className="pn-theme-slot" aria-hidden="true" />
           </header>
@@ -149,7 +150,7 @@ export function PanelShell({ name, initialTab, signoutHref, hostingNote, vps }: 
           <ul className="pn-more-list">
             <li><button type="button" className="pn-more-item" aria-current={view === "overview" ? "page" : undefined} onClick={() => go("overview")}><ChartNoAxesCombined size={20} aria-hidden="true" />Tableau de bord</button></li>
             <li><button type="button" className="pn-more-item" aria-current={view === "acquisition" ? "page" : undefined} onClick={() => go("acquisition")}><Search size={20} aria-hidden="true" />Acquisition & SEO</button></li>
-            <li><a className="pn-more-item" href="/" target="_blank" rel="noreferrer"><ArrowUpRight size={20} aria-hidden="true" />Voir le site</a></li>
+            <li><Link className="pn-more-item" href="/" target="_blank" rel="noreferrer"><ArrowUpRight size={20} aria-hidden="true" />Voir le site</Link></li>
             <li><a className="pn-more-item" href={signoutHref} target="_top"><LogOut size={20} aria-hidden="true" />Se déconnecter</a></li>
           </ul>
           <p className="pn-more-note"><span className="pn-avatar" aria-hidden="true">{first.slice(0, 1).toUpperCase()}</span>{first} · Propriétaire. Le choix clair ou sombre est en haut à droite.</p>
