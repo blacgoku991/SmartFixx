@@ -43,8 +43,8 @@ export function ContactPage(props: Props) {
           </h1>
           <p className="sx-lead">
             {emailing
-              ? "Décrivez votre activité, votre cible et votre fichier de contacts. Votre demande est enregistrée, je la lis moi-même et je reviens vers vous avec une proposition."
-              : "Décrivez votre projet en quelques lignes : création, refonte, outil ou prospection. Votre demande est enregistrée, je la lis moi-même et je reviens vers vous."}
+              ? "Votre offre, votre cible, votre fichier : je vous réponds moi-même."
+              : "Décrivez votre projet en quelques lignes, je vous réponds moi-même."}
           </p>
           <div className="sx-hero-actions">
             <PhoneLink compact="sm" />
@@ -61,6 +61,7 @@ export function ContactPage(props: Props) {
             Vous préférez parler directement&#8239;? Appelez-moi au <a className="sc-textlink sx-tabular sx-nowrap" href={`tel:${SITE_IDENTITY.PHONE_E164}`}>{SITE_IDENTITY.PHONE_DISPLAY}</a> ou écrivez à <a className="sc-textlink" href={mailHref}>{SITE_IDENTITY.EMAIL}</a>.
             {" "}<CampaignLink className="sc-textlink" href="/confidentialite">Comment j’utilise vos données</CampaignLink>.
           </p>
+          <p className="sc-ct-direct">Pas encore de projet précis&#8239;? <CampaignLink className="sc-textlink" href="/diagnostic">Faire le point sur votre site et vos outils</CampaignLink>.</p>
         </div>
       </div>
     </section>

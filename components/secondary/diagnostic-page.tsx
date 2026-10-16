@@ -35,7 +35,7 @@ export function DiagnosticPage({ form }: { form: ShortQuoteFormProps }) {
         breadcrumbs={[{ name: "Faire le point", path: "/diagnostic" }]}
         title="Faire le point"
         tagline="sur votre site et vos outils"
-        lead="Site difficile à parcourir, tâches répétitives, demandes qui se perdent : décrivez votre situation. Je prépare un premier échange utile, sans engagement."
+        lead="Décrivez votre situation, je prépare un premier échange utile."
         actions={<><ButtonLink variant="cta" href="#demande" size="lg">Décrire ma situation</ButtonLink><PhoneLink compact="sm" /></>}
         proofs={["Sans engagement", "Aucun accès technique à fournir", "Un échange avec moi, Mohamed"]}
         backdrop={<><Glow tone="blue" size={640} top="-220px" right="-180px" duration={24} /><Skyline seed={9} signal depth={false} /><SignalCard className="sc-signal" meta="Faire le point · démonstration" right="6%" bottom="calc(var(--sx-skyline-h) + 40px)" /></>}

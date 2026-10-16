@@ -95,7 +95,7 @@ export function ServicesPage() {
                   <ul className="sc-points">{c.points.map((p) => <li key={p}>{p}</li>)}</ul>
                   <span className="sc-prest-more" aria-hidden="true">{c.link}<ArrowRight className="sc-arrow" /></span>
                 </div>
-                <div className="sc-prest-art">
+                <div className={c.media ? "sc-prest-art" : "sc-prest-art sc-prest-art--vg"}>
                   {c.media ? <Media src={c.media.src} base={c.media.base} alt="" width={1024} height={1024} maxWidth={c.size === "lg" ? 260 : 200} sizes={c.size === "lg" ? "(max-width: 719.98px) 112px, 260px" : "(max-width: 719.98px) 112px, 200px"} className="sc-prest-media" sheen={c.size === "lg"} /> : <Vignette kind={c.vignette!} />}
                 </div>
               </li>

@@ -26,6 +26,12 @@
 /* Carte « Nouvelle demande » (démonstration, immobile) : seulement quand la colonne de droite du hero est
    libre (le H1 occupe toute la largeur en dessous de 1100 px). */
 @media (max-width:1099.98px){.sc-signal{display:none}}
+/* Retour à la ligne voulu dans un titre, seulement sous 480 px (même nombre de lignes avec la police de
+   secours et avec SFX Display : aucun décalage du H1 au chargement de la police). */
+@media (min-width:480px){.sc-br-m{display:none}}
+/* Grilles du lot : colonne unique bornée (minmax(0,1fr)) pour qu'un contenu sans retour à la ligne (adresse
+   de démonstration, maquette) ne l'élargisse pas au-delà de l'écran. */
+.sc-unsure,.sc-ct-grid,.sc-ex,.sc-dem,.sc-pe,.sc-so,.sc-zero,.sc-mt,.sc-faqwrap,.sc-limit,.sc-group,.sc-sit,.sc-prest,.sc-plans,.sc-var,.sc-checks{grid-template-columns:minmax(0,1fr)}
 @media (min-width:1024px){.sc-hero .sx-hero-proofs{display:flex;flex-wrap:wrap;column-gap:22px;row-gap:8px}.sc-hero .sx-hero-proofs>li{grid-template-columns:12px auto}}
 
 /* ================================================================ FAÇADE (cartes qui s'allument) */
@@ -99,7 +105,10 @@
   .sc-prest-top{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px}
   .sc-prest-art{min-height:0;place-items:center end}
   .sc-prest-media,.sc-prest-card--lg .sc-prest-media{width:112px}
-  .sc-prest-art .sc-vg{transform:scale(.5);transform-origin:right center;width:220px;height:150px;margin:-38px 0 -38px -110px}
+  /* Maquette DOM à mi-échelle dans une boîte réservée de 112 × 78 px (la maquette garde sa taille de
+     construction, 220 × 150, sans être comprimée par max-width). */
+  .sc-prest-art--vg{width:112px;height:78px;justify-self:end}
+  .sc-prest-art .sc-vg{position:absolute;top:0;right:0;width:220px;height:150px;max-width:none;transform:scale(.5);transform-origin:top right}
 }
 @media (min-width:720px){
   .sc-prest{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -178,6 +187,7 @@
 .sc-ct-next{grid-area:next;min-width:0;max-width:560px}
 .sc-ct-next-title{margin:0 0 20px;font-size:var(--sx-step-2)}
 .sc-ct-direct{margin:24px 0 0;color:var(--sx-text-muted)}
+.sc-ct-direct+.sc-ct-direct{margin-top:12px}
 @media (min-width:1024px){
   .sc-ct-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);grid-template-areas:"copy form" "next form";grid-template-rows:auto 1fr;column-gap:var(--sx-space-8);row-gap:var(--sx-space-7);align-items:start}
   .sc-ct-form{position:sticky;top:calc(var(--sx-header-h) + 16px)}
@@ -402,9 +412,9 @@
 .sc-so-row+.sc-so-row{border-top:1px solid var(--sx-line)}
 .sc-so-mail{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--sx-font-mono)}
 .sc-so-tag{flex:none}
-/* Écartés : texte barré (trait en pseudo-élément, transform) et estompé. */
-.sc-so-row--out .sc-so-mail{color:var(--sx-text-muted)}
-.sc-so-row--out::after{content:'';position:absolute;left:16px;right:150px;top:50%;height:2px;background:color-mix(in srgb,var(--sx-danger) 70%,transparent);transform-origin:left}
+/* Écartés : adresse barrée (trait en pseudo-élément de l'adresse elle-même, transform) et estompée. */
+.sc-so-row--out .sc-so-mail{position:relative;color:var(--sx-text-muted)}
+.sc-so-row--out .sc-so-mail::after{content:'';position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:color-mix(in srgb,var(--sx-danger) 70%,transparent);transform-origin:left}
 .sc-so-sum{margin:0;padding:12px 16px;border-top:1px solid var(--sx-line);background:var(--sx-surface-2);font-weight:650}
 @keyframes sc-strike{0%,30%{transform:scaleX(0)}42%,100%{transform:scaleX(1)}}
 @keyframes sc-strike4{0%,46%{transform:scaleX(0)}58%,100%{transform:scaleX(1)}}
@@ -413,9 +423,9 @@
 @keyframes sc-sum{0%,80%{opacity:0;transform:translate3d(0,8px,0)}90%,100%{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){
   .sc-so-scene.is-playing .sc-so-tag{animation:sc-tag 6.4s cubic-bezier(.2,.7,.2,1) both}
-  .sc-so-scene.is-playing .sc-so-row--3::after{animation:sc-strike 6.4s cubic-bezier(.2,.7,.2,1) both}
-  .sc-so-scene.is-playing .sc-so-row--4::after{animation:sc-strike4 6.4s cubic-bezier(.2,.7,.2,1) both}
-  .sc-so-scene.is-playing .sc-so-row--5::after{animation:sc-strike5 6.4s cubic-bezier(.2,.7,.2,1) both}
+  .sc-so-scene.is-playing .sc-so-row--3 .sc-so-mail::after{animation:sc-strike 6.4s cubic-bezier(.2,.7,.2,1) both}
+  .sc-so-scene.is-playing .sc-so-row--4 .sc-so-mail::after{animation:sc-strike4 6.4s cubic-bezier(.2,.7,.2,1) both}
+  .sc-so-scene.is-playing .sc-so-row--5 .sc-so-mail::after{animation:sc-strike5 6.4s cubic-bezier(.2,.7,.2,1) both}
   .sc-so-scene.is-playing .sc-so-sum{animation:sc-sum 6.4s cubic-bezier(.2,.7,.2,1) both}
 }
 .sc-zero{display:grid;gap:var(--sx-space-6)}

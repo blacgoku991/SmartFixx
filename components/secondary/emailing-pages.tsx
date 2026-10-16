@@ -80,7 +80,7 @@ export function ProspectionPage() {
       <Hero
         title="Prospection par email"
         tagline="pour les professionnels"
-        lead="J’organise vos campagnes avec votre propre fichier de contacts : messages validés avec vous avant l’envoi, cadence maîtrisée, désinscription respectée et suivi des réponses."
+        lead="Avec votre propre fichier de contacts, et rien ne part sans votre accord."
         proofs={["Votre fichier, vos contacts", "Aucun envoi sans votre validation", "Désinscription respectée"]}
         seed={10}
       />
@@ -116,9 +116,9 @@ export function SolutionsPage() {
     <>
       <Hero
         crumb={{ name: "Votre fichier de contacts", path: "/solutions" }}
-        title="Votre fichier de contacts"
+        title={<>Votre fichier<br className="sc-br-m" /> de contacts</>}
         tagline="ou une nouvelle audience"
-        lead="Vos clients, vos prospects, les contacts de vos salons : c’est le meilleur point de départ d’une campagne. Voici comment je le prépare, et ce qu’il faut vérifier avant d’envoyer."
+        lead="Vos clients et vos prospects : le meilleur point de départ d’une campagne."
         seed={11}
       />
       <Section labelledBy="sc-so-titre" className="sc-so-sec">
@@ -152,7 +152,7 @@ export function MethodePage() {
         crumb={{ name: "Méthode", path: "/methode" }}
         title="Méthode de prospection emailing"
         tagline="en 4 étapes"
-        lead="Cadrage, préparation des données et des messages, envoi, puis bilan. Vous validez chaque message avant qu’il parte et vous savez à chaque étape où en est votre campagne."
+        lead="Cadrer, préparer, envoyer, faire le bilan : vous validez chaque message avant qu’il parte."
         seed={4}
       />
       <Section labelledBy="sc-mt-titre" className="sc-mt-sec">
@@ -190,7 +190,7 @@ export function TarifsPage({ config }: { config: CampaignConfig }) {
         crumb={{ name: "Formules", path: "/tarifs" }}
         title="Formules de prospection emailing"
         tagline="sur devis"
-        lead="Je ne publie pas de prix : chaque campagne est chiffrée selon le volume, l’état de votre fichier et l’accompagnement. Choisissez un volume et une formule, je vous envoie un devis détaillé."
+        lead="Je ne publie pas de prix : chaque campagne est chiffrée selon son volume et son accompagnement."
         cta="Composer ma demande"
         href="#formules"
         seed={6}
@@ -236,7 +236,7 @@ export function GarantiesPage() {
         crumb={{ name: "Mes engagements", path: "/garanties" }}
         title="Mes engagements"
         tagline="pour vos campagnes d’emailing"
-        lead="Je ne m’engage que sur ce que je maîtrise et que vous pouvez vérifier : vos messages, la désinscription, la cadence d’envoi et le bilan."
+        lead="Je m’engage seulement sur ce que je maîtrise et que vous pouvez vérifier."
         seed={3}
       />
       <Section tone="night" labelledBy="sc-eng-titre" className="sc-eng-sec">

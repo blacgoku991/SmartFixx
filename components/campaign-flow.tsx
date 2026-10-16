@@ -71,7 +71,7 @@ function Pricing({ initial }: { initial: CampaignConfig }) {
               <div><dt>Contacts</dt><dd>{sourceLabel(config)}</dd></div>
             </dl>
             <p className="sc-plan-note">Contenu et prix détaillés dans le devis.</p>
-            <a className="sx-btn sx-btn--primary sc-plan-btn" href={campaignHref("/contact", { ...config, plan: p.id })} data-analytics="contact" data-service="emailing"><span>Demander un devis {p.name}</span><ArrowRight className="sx-btn-icon" aria-hidden="true" /></a>
+            <a className="sx-btn sx-btn--primary sc-plan-btn" href={campaignHref("/contact", { ...config, plan: p.id })} data-analytics="contact" data-service="emailing"><span>Choisir {p.name}</span><ArrowRight className="sx-btn-icon" aria-hidden="true" /></a>
           </li>
         ))}
       </ul>

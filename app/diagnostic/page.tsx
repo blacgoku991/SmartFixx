@@ -6,5 +6,5 @@ export const metadata = pageMeta("Faire le point sur son site et ses outils | Sm
 /* Cible des liens d'acquisition du panel (/diagnostic?service=…&utm_campaign=…) : dynamique et en 200. */
 export default async function Diagnostic({ searchParams }: { searchParams: Promise<Params> }) {
   const p = await searchParams;
-  return <PublicShell><DiagnosticPage form={formFromParams(p)} /></PublicShell>;
+  return <PublicShell><DiagnosticPage form={formFromParams(p, "conseil")} /></PublicShell>;
 }
