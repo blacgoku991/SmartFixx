@@ -1,8 +1,11 @@
 "use client";
 /* Panel — onglet Demandes (lot 5). Présentation seule : appels et corps inchangés (GET /api/admin/requests
    avec q, status, service, page ; GET du détail ; PATCH {status, notes, revision} avec contrôle de révision
-   et garde window.confirm des modifications non enregistrées). Client défensif lib/fetch-json : 401 ou 403
-   → /admin/login?retour=requests. Styles rq- dans app/admin/admin.css, jetons --sx- uniquement. */
+   et garde window.confirm des modifications non enregistrées). Client défensif lib/fetch-json : session perdue
+   (401, ou 403 « Accès administrateur requis. ») → /admin/login?retour=requests, sauf si le volet contient des
+   modifications non enregistrées : la note reste alors à l'écran, une copie est gardée dans l'onglet et la
+   reconnexion s'ouvre dans un nouvel onglet. Un 403 « Origine non autorisée. » n'est pas une session perdue :
+   son message est affiché. Styles rq- dans app/admin/admin.css, jetons --sx- uniquement. */
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Search, RefreshCw, Phone, Mail, Copy, Check, X, ExternalLink, ChevronLeft, ChevronRight, ShieldCheck, Save, ArrowRight } from "lucide-react";
@@ -46,13 +49,35 @@ function StatusPill({ status }: { status: RequestStatus }) {
   return <span className={s.chip}><span className="rq-dot" aria-hidden="true" />{s.label}</span>;
 }
 
-/* 401/403 de session : retour à la connexion, onglet conservé. */
-function sessionLost(result: JsonResult<unknown>) {
-  if (!result.ok && result.kind === "http" && (result.status === 401 || result.status === 403)) {
-    window.location.assign("/admin/login?retour=requests");
-    return true;
-  }
-  return false;
+const LOGIN_URL = "/admin/login?retour=requests";
+/* Session absente ou expirée : 401, ou 403 « Accès administrateur requis. » (getAdmin). Les autres 403
+   (« Origine non autorisée. », page HTML d'un proxy) ne renvoient pas vers la connexion : leur message
+   est affiché comme toute autre erreur. */
+function isSessionLost(result: JsonResult<unknown>) {
+  if (result.ok || result.kind !== "http") return false;
+  if (result.status === 401) return true;
+  const data = result.data as { error?: unknown } | null;
+  return result.status === 403 && !!data && typeof data.error === "string" && /administrateur requis/i.test(data.error);
+}
+/* Session perdue : renvoi vers la connexion, sauf si une modification du volet n'est pas enregistrée
+   (la saisie reste alors à l'écran et le volet affiche comment se reconnecter). */
+function leaveIfSessionLost(result: JsonResult<unknown>, dirty: boolean, onKeep: (value: boolean) => void) {
+  if (!isSessionLost(result)) return false;
+  if (dirty) onKeep(true); else window.location.assign(LOGIN_URL);
+  return true;
+}
+/* Copie de secours d'une modification non enregistrée, propre à l'onglet (sessionStorage) : restaurée à la
+   réouverture de la demande si sa révision n'a pas changé. Stockage indisponible : simplement ignorée. */
+type Draft = { status: RequestStatus; notes: string; revision?: number };
+const draftKey = (id: string) => `rq-draft-${id}`;
+function keepDraft(id: string, draft: Draft) { try { window.sessionStorage.setItem(draftKey(id), JSON.stringify(draft)); } catch {} }
+function dropDraft(id: string | null) { if (!id) return; try { window.sessionStorage.removeItem(draftKey(id)); } catch {} }
+function readDraft(id: string): Draft | null {
+  try {
+    const raw = window.sessionStorage.getItem(draftKey(id)); if (!raw) return null;
+    const value = JSON.parse(raw) as Partial<Draft>;
+    return value && typeof value.notes === "string" && statuses.includes(value.status as RequestStatus) ? { status: value.status as RequestStatus, notes: value.notes.slice(0, 4000), revision: value.revision } : null;
+  } catch { return null; }
 }
 /* Les messages JSON de l'API du panel sont rédigés en français (409 « Cette demande a changé… », 503…) :
    ils sont repris ; sinon (réseau, HTML de passerelle) frenchError. */
@@ -84,7 +109,9 @@ export function AdminDashboard({ name }: { name: string }) {
   const error = loaded && loaded.key === listKey ? loaded.error : "";
   const [selected, setSelected] = useState<string | null>(null), [detail, setDetail] = useState<Quote | null>(null), [events, setEvents] = useState<QuoteEvent[]>([]), [detailError, setDetailError] = useState(""), [detailTick, setDetailTick] = useState(0);
   const [editStatus, setEditStatus] = useState<RequestStatus>("new"), [notes, setNotes] = useState(""), [saving, setSaving] = useState(false), [notice, setNotice] = useState("");
+  const [sessionExpired, setSessionExpired] = useState(false), [draftRestored, setDraftRestored] = useState(false);
   const activeId = useRef<string | null>(null);
+  const dirtyRef = useRef(false);
   const detailLoading = !!selected && !detail && !detailError;
 
   useEffect(() => { const timeout = setTimeout(() => { setQuery(search.trim()); setPage(1); }, 300); return () => clearTimeout(timeout); }, [search]);
@@ -93,39 +120,53 @@ export function AdminDashboard({ name }: { name: string }) {
     void getJson<Listing>(`/api/admin/requests?${new URLSearchParams({ q: query, status, service: serviceFilter, page: String(page) })}`, { signal: controller.signal }).then(result => {
       if (controller.signal.aborted) return;
       if (result.ok) { setData(result.data); setLoaded({ key, error: "" }); }
-      else if (!sessionLost(result)) setLoaded({ key, error: messageOf(result) });
+      else if (!leaveIfSessionLost(result, dirtyRef.current, setSessionExpired)) setLoaded({ key, error: messageOf(result) });
     });
     return () => controller.abort();
   }, [listKey, query, status, serviceFilter, page]);
 
   /* Ouverture et fermeture du volet : l'état du détail est remis à zéro ici, puis l'effet charge. */
-  const openRequest = (id: string) => { activeId.current = id; setSelected(id); setDetail(null); setEvents([]); setNotice(""); setDetailError(""); };
-  const closeRequest = () => { activeId.current = null; setSelected(null); setDetail(null); setEvents([]); setNotice(""); setDetailError(""); };
-  const reloadDetail = () => { setDetailError(""); setNotice(""); setDetailTick(v => v + 1); };
+  const resetDetailState = () => { setNotice(""); setDetailError(""); setSessionExpired(false); setDraftRestored(false); };
+  const openRequest = (id: string) => { activeId.current = id; setSelected(id); setDetail(null); setEvents([]); resetDetailState(); };
+  /* Fermer ou recharger n'arrive qu'après confirmation si le volet est modifié : la copie de secours est abandonnée. */
+  const closeRequest = () => { dropDraft(activeId.current); activeId.current = null; setSelected(null); setDetail(null); setEvents([]); resetDetailState(); };
+  const reloadDetail = () => { dropDraft(activeId.current); resetDetailState(); setDetailTick(v => v + 1); };
   useEffect(() => {
     if (!selected) return;
     const controller = new AbortController(); const id = selected;
     void getJson<{ request: Quote; events: QuoteEvent[] }>(`/api/admin/requests/${id}`, { signal: controller.signal }).then(result => {
       if (controller.signal.aborted || activeId.current !== id) return;
-      if (result.ok) { setDetail(result.data.request); setEvents(result.data.events); setEditStatus(result.data.request.status); setNotes(result.data.request.notes || ""); }
-      else if (!sessionLost(result)) setDetailError(messageOf(result));
+      if (result.ok) {
+        const request = result.data.request, draft = readDraft(id);
+        const restore = !!draft && draft.revision === request.revision && (draft.status !== request.status || draft.notes !== (request.notes || ""));
+        if (draft && !restore) dropDraft(id);
+        setDetail(request); setEvents(result.data.events);
+        setEditStatus(restore ? draft!.status : request.status); setNotes(restore ? draft!.notes : request.notes || ""); setDraftRestored(restore);
+      }
+      else if (!leaveIfSessionLost(result, dirtyRef.current, setSessionExpired)) setDetailError(messageOf(result));
     });
     return () => controller.abort();
   }, [selected, detailTick]);
 
   async function save() {
-    if (!detail || saving) return; const id = detail.id; setSaving(true); setDetailError(""); setNotice("");
+    if (!detail || saving) return; const id = detail.id; setSaving(true); setDetailError(""); setNotice(""); setSessionExpired(false);
     const result = await postJson<{ revision: number; updatedAt: number }>(`/api/admin/requests/${id}`, { status: editStatus, notes, revision: detail.revision }, { method: "PATCH" });
     if (result.ok) {
-      if (activeId.current === id) { setDetail({ ...detail, status: editStatus, notes, revision: result.data.revision, updated_at: result.data.updatedAt }); setEvents(previous => [{ created_at: result.data.updatedAt, from_status: detail.status, to_status: editStatus, notes_changed: Number(notes !== (detail.notes || "")) }, ...previous]); setNotice("Modifications enregistrées."); }
+      dropDraft(id);
+      if (activeId.current === id) { setDraftRestored(false); setDetail({ ...detail, status: editStatus, notes, revision: result.data.revision, updated_at: result.data.updatedAt }); setEvents(previous => [{ created_at: result.data.updatedAt, from_status: detail.status, to_status: editStatus, notes_changed: Number(notes !== (detail.notes || "")) }, ...previous]); setNotice("Modifications enregistrées."); }
       setTick(v => v + 1);
-    } else if (!sessionLost(result) && activeId.current === id) setDetailError(messageOf(result));
+    } else if (isSessionLost(result)) {
+      /* Le bouton n'est actif que si le volet est modifié : on ne quitte jamais la page ici. */
+      keepDraft(id, { status: editStatus, notes, revision: detail.revision });
+      if (activeId.current === id) setSessionExpired(true);
+    } else if (activeId.current === id) setDetailError(messageOf(result));
     setSaving(false);
   }
 
   const count = (s: RequestStatus) => data?.counts.find(c => c.status === s)?.total || 0;
   const total = data?.counts.reduce((a, b) => a + b.total, 0) || 0;
   const dirty = !!detail && (editStatus !== detail.status || notes !== (detail.notes || ""));
+  useEffect(() => { dirtyRef.current = dirty; }, [dirty]);
   const filtered = !!query || status !== "all" || serviceFilter !== "all";
   const fresh = count("new"), stale = data?.pending?.stale || 0;
   const clearFilters = () => { setSearch(""); setQuery(""); setStatus("all"); setServiceFilter("all"); setPage(1); };
@@ -245,12 +286,19 @@ export function AdminDashboard({ name }: { name: string }) {
                   </select>
                   <button type="button" className="rq-btn rq-btn--primary" disabled={saving || !dirty} onClick={save}>{saving ? <RefreshCw aria-hidden="true" className="rq-spin" /> : <Save aria-hidden="true" />}{saving ? "Enregistrement…" : <span>Enregistrer<span className="rq-wide"> le suivi</span></span>}</button>
                 </div>
-                <div className="rq-actions-live" role="status" aria-live="polite">{notice ? <p className="rq-notice"><Check aria-hidden="true" />{notice}</p> : null}</div>
+                <div className="rq-actions-live" role="status" aria-live="polite">{notice ? <p className="rq-notice"><Check aria-hidden="true" />{notice}</p> : draftRestored && dirty ? <p className="rq-draft">Modification non enregistrée restaurée. Vérifiez-la puis enregistrez.</p> : null}</div>
               </div>
             ) : null}
           </div>
 
           <div className="rq-sheet-body">
+            {sessionExpired ? (
+              <div className="rq-expired" role="alert">
+                <p><strong>Votre session a expiré : rien n’a été enregistré.</strong> Votre note reste à l’écran et une copie est gardée dans cet onglet.</p>
+                <p>Reconnectez-vous dans un nouvel onglet, revenez ici, puis cliquez de nouveau sur « Enregistrer le suivi ».</p>
+                <a className="rq-btn rq-btn--primary" href={LOGIN_URL} target="_blank" rel="noopener">Se reconnecter dans un nouvel onglet<ExternalLink aria-hidden="true" /></a>
+              </div>
+            ) : null}
             {detailError ? <StateError message={detailError} retryLabel="Recharger" onRetry={() => { if (selected && (!dirty || window.confirm("Recharger et abandonner les modifications locales ?"))) reloadDetail(); }} /> : null}
             {detailLoading && !detail ? <StateLoading rows={4} rowHeight={56} label="Chargement de la demande…" /> : detail ? (
               <>
