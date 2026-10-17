@@ -42,12 +42,13 @@ export function Anatomy({ marks, caption, description }: { marks: Item[]; captio
             <text className="aq-an-t aq-an-t--h" x="32" y="178">sur mesure</text>
             <text className="aq-an-t aq-an-t--m" x="32" y="197">Conception, fabrication, pose.</text>
             {/* Preuves */}
-            <rect className="aq-an-chip" x="29" y="221" width="64" height="24" rx="12" />
-            <text className="aq-an-t aq-an-t--s" x="61" y="237" textAnchor="middle">Méthode</text>
-            <rect className="aq-an-chip" x="96" y="221" width="98" height="24" rx="12" />
-            <text className="aq-an-t aq-an-t--s" x="145" y="237" textAnchor="middle">Réalisations</text>
-            <rect className="aq-an-chip" x="197" y="221" width="39" height="24" rx="12" />
-            <text className="aq-an-t aq-an-t--s" x="216.5" y="237" textAnchor="middle">FAQ</text>
+            {/* « Projets » plutôt que « Réalisations » : à 13,1 unités, trois pastilles doivent tenir dans 212 unités. */}
+            <rect className="aq-an-chip" x="28" y="221" width="78" height="24" rx="12" />
+            <text className="aq-an-t aq-an-t--s" x="67" y="237" textAnchor="middle">Méthode</text>
+            <rect className="aq-an-chip" x="110" y="221" width="70" height="24" rx="12" />
+            <text className="aq-an-t aq-an-t--s" x="145" y="237" textAnchor="middle">Projets</text>
+            <rect className="aq-an-chip" x="184" y="221" width="52" height="24" rx="12" />
+            <text className="aq-an-t aq-an-t--s" x="210" y="237" textAnchor="middle">FAQ</text>
             <rect className="aq-an-thumb" x="32" y="252" width="62" height="20" rx="5" />
             <rect className="aq-an-thumb" x="100" y="252" width="62" height="20" rx="5" />
             <rect className="aq-an-thumb" x="168" y="252" width="64" height="20" rx="5" />
