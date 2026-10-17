@@ -28,3 +28,7 @@
 html :is(.admin-heading,.admin-login-card,.camp-header,.sending-header,.workspace-heading,.email-action-card) h1{letter-spacing:var(--sx-tracking-title)}
 /* H1 sans style propre (/admin/transfert-vps, /admin/logout) : à l'échelle des titres, pas du texte courant. */
 :is(main.section)>h1{font-size:var(--sx-step-3)}
+/* Panneau d'onglet du panel (Radix Tabs.Content, tabindex=0 par le motif ARIA) : workspace.css lui retire
+   l'outline et il recevait le focus clavier sans indicateur (WCAG 2.4.7, constaté à la recette du lot 10).
+   Spécificité (0,2,0) : bat .pn-panel{outline:none}. Contour intérieur, le panneau occupe toute la largeur. */
+.pn-panel:focus-visible{outline:3px solid var(--sx-focus);outline-offset:-3px}
