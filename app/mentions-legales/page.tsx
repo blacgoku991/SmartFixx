@@ -49,7 +49,6 @@ export default function MentionsLegales() {
           </dl>
         </div>
         <p>Le site est édité par l’entreprise de Mohamed, SmartFixx, qui présente ses prestations de création et de refonte de sites internet, de développement, d’automatisation, de sécurité web, de référencement et de prospection emailing.</p>
-        <p>Ces informations sont celles présentées sur la page <Link href="/mentions-legales">mentions légales</Link> du site principal de SmartFixx.</p>
       </Chapter>
       <Chapter id="publication" n={2} title="Directeur de la publication">
         <p>Directeur de la publication : <strong>{or(SITE_IDENTITY.PUBLICATION_DIRECTOR)}</strong>. Pour le joindre : <a href={mailHref}>{SITE_IDENTITY.EMAIL}</a>.</p>
