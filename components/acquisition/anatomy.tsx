@@ -10,7 +10,8 @@ import type { Item } from "@/lib/content/acquisition";
      sur des éléments HTML (composités). Mesuré : un tracé stroke-dashoffset sur le SVG provoquait une mise
      en page par image (LayoutCount 40 sur la fenêtre de la scène, motion-cost) ; il est donc abandonné.
    - La maquette est un décor aria-hidden (dans la scène) ; la liste ordonnée porte le contenu. Étiquette
-     « Démonstration : maquette fictive ». Aucun texte sous 12 px à partir de 360 px de large. */
+     « Démonstration : maquette fictive ». Aucun texte sous 12 px à partir de 360 px de large : à 360 px le SVG
+     est rendu à 294 px (échelle 0,919), d'où des tailles d'au moins 13,1 unités (acquisition.css). */
 const PHONE = "M44 6H216A36 36 0 0 1 252 42V428A36 36 0 0 1 216 464H44A36 36 0 0 1 8 428V42A36 36 0 0 1 44 6Z";
 const ZONES = [
   { x: 160, y: 47, w: 78, h: 36, cy: 65 },
@@ -41,12 +42,12 @@ export function Anatomy({ marks, caption, description }: { marks: Item[]; captio
             <text className="aq-an-t aq-an-t--h" x="32" y="178">sur mesure</text>
             <text className="aq-an-t aq-an-t--m" x="32" y="197">Conception, fabrication, pose.</text>
             {/* Preuves */}
-            <rect className="aq-an-chip" x="30" y="221" width="66" height="24" rx="12" />
-            <text className="aq-an-t aq-an-t--s" x="63" y="237" textAnchor="middle">Méthode</text>
-            <rect className="aq-an-chip" x="100" y="221" width="92" height="24" rx="12" />
-            <text className="aq-an-t aq-an-t--s" x="146" y="237" textAnchor="middle">Réalisations</text>
-            <rect className="aq-an-chip" x="196" y="221" width="40" height="24" rx="12" />
-            <text className="aq-an-t aq-an-t--s" x="216" y="237" textAnchor="middle">FAQ</text>
+            <rect className="aq-an-chip" x="29" y="221" width="64" height="24" rx="12" />
+            <text className="aq-an-t aq-an-t--s" x="61" y="237" textAnchor="middle">Méthode</text>
+            <rect className="aq-an-chip" x="96" y="221" width="98" height="24" rx="12" />
+            <text className="aq-an-t aq-an-t--s" x="145" y="237" textAnchor="middle">Réalisations</text>
+            <rect className="aq-an-chip" x="197" y="221" width="39" height="24" rx="12" />
+            <text className="aq-an-t aq-an-t--s" x="216.5" y="237" textAnchor="middle">FAQ</text>
             <rect className="aq-an-thumb" x="32" y="252" width="62" height="20" rx="5" />
             <rect className="aq-an-thumb" x="100" y="252" width="62" height="20" rx="5" />
             <rect className="aq-an-thumb" x="168" y="252" width="64" height="20" rx="5" />

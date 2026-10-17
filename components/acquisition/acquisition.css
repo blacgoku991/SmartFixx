@@ -67,12 +67,14 @@
 .aq-an-chip{fill:var(--sx-surface-2);stroke:var(--sx-line)}
 .aq-an-field{fill:var(--sx-surface-2);stroke:var(--sx-line-strong)}
 .aq-an-cta{fill:var(--sx-cta)}
-.aq-an-t{fill:var(--sx-text);font-family:var(--sx-font-text);font-size:13px}
+/* Tailles en unités du viewBox (320 de large). Le SVG descend à 294 px à 360 px de large (échelle 0,919) :
+   13,1 unités = 12,04 px, aucun texte de la maquette sous 12 px de 360 px à l'infini. */
+.aq-an-t{fill:var(--sx-text);font-family:var(--sx-font-text);font-size:13.5px}
 .aq-an-t--b{font-weight:700}
-.aq-an-t--m{fill:var(--sx-text-muted);font-size:12px}
-.aq-an-t--s{fill:var(--sx-text-muted);font-size:12px;font-weight:600}
+.aq-an-t--m{fill:var(--sx-text-muted);font-size:13.1px}
+.aq-an-t--s{fill:var(--sx-text-muted);font-size:13.1px;font-weight:600}
 .aq-an-t--h{font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:25px;letter-spacing:-.01em}
-.aq-an-t--cta{fill:var(--sx-on-cta);font-size:12.5px;font-weight:700}
+.aq-an-t--cta{fill:var(--sx-on-cta);font-size:13.1px;font-weight:700}
 /* Couche de repères en HTML (composités), positionnée en pourcentages du viewBox. */
 .aq-an-wrap{position:relative;width:min(100%,320px);margin-inline:auto;aspect-ratio:320/470}
 .aq-an-wrap>.aq-an{width:100%;max-width:none;height:100%}
@@ -126,7 +128,7 @@
 .aq-link-label{font-weight:700;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,var(--sx-accent) 60%,transparent)}
 .aq-link-text{grid-column:1;color:var(--sx-text-muted);font-size:var(--sx-step--1);line-height:1.4}
 /* Flèche en pseudo-élément (une icône SVG de moins par carte). */
-.aq-link::after{content:'→';grid-column:2;grid-row:1 / span 2;color:var(--sx-accent);font-size:1.25rem;line-height:1;transition:transform var(--sx-dur-base) var(--sx-ease-out)}
+.aq-link::after{content:'→';content:'→' / "";grid-column:2;grid-row:1 / span 2;color:var(--sx-accent);font-size:1.25rem;line-height:1;transition:transform var(--sx-dur-base) var(--sx-ease-out)}
 @media (hover:hover){.aq-link:hover{transform:translateY(-1px);border-color:var(--sx-line-strong)}.aq-link:hover::after{transform:translateX(3px)}}
 @media (min-width:700px){.aq-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (min-width:1180px){.aq-links{grid-template-columns:repeat(4,minmax(0,1fr))}.aq-link{grid-template-columns:minmax(0,1fr);align-content:start}.aq-link::after{grid-column:1;grid-row:auto;margin-top:var(--sx-space-2)}}
@@ -247,6 +249,9 @@
 .aq-keep-num{padding-top:2px;font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:1.75rem;line-height:1;color:var(--sx-signal-text);font-variant-numeric:tabular-nums}
 .aq-keep-title{margin:0 0 4px;font-size:var(--sx-step-1);line-height:1.2}
 .aq-keep-list p{margin:0;color:var(--sx-text-muted)}
+/* Sous 900 px, step-1 condensé (17 px) paraît plus petit que le texte courant (16 px, chasse normale) :
+   les titres de repères passent à step-2, comme les titres d'étapes. */
+@media (max-width:899.98px){.aq-mark-title,.aq-keep-title{font-size:var(--sx-step-2)}}
 /* Planche « URL conservée / redirection 308 » : reflet d'ambiance (sx-sheen, data-sx-ambient). */
 .aq-urls{margin:0;padding:var(--sx-space-5);border:1px solid var(--sx-edge);border-radius:var(--sx-radius-xl);background:radial-gradient(90% 60% at 100% 0%,color-mix(in srgb,var(--sx-accent-strong) 16%,transparent),transparent 70%),color-mix(in srgb,var(--sx-surface) 90%,transparent);box-shadow:var(--sx-shadow-2)}
 .aq-urls-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 12px;margin-bottom:var(--sx-space-4)}
@@ -278,8 +283,9 @@
 .aq-change-card{position:relative;display:grid;align-content:start;gap:var(--sx-space-3);padding:var(--sx-space-6) var(--sx-space-5) var(--sx-space-5);border:1px solid var(--sx-line);border-radius:var(--sx-radius-lg);background:var(--sx-bg);overflow:hidden}
 .aq-change-card p{margin:0;color:var(--sx-text-muted)}
 .aq-change-title{margin:0;font-size:var(--sx-step-2)}
-/* Numéro décoratif en pseudo-élément (contenu non textuel, hors arbre d'accessibilité). */
-.aq-change-card::after{content:attr(data-idx);position:absolute;right:var(--sx-space-5);top:var(--sx-space-4);font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:2.5rem;line-height:1;color:var(--sx-surface-3)}
+/* Numéro décoratif en pseudo-élément. Le texte alternatif vide (« / "" ») le retire de l'arbre d'accessibilité ;
+   la première déclaration sert de repli aux navigateurs qui ne le connaissent pas. */
+.aq-change-card::after{content:attr(data-idx);content:attr(data-idx) / "";position:absolute;right:var(--sx-space-5);top:var(--sx-space-4);font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-weight:700;font-size:2.5rem;line-height:1;color:var(--sx-surface-3)}
 /* Fenêtres 2 × 2 qui s'allument au survol (opacity d'un calque ambre) ; la première est toujours allumée. */
 .aq-change-win{display:grid;grid-template-columns:repeat(2,14px);gap:5px}
 .aq-change-win i{position:relative;display:block;width:14px;height:18px;border-radius:2px;border:1px solid var(--sx-line-strong);background:var(--sx-window-off)}
