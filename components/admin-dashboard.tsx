@@ -296,7 +296,7 @@ export function AdminDashboard({ name }: { name: string }) {
               <div className="rq-expired" role="alert">
                 <p><strong>Votre session a expiré : rien n’a été enregistré.</strong> Votre note reste à l’écran et une copie est gardée dans cet onglet.</p>
                 <p>Reconnectez-vous dans un nouvel onglet, revenez ici, puis cliquez de nouveau sur « Enregistrer le suivi ».</p>
-                <a className="rq-btn rq-btn--primary" href={LOGIN_URL} target="_blank" rel="noopener">Se reconnecter dans un nouvel onglet<ExternalLink aria-hidden="true" /></a>
+                <a className="rq-btn rq-btn--primary" href={LOGIN_URL} target="_blank" rel="noopener">Se reconnecter<span className="rq-wide"> dans un nouvel onglet</span><ExternalLink aria-hidden="true" /></a>
               </div>
             ) : null}
             {detailError ? <StateError message={detailError} retryLabel="Recharger" onRetry={() => { if (selected && (!dirty || window.confirm("Recharger et abandonner les modifications locales ?"))) reloadDetail(); }} /> : null}
