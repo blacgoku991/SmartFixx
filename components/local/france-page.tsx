@@ -6,7 +6,8 @@ import { Commune, LocalLinks, LocalServiceJsonLd } from "@/components/location-p
    projet avance quand on ne se voit pas, ce qui se fait bien à distance, ce qu'il faut prévoir.
    Moment signature : « le fil du projet », quatre étapes reliées par un fil dont les fenêtres s'allument au
    passage (opacité liée au défilement ; allumées d'emblée sans mouvement). Ciel nocturne étoilé de fenêtres
-   lointaines dans le hero (décor). Aucun délai. */
+   lointaines et relais « Asnières ↔ chez vous » dans le hero (décor) ; sous 1024 px, un relais léger reste
+   dans le bas du hero. Aucun délai. */
 const PATH = "/agence-web-france";
 const STEPS = [
   { title: "Un premier appel en visio", text: "On parle de votre activité, de vos clients et de ce que le site doit leur permettre de faire. Vous voyez mon écran, je vous montre des exemples, et je repars avec la liste de ce qui compte pour vous." },
@@ -50,6 +51,12 @@ export function FrancePage() {
                 <span className="lc-relay-node lc-relay-node--far"><i />Chez vous, en France</span>
               </span>
               <SignalCard right="7%" top="15%" title="Étape validée" reference="Maquette v2" meta="Visio · démonstration" />
+            </span>
+            {/* Sous 1024 px : relais léger (libellés courts) dans le bas du hero, sous les preuves. */}
+            <span className="lc-relay lc-relay--compact">
+              <span className="lc-relay-node"><i />Asnières</span>
+              <span className="lc-relay-line"><i className="lc-relay-dot" /></span>
+              <span className="lc-relay-node lc-relay-node--far"><i />Chez vous</span>
             </span>
             <div className="lc-stars">{STARS.map(([x, y], i) => <i key={i} className={`lc-star lc-s${(i % 4) + 1}`} style={{ left: `${x}%`, top: `${y}%` }} />)}</div>
           </>

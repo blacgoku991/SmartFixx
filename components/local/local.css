@@ -13,6 +13,9 @@
    --sx-skyline-h) couvre la ville ET le fleuve ; sous 768 px, consentement ouvert, ville + fleuve (au plus
    145 px à 767 px) tiennent dans la réserve du consentement (146 px). */
 .lc-hero--asnieres{--sx-skyline-h:calc(var(--lc-city-h) + var(--lc-water-h))}
+/* ≥ 1024 px : ville plus basse et fleuve plus mince, pour que la Seine et ses reflets (signature de la page)
+   entrent dans le premier écran (hero d'environ 830 px sous l'en-tête de 72 px à 1440 × 900, contre 927). */
+@media (min-width:1024px){.lc-hero--asnieres{--lc-city-h:clamp(140px,10vw,180px);--lc-water-h:48px}}
 .lc-wide{display:contents}
 @media (max-width:1023.98px){.lc-wide{display:none}}
 .lc-bank{position:absolute;left:0;right:0;bottom:var(--lc-water-h);height:var(--lc-city-h)}
@@ -27,6 +30,17 @@
 /* France : ciel nocturne piqué de fenêtres lointaines (bleutées : l'ambre reste aux CTA et au signal). */
 .lc-stars{position:absolute;inset:0 0 18% 0}
 @media (max-width:1023.98px){.lc-stars{display:none}}
+/* France sous 1024 px : version légère du relais (deux pastilles courtes et le fil), dans le bas du hero.
+   Consentement fermé : le hero ménage 56 px de plus pour lui. Consentement en attente (sous 768 px) : la
+   réserve du socle (122 px) le contient déjà ; la règle du socle est reprise à l'identique, car cette
+   feuille hors couche battrait sinon la réserve. Le CTA ne bouge pas : le relais est sous les preuves. */
+.lc-relay.lc-relay--compact{display:none}
+@media (max-width:1023.98px){
+  .lc-hero--france{padding-bottom:calc(var(--sx-space-7) + 56px)}
+  .lc-relay.lc-relay--compact{display:flex;left:var(--sx-gutter);right:auto;top:auto;bottom:var(--sx-space-5);width:min(360px,calc(100% - 2 * var(--sx-gutter)))}
+}
+@media (min-width:768px) and (max-width:1023.98px){.lc-hero--france{padding-bottom:calc(var(--sx-space-9) + 40px)}}
+@media (max-width:767.98px){html[data-consent='pending'] .lc-hero--france{padding-bottom:calc(var(--sx-space-5) + var(--sx-consent-reserve))}}
 /* France (≥ 1024 px) : le relais « Asnières ↔ chez vous », une lueur parcourt le fil (transform seulement). */
 .lc-relay{position:absolute;right:7%;top:62%;display:flex;align-items:center;gap:10px;width:min(440px,34vw)}
 .lc-relay-node{display:inline-flex;align-items:center;gap:8px;flex:none;padding:6px 12px;border:1px solid var(--sx-edge);border-radius:var(--sx-radius-pill);background:color-mix(in srgb,var(--sx-surface-2) 90%,transparent);color:var(--sx-text);font-size:13px;font-weight:650;white-space:nowrap}
@@ -82,21 +96,24 @@
 .lc-map-river{fill:none;stroke:color-mix(in srgb,var(--sx-accent) 30%,transparent);stroke-width:34px;stroke-linecap:round;stroke-linejoin:round}
 .lc-map-river-core{fill:none;stroke:color-mix(in srgb,var(--sx-accent) 75%,#fff);stroke-width:2px;stroke-dasharray:3 9;stroke-linecap:round;opacity:.55}
 .lc-map-link{stroke:color-mix(in srgb,var(--sx-window-on) 55%,transparent);stroke-width:1.25px;stroke-dasharray:3 6}
-.lc-map-seine{position:absolute;left:60%;top:68%;rotate:-72deg;color:color-mix(in srgb,var(--sx-accent) 80%,#fff);font-size:13px;font-style:italic;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.lc-map-seine{position:absolute;left:70%;top:33%;translate:-50% -50%;rotate:-78deg;color:color-mix(in srgb,var(--sx-accent) 80%,#fff);font-size:13px;font-style:italic;font-weight:600;letter-spacing:.04em;white-space:nowrap}
 .lc-map-north{position:absolute;right:16px;top:14px;display:grid;place-items:center;width:32px;height:32px;border:1px solid var(--sx-line-strong);border-radius:50%;color:var(--sx-text-muted);font-size:12px;font-weight:700}
 .lc-map-north::before{content:'';position:absolute;top:-5px;left:50%;translate:-50% 0;border:5px solid transparent;border-top:0;border-bottom:6px solid var(--sx-text-muted)}
 .lc-pin{position:absolute;display:flex;align-items:center;gap:8px;translate:-7px -50%;white-space:nowrap}
 .lc-pin--left{flex-direction:row-reverse;translate:calc(-100% + 7px) -50%}
+.lc-pin--below{flex-direction:column;gap:6px;translate:-50% -7px}
 .lc-pin-dot{position:relative;z-index:1;flex:none;width:14px;height:14px;border-radius:3px;background:color-mix(in srgb,var(--sx-window-on) 82%,#fff);box-shadow:0 0 0 3px color-mix(in srgb,var(--sx-bg) 80%,transparent),0 0 14px 2px rgba(255,182,72,.45)}
 .lc-pin-name{padding:4px 10px;border:1px solid var(--sx-line);border-radius:var(--sx-radius-pill);background:color-mix(in srgb,var(--sx-bg) 82%,transparent);color:var(--sx-text);font-size:13px;font-weight:600;line-height:1.3}
 .lc-pin--home{flex-direction:column;gap:10px;translate:-50% -11px;z-index:2}
 .lc-pin--home .lc-pin-dot{width:22px;height:22px;border-radius:4px;background:var(--sx-signal);box-shadow:0 0 0 4px color-mix(in srgb,var(--sx-bg) 70%,transparent),0 0 26px 6px rgba(255,182,72,.55)}
 .lc-pin--home .lc-pin-name{padding:6px 14px;border-color:color-mix(in srgb,var(--sx-signal) 55%,transparent);background:var(--sx-surface-2);font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-size:1.0625rem;font-weight:700;letter-spacing:var(--sx-tracking-title)}
+@media (max-width:379.98px){.lc-pin-name{padding:3px 8px;font-size:12px}.lc-map-river{stroke-width:26px}}
 .lc-pin-ring{position:absolute;left:50%;top:11px;width:56px;height:56px;margin:-28px 0 0 -28px;border:1px solid color-mix(in srgb,var(--sx-signal) 60%,transparent);border-radius:50%;opacity:.35;transform:scale(1.2)}
 
 /* Apparition des repères liée au défilement (voir seine-schema.tsx) : ligne de temps de vue nommée sur la
-   carte, plages décalées et terminées quand la carte est entièrement entrée à l'écran (aucun repère
-   translucide en zone de lecture). Règles dans le bloc MOUVEMENT. */
+   carte, plages décalées et BORNÉES EN LONGUEUR (300 px de défilement au plus après l'entrée du haut de
+   la carte) : tout est opaque quand le haut de la carte atteint la mi-hauteur de l'écran, dès 640 px de
+   haut (aucun repère translucide en zone de lecture). Règles dans le bloc MOUVEMENT. */
 .lc-map-layer{position:absolute;inset:0}
 .lc-schema{margin:0;min-width:0}
 .lc-schema-caption{margin-top:var(--sx-space-3);color:var(--sx-text-muted);font-size:var(--sx-step--1)}
@@ -162,6 +179,8 @@
   .lc-band{-webkit-mask-image:none;mask-image:none}
   .lc-band-row,.lc-band-row--b{flex-wrap:wrap;width:auto;gap:var(--sx-space-2) var(--sx-space-5);padding-inline:var(--sx-gutter);transform:none;white-space:normal}
   .lc-band-name{gap:var(--sx-space-3);font-size:var(--sx-step-2)}
+  /* Le contour seul (remplissage transparent) devient illisible à cette taille : noms en couleur pleine. */
+  .lc-band-name--line{color:var(--sx-text-muted);-webkit-text-stroke:0}
   .lc-band-dup{display:none}
 }
 
@@ -234,13 +253,16 @@
   /* Liés au défilement (aucune lecture automatique) : fenêtres qui s'allument, ligne des communes. */
   @supports (animation-timeline:view()){
     html[data-motion='on']:not([data-motion-paused]) .lc-win i{animation:lc-light linear both;animation-timeline:view();animation-range:entry 30% cover 40%}
+    /* R6 : la fenêtre de l'étape 1 de /agence-web-france a son haut entre 800 et 890 px sur ordinateur
+       (1024 × 768 à 1600 × 900) : elle reste allumée, sans révélation dans les 900 premiers pixels. */
+    html[data-motion='on'] .lc-step:first-child .lc-win i{animation:none}
     html[data-motion='on']:not([data-motion-paused]) .lc-band-row--a{animation:lc-slide-a linear both;animation-timeline:view();animation-range:cover}
     html[data-motion='on']:not([data-motion-paused]) .lc-band-row--b{animation:lc-slide-b linear both;animation-timeline:view();animation-range:cover}
     html[data-motion='on']:not([data-motion-paused]) .lc-map{view-timeline-name:--lc-map}
-    html[data-motion='on']:not([data-motion-paused]) .lc-map-layer--river{animation:lc-fade linear both;animation-timeline:--lc-map;animation-range:entry 0% entry 40%}
-    html[data-motion='on']:not([data-motion-paused]) .lc-pin--home{animation:lc-pop linear both;animation-timeline:--lc-map;animation-range:entry 20% entry 55%}
-    html[data-motion='on']:not([data-motion-paused]) .lc-pin-ring{animation:lc-ring linear both;animation-timeline:--lc-map;animation-range:entry 30% entry 75%}
-    html[data-motion='on']:not([data-motion-paused]) .lc-map-wave--1{animation:lc-wave linear both;animation-timeline:--lc-map;animation-range:entry 45% entry 80%}
-    html[data-motion='on']:not([data-motion-paused]) .lc-map-wave--2{animation:lc-wave linear both;animation-timeline:--lc-map;animation-range:entry 65% entry 100%}
+    html[data-motion='on']:not([data-motion-paused]) .lc-map-layer--river{animation:lc-fade linear both;animation-timeline:--lc-map;animation-range:entry 0% entry 120px}
+    html[data-motion='on']:not([data-motion-paused]) .lc-pin--home{animation:lc-pop linear both;animation-timeline:--lc-map;animation-range:entry 40px entry 170px}
+    html[data-motion='on']:not([data-motion-paused]) .lc-pin-ring{animation:lc-ring linear both;animation-timeline:--lc-map;animation-range:entry 80px entry 250px}
+    html[data-motion='on']:not([data-motion-paused]) .lc-map-wave--1{animation:lc-wave linear both;animation-timeline:--lc-map;animation-range:entry 110px entry 230px}
+    html[data-motion='on']:not([data-motion-paused]) .lc-map-wave--2{animation:lc-wave linear both;animation-timeline:--lc-map;animation-range:entry 170px entry 300px}
   }
 }
