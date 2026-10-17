@@ -1,9 +1,10 @@
-import {SiteHeader} from "@/components/site-header";
-import {Footer} from "@/components/brand";
-import {ProjectForm} from "@/components/project-form";
-import {pageMeta} from "@/lib/seo";
-import {cleanCampaign} from "@/lib/project-options";
-import {serviceLabels,type ServiceId} from "@/lib/services";
-import {Check,ArrowDown} from "lucide-react";
-export const metadata=pageMeta("Faisons le point sur votre site et vos outils — SmartFixx","Identifiez les priorités de votre projet digital : site internet, automatisation, sécurité ou acquisition. Un premier échange ciblé avec SmartFixx.","/diagnostic");
-export default async function Diagnostic({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}){const p=await searchParams;const service=typeof p.service==="string"&&p.service!=="emailing"&&Object.prototype.hasOwnProperty.call(serviceLabels,p.service)?p.service as ServiceId:"conseil";return <><SiteHeader/><main id="contenu"><section className="diagnostic-hero"><div className="container"><p className="eyebrow">UN PREMIER ÉCHANGE. DES PRIORITÉS PLUS CLAIRES.</p><h1>Votre prochain levier<br/><span>est peut-être déjà là.</span></h1><p>Un site difficile à parcourir, une tâche répétitive ou des demandes qui se perdent : décrivez votre situation pour préparer un échange utile.</p><a href="#votre-projet" className="button button-primary">Faisons le point <ArrowDown size={19}/></a><div className="diagnostic-reassurance"><span><Check size={17}/> Sans engagement</span><span><Check size={17}/> Centré sur votre activité</span><span><Check size={17}/> Sans accès technique à fournir</span></div></div></section><section id="votre-projet" className="section diagnostic-content"><div className="container"><div><p className="eyebrow">COMMENCER PAR CE QUI COMPTE.</p><h2>Un sujet précis.<br/><span>Une conversation utile.</span></h2>{[["Votre point de départ","Votre activité, votre site et les outils que vous utilisez."],["Ce qui vous freine","Une difficulté concrète, plutôt qu’une liste de fonctionnalités."],["Le résultat que vous visez","Des demandes mieux qualifiées, moins de saisie ou un outil plus simple."]].map(([a,b],i)=><article key={a}><span>0{i+1}</span><div><h3>{a}</h3><p>{b}</p></div></article>)}<p className="diagnostic-note">Ce formulaire prépare un échange. Il ne lance aucun audit technique, scan ou campagne automatiquement.</p></div><div className="contact-form-card"><ProjectForm initialService={service} campaign={cleanCampaign(p.utm_campaign)}/></div></div></section></main><Footer/></>}
+import { PublicShell } from "@/components/sx/public-shell";
+import { DiagnosticPage } from "@/components/secondary/diagnostic-page";
+import { formFromParams, type Params } from "@/components/secondary/params";
+import { pageMeta } from "@/lib/seo";
+export const metadata = pageMeta("Faire le point sur son site et ses outils | SmartFixx", "Site difficile à parcourir, tâches répétitives, demandes qui se perdent : décrivez votre situation pour préparer un premier échange utile, sans engagement.", "/diagnostic");
+/* Cible des liens d'acquisition du panel (/diagnostic?service=…&utm_campaign=…) : dynamique et en 200. */
+export default async function Diagnostic({ searchParams }: { searchParams: Promise<Params> }) {
+  const p = await searchParams;
+  return <PublicShell><DiagnosticPage form={formFromParams(p, "conseil")} /></PublicShell>;
+}

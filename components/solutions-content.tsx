@@ -1,13 +1,49 @@
-"use client";
-import { useState, type FormEvent } from "react";
-import Link from "@/components/campaign-link";
-import { ArrowRight, ArrowUpRight, Check, CheckCheck, ChevronRight, Target, Database, Send, ShieldCheck, BarChart3, Building2, Users, FileCheck2, SlidersHorizontal, Sparkles, Menu, Mail, CircleCheck, LoaderCircle, Plus, Layers, LockKeyhole, Crosshair } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
-import { MailScene } from "@/components/mail-scene";
-import { Brand, Footer } from "@/components/brand";
-import { plans, volumes, quotePrice, formatNumber, formatEuro, type Audience, type DataSource, type PlanId } from "@/lib/offers";
-export function SolutionsContent(){return <section id="solutions" className="section solutions-section"><div className="container"><div className="section-heading"><div><p className="eyebrow">01 / UNE SOLUTION POUR VOTRE POINT DE DÉPART</p><h2>Vous avez l’offre.<br/><span>On s’occupe de la portée.</span></h2></div><p>Que vous ayez déjà des contacts ou tout à construire, votre campagne commence avec les bonnes données.</p></div><div className="solution-grid"><article className="solution-card"><div className="card-topline"><span className="icon-box"><FileCheck2 size={23}/></span><span className="tag">VOTRE FICHIER</span></div><h3>Votre data a du potentiel.<br/>Activons-le.</h3><p>Vous fournissez vos contacts. Nous préparons un fichier propre, des segments utiles et un message adapté à chaque audience.</p><div className="file-preview"><div className="file-preview-head"><span><Database size={16}/> votre-fichier.csv</span><span>PRÉPARATION</span></div>{[["Doublons","Suppression"],["Adresses invalides","Contrôle"],["Segments prioritaires","Organisation"]].map(([a,b])=><div key={a}><span>{a}</span><span><CheckCheck size={14}/>{b}</span></div>)}</div><a href="/tarifs?source=client" className="text-link">J’ai déjà mes contacts <ArrowUpRight size={18}/></a></article><article className="solution-card solution-blue"><div className="card-topline"><span className="icon-box"><Target size={23}/></span><span className="tag">DATA CIBLÉE</span></div><h3>Vos futurs clients existent.<br/>Trouvons votre audience.</h3><p>Vous décrivez le profil idéal. Nous étudions les données disponibles pour construire une sélection cohérente avec votre offre.</p><div className="target-preview"><span className="preview-label">VOTRE CIBLAGE, SUR MESURE</span><div className="filter-tags"><span><Building2 size={14}/> Secteur d’activité</span><span><Users size={14}/> Fonction</span><span><Target size={14}/> Zone géographique</span><span><SlidersHorizontal size={14}/> Taille d’entreprise</span></div><div className="target-foot"><ShieldCheck size={17}/> Sources et conditions d’utilisation vérifiées</div></div><a href="/tarifs?source=included" className="text-link">Je cherche la bonne audience <ArrowUpRight size={18}/></a></article></div><Tabs defaultValue="b2b" className="audience-detail"><div><p className="eyebrow">À QUI PARLEZ-VOUS ?</p><TabsList className="audience-tabs"><TabsTrigger value="b2b"><Building2 size={17}/> Aux professionnels</TabsTrigger><TabsTrigger value="b2c"><Users size={17}/> Aux particuliers</TabsTrigger></TabsList></div><TabsContent value="b2b"><h3>Des décideurs qui ont une raison de vous lire.</h3><p>Un ciblage par métier, fonction et localisation, une offre liée à leur activité et un moyen simple de se désinscrire à chaque envoi.</p></TabsContent><TabsContent value="b2c"><h3>Une audience qui a accepté d’être contactée.</h3><p>Une campagne pour vos clients ou des contacts avec consentement documenté. La disponibilité des audiences B2C fournies est étudiée au devis.</p></TabsContent></Tabs></div></section>;}
+import { ScenePlayer } from "@/components/sx/scene-player";
+/* Contenu de /solutions (lot 8) — composant serveur. « Préparer votre propre fichier » : qualité, base
+   légale, désinscription. Moment signature : la préparation d'un fichier en démonstration (ScenePlayer, une
+   lecture) — les doublons, les adresses invalides et les désinscrits sont écartés ligne à ligne ; l'état
+   final, rendu par le serveur, montre le fichier préparé. Adresses fictives en example.test.
+   Masqués jusqu'à confirmation écrite du propriétaire (décision n° 9) : l'offre « data ciblée », la
+   prospection B2C et toute mention de « sources vérifiées ». Styles : secondary.css (sc-so-…). */
+const ROWS = [
+  { mail: "contact@boulangerie.example.test", state: "ok", tag: "Prêt" },
+  { mail: "a.martin@cabinet.example.test", state: "ok", tag: "Prêt" },
+  { mail: "a.martin@cabinet.example.test", state: "out", tag: "Doublon" },
+  { mail: "info@@garage.example.test", state: "out", tag: "Adresse invalide" },
+  { mail: "j.durand@atelier.example.test", state: "out", tag: "Désinscrit (STOP)" },
+  { mail: "accueil@studio.example.test", state: "ok", tag: "Prêt" },
+];
+export const POINTS = [
+  { title: "Un fichier propre", text: "Je retire les doublons et les adresses mal formées, et je repère les contacts qui ne correspondent pas à votre cible. Moins d’envois inutiles, une meilleure réputation d’envoi." },
+  { title: "Une base légale claire", text: "En prospection entre professionnels, le message doit concerner l’activité de la personne, et elle doit pouvoir s’y opposer simplement. Je vous demande d’où viennent vos contacts avant tout envoi." },
+  { title: "La désinscription respectée", text: "Chaque message porte un lien de désinscription en un clic. Une adresse désinscrite rejoint une liste STOP commune à toutes les campagnes : elle n’est plus sollicitée." },
+];
+export function SolutionsContent() {
+  return (
+    <div className="sc-so">
+      <ul className="sc-so-points" role="list">
+        {POINTS.map((p, i) => (
+          <li className="sc-so-point" key={p.title}>
+            <span className="sc-so-mark" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+            <h3 className="sc-so-title">{p.title}</h3>
+            <p>{p.text}</p>
+          </li>
+        ))}
+      </ul>
+      <ScenePlayer className="sc-so-scene" label="Démonstration : préparation d’un fichier de contacts." description="Six lignes fictives ; un doublon, une adresse invalide et une personne désinscrite sont écartés, trois contacts restent prêts pour la campagne.">
+        <div className="sc-so-file">
+          <div className="sc-so-file-head"><span className="sc-so-file-name">votre-fichier.csv</span><span className="sc-so-file-tag">Démonstration</span></div>
+          <ol className="sc-so-rows">
+            {ROWS.map((r, i) => (
+              <li className={`sc-so-row sc-so-row--${r.state} sc-so-row--${i + 1}`} key={i}>
+                <span className="sc-so-mail">{r.mail}</span>
+                <span className={r.state === "ok" ? "sx-chip sx-chip--success sc-so-tag" : "sx-chip sc-so-tag"}>{r.tag}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="sc-so-sum"><span className="sx-tabular">3</span> contacts prêts · <span className="sx-tabular">3</span> écartés avant l’envoi</p>
+        </div>
+      </ScenePlayer>
+    </div>
+  );
+}

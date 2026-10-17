@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
-import { ArrowDown, CheckCheck } from "lucide-react";
-import { SiteHeader } from "@/components/site-header";
-import { Footer } from "@/components/brand";
-import { MethodContent } from "@/components/method-content";
-import { NextStep } from "@/components/next-step";
-export const metadata:Metadata={title:"Notre méthode de prospection — SmartFixx Reach",description:"Cadrage, préparation, lancement et bilan : découvrez comment se déroule votre campagne de prospection avec SmartFixx Reach.",alternates:{canonical:"/methode"}};
-export default function Method(){return <><SiteHeader/><main id="contenu"><section className="route-hero method-hero"><div className="container"><p className="eyebrow">LA MÉTHODE / DU SENS À CHAQUE ÉTAPE</p><div className="method-title-row"><h1>Rien au hasard.<br/><em>Tout pour<br/>la rencontre.</em></h1><div className="method-number" aria-hidden="true">04<span>TEMPS FORTS</span></div></div><div className="method-intro"><p>Vous avez un objectif. Nous organisons le chemin pour l’atteindre : des choix lisibles, des messages validés et un bilan exploitable.</p><a href="#methode" className="round-link" aria-label="Découvrir les quatre étapes"><ArrowDown size={26}/></a></div></div></section><MethodContent/><section className="section approval-section"><div className="container approval-grid"><div><p className="eyebrow">VOUS GARDEZ LA MAIN.</p><h2>Votre voix.<br/><span>Votre feu vert.</span></h2><p>Nous préparons. Vous validez. Aucune campagne n’est envoyée avant votre accord sur les messages et le périmètre.</p></div><div className="approval-list">{[["Avant l’envoi","Audience, quota, messages et calendrier."],["Pendant la campagne","Envois et relances selon la formule convenue."],["Après la campagne","Résultats observés et recommandations pour la suite."]].map(([a,b])=><div key={a}><CheckCheck size={24}/><div><h3>{a}</h3><p>{b}</p></div></div>)}</div></div></section><NextStep/></main><Footer/></>}
+import { PublicShell } from "@/components/sx/public-shell";
+import { MethodePage } from "@/components/secondary/emailing-pages";
+import { pageMeta } from "@/lib/seo";
+export const metadata = pageMeta("Méthode de prospection emailing en 4 étapes | SmartFixx", "Cadrage, préparation des données et des messages, lancement puis bilan : le déroulement d’une campagne de prospection emailing, étape par étape, sans surprise.", "/methode");
+export default function Methode() {
+  return <PublicShell><MethodePage /></PublicShell>;
+}
