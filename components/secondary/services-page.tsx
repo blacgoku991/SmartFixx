@@ -12,7 +12,8 @@ import { Facade, LinkCard } from "./shared";
    utm_campaign inchangés. Chaque lien de prestation passe par CampaignLink (utm_campaign propagé dans le
    HTML serveur : /creation-site-internet?utm_campaign=…).
    Moment signature : « la ville des prestations ». Chaque carte porte une façade de sept fenêtres (une par
-   prestation) ; sa propre fenêtre reste allumée, les autres s'allument au survol ou au focus. Création et
+   prestation) ; sa propre fenêtre reste allumée, les autres s'allument au survol ou au focus (au défilement sur écran
+   tactile ou sous 1024 px). Création et
    refonte en grand, quatre prestations en moyen, la prospection emailing en dernier. Objets chrome en Media
    (lazy, jamais dans le hero) ; trois maquettes DOM pour les prestations sans objet. */
 type Card = { id: string; href: string; size: "lg" | "md"; kicker: string; title: string; text: string; points: string[]; link: string; media?: { base: MediaBase; src: string }; vignette?: "refonte" | "dev" | "seo" };
@@ -73,14 +74,14 @@ export function ServicesPage() {
         breadcrumbs={[{ name: "Prestations", path: "/services" }]}
         title={<>Prestations web :</>}
         tagline="création, refonte, automatisation, sécurité et SEO"
-        lead={<>Je conçois et je construis des sites pour les entreprises d’<Place>Asnières-sur-Seine</Place> et d’Île-de-France, et les outils qui vont avec. Choisissez par où commencer.</>}
+        lead={<>Je conçois des sites pour les entreprises d’<Place>Asnières-sur-Seine</Place> et d’Île-de-France.</>}
         actions={<><ButtonLink variant="cta" href="/contact" size="lg">Parler de mon projet</ButtonLink><PhoneLink compact="sm" /></>}
         backdrop={<><Glow tone="blue" size={680} top="-240px" right="-200px" duration={26} /><Skyline seed={7} signal depth={false} /></>}
         aside={<Board />}
       />
       <Section id="prestations" labelledBy="sc-prest-titre" className="sc-prest-sec">
         <Container>
-          <SectionHead id="sc-prest-titre" eyebrow="Sept prestations, un seul interlocuteur" title="Choisissez la fenêtre qui vous concerne" text="Chaque prestation a sa page détaillée. Vous pouvez aussi me décrire votre situation : je vous oriente vers ce qui sert vraiment votre activité." />
+          <SectionHead id="sc-prest-titre" eyebrow="Sept prestations, un seul interlocuteur" title="Choisissez la fenêtre qui vous concerne" text="Je construis les sites, et les outils qui vont avec. Chaque prestation a sa page détaillée : choisissez par où commencer, ou décrivez-moi votre situation : je vous oriente vers ce qui sert vraiment votre activité." />
           <ul className="sc-prest" role="list">
             {CARDS.map((c, i) => (
               <li key={c.id} id={`prest-${c.id}`} className={`sc-prest-card sc-prest-card--${c.size} sc-prest-card--${c.id} sc-lit`}>

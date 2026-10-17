@@ -484,3 +484,95 @@
 .sc-limit-frame p{margin:12px 0 0;color:var(--sx-text-muted)}
 .sc-limit-sub{margin:0;font-size:1.25rem}
 @media (min-width:1024px){.sc-limit{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}}
+
+/* ================================================================ ÉCRANS TACTILES ET ÉTROITS : la ville s'allume au défilement
+   Sur écran tactile (hover:none) ou sous 1024 px, les moments signature qui dépendent du survol (façades et
+   maquettes de /services, scènes de /diagnostic) ou de la colonne de l'immeuble (/methode, ≥ 1024 px) sont
+   liés au défilement : timeline de vue NOMMÉE sur la carte (un sujet par carte, ses décors s'y réfèrent),
+   transform et opacity seulement, aucune var() dans les @keyframes, sous html[data-motion='on'] sans pause
+   globale. État de repos (sans mouvement, sans prise en charge, mode réduit, pause) = rendu actuel : façades
+   éteintes sauf la fenêtre ambre, scènes rangées, étapes de la méthode allumées, voyants allumés. Les voyants
+   (/garanties, /prospection-emailing, /tarifs) s'allument à toutes les largeurs. Aucun de ces décors n'est du
+   contenu (tous aria-hidden) : ce ne sont pas des révélations au sens de R6. */
+@keyframes sc-tw-on{from{opacity:0}to{opacity:1}}
+@keyframes sc-tw-old{from{opacity:.75;transform:rotate(-6deg)}to{opacity:.45;transform:rotate(-10deg) translate3d(-8px,6px,0)}}
+@keyframes sc-tw-new{from{transform:translate3d(0,10px,0)}to{transform:translate3d(0,-6px,0)}}
+@keyframes sc-tw-bar{from{transform:scaleY(.35)}to{transform:none}}
+@keyframes sc-tw-l1{from{transform:translate3d(30px,6px,0) rotate(-8deg)}to{transform:none}}
+@keyframes sc-tw-l2{from{transform:translate3d(-12px,22px,0) rotate(6deg)}to{transform:none}}
+@keyframes sc-tw-l3{from{transform:translate3d(36px,-6px,0) rotate(-4deg)}to{transform:none}}
+@keyframes sc-tw-l4{from{transform:translate3d(-6px,-30px,0) rotate(9deg)}to{transform:none}}
+@keyframes sc-tw-lb{from{opacity:.35;transform:translate3d(70px,-2px,0) rotate(12deg)}to{opacity:1;transform:none}}
+@keyframes sc-tw-p1{from{transform:translate3d(-40px,-44px,0) rotate(-18deg)}to{transform:none}}
+@keyframes sc-tw-p2{from{transform:translate3d(64px,-40px,0) rotate(14deg)}to{transform:none}}
+@keyframes sc-tw-p3{from{opacity:.5;transform:translate3d(46px,40px,0) rotate(28deg)}to{opacity:1;transform:none}}
+@keyframes sc-tw-pb{from{opacity:.4}to{opacity:1}}
+@keyframes sc-tw-r2{from{opacity:1;transform:translate3d(10px,10px,0)}to{opacity:0;transform:none}}
+@keyframes sc-tw-r3{from{opacity:1;transform:translate3d(20px,20px,0)}to{opacity:0;transform:none}}
+@keyframes sc-tw-rb{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+@keyframes sc-lamp-on{from{opacity:.16}to{opacity:1}}
+
+/* Voyants : chaque ligne allume le sien en traversant l'écran (une animation par voyant), toutes largeurs. */
+@media (prefers-reduced-motion:no-preference){
+  @supports (animation-timeline:view()){
+    .sc-check{view-timeline:--sc-check}
+    html[data-motion='on']:not([data-motion-paused]) .sc-check-lamp{animation:sc-lamp-on linear both;animation-timeline:--sc-check;animation-range:entry 30% cover 40%}
+  }
+}
+
+/* /methode sous 1024 px : l'immeuble collant n'a pas de place ; chaque étape devient un étage, avec sa
+   rangée de trois fenêtres sous le numéro (::before éteinte, ::after allumée, ombres portées sans flou =
+   fenêtres voisines). Allumée par défaut ; avec le mouvement, elle s'allume quand l'étape traverse l'écran. */
+@media (max-width:1023.98px){
+  .sc-mt-step{padding-bottom:26px}
+  .sc-mt-step::before,.sc-mt-step::after{content:'';position:absolute;left:22px;top:84px;width:14px;height:18px;border-radius:3px 3px 2px 2px;pointer-events:none}
+  .sc-mt-step::before{background:color-mix(in srgb,var(--sx-text-muted) 22%,transparent);box-shadow:18px 0 0 color-mix(in srgb,var(--sx-text-muted) 22%,transparent),36px 0 0 color-mix(in srgb,var(--sx-text-muted) 22%,transparent)}
+  .sc-mt-step::after{background:var(--sx-window-on);box-shadow:18px 0 0 var(--sx-window-on),36px 0 0 var(--sx-window-on),0 0 14px 1px rgba(255,182,72,.4),18px 0 14px 1px rgba(255,182,72,.4),36px 0 14px 1px rgba(255,182,72,.4)}
+}
+@media (prefers-reduced-motion:no-preference) and (max-width:1023.98px){
+  @supports (animation-timeline:view()){
+    .sc-mt-step{view-timeline:--sc-step}
+    html[data-motion='on']:not([data-motion-paused]) .sc-mt-step::after{animation:sc-tw-on linear both;animation-timeline:--sc-step;animation-range:entry 35% cover 42%}
+  }
+}
+
+/* /services et /diagnostic : écran tactile, ou fenêtre étroite (même avec une souris : l'animation liée au
+   défilement prime alors sur le survol, état final identique). */
+@media (prefers-reduced-motion:no-preference) and (hover:none),(prefers-reduced-motion:no-preference) and (max-width:1023.98px){
+  @supports (animation-timeline:view()){
+    .sc-prest-card{view-timeline:--sc-card}
+    .sc-sit-card{view-timeline:--sc-sit}
+    /* Façades : les fenêtres éteintes s'allument l'une après l'autre (la fenêtre ambre l'est déjà). */
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-w:not(.sc-w--signal)::after{animation:sc-tw-on linear both;animation-timeline:--sc-card}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-w:nth-child(1)::after{animation-range:cover 16% cover 22%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-w:nth-child(2)::after{animation-range:cover 19% cover 25%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-w:nth-child(3)::after{animation-range:cover 22% cover 28%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-w:nth-child(4)::after{animation-range:cover 25% cover 31%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-w:nth-child(5)::after{animation-range:cover 28% cover 34%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-w:nth-child(6)::after{animation-range:cover 31% cover 37%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-w:nth-child(7)::after{animation-range:cover 34% cover 40%}
+    /* Maquettes : l'ancienne page s'efface derrière la nouvelle ; le tableau de bord monte, barre après barre. */
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-vg-page--old{animation:sc-tw-old linear both;animation-timeline:--sc-card;animation-range:entry 60% cover 45%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-vg-page--new{animation:sc-tw-new linear both;animation-timeline:--sc-card;animation-range:entry 60% cover 45%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-vg-bars i{animation:sc-tw-bar linear both;animation-timeline:--sc-card}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-vg-bars i:nth-child(1){animation-range:entry 50% cover 30%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-vg-bars i:nth-child(2){animation-range:entry 60% cover 33%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-vg-bars i:nth-child(3){animation-range:entry 70% cover 36%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-vg-bars i:nth-child(4){animation-range:entry 80% cover 39%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-prest-card .sc-vg-bars i:nth-child(5){animation-range:entry 90% cover 42%}
+    /* /diagnostic : la scène en désordre se range pendant que sa carte monte vers le milieu de l'écran. */
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-card .sc-w:not(.sc-w--signal)::after{animation:sc-tw-on linear both;animation-timeline:--sc-sit;animation-range:cover 38% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--lisible i:nth-child(1){animation:sc-tw-l1 linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--lisible i:nth-child(2){animation:sc-tw-l2 linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--lisible i:nth-child(3){animation:sc-tw-l3 linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--lisible i:nth-child(4){animation:sc-tw-l4 linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--lisible b{animation:sc-tw-lb linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--perdues i:nth-child(1){animation:sc-tw-p1 linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--perdues i:nth-child(2){animation:sc-tw-p2 linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--perdues i:nth-child(3){animation:sc-tw-p3 linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--perdues b{animation:sc-tw-pb linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--repetitif i:nth-child(2){animation:sc-tw-r2 linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--repetitif i:nth-child(3){animation:sc-tw-r3 linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+    html[data-motion='on']:not([data-motion-paused]) .sc-sit-art--repetitif b{animation:sc-tw-rb linear both;animation-timeline:--sc-sit;animation-range:entry 40% cover 48%}
+  }
+}

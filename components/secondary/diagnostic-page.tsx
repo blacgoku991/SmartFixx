@@ -9,7 +9,8 @@ import { Facade, Floors } from "./shared";
    des liens générés par le panel (/diagnostic?service=…&utm_campaign=…), lus côté serveur.
    Moment signature : « trois situations qui s'éclairent ». Chaque carte montre une petite scène en DOM de
    la situation (désordre) ; au survol ou au focus, elle se range et sa fenêtre s'allume (transitions
-   transform et opacity, aucune boucle). La note honnête « aucun audit automatique » est conservée. */
+   transform et opacity, aucune boucle). Sur écran tactile ou sous 1024 px, elle se range au défilement
+   (timeline de vue de la carte, secondary.css « ÉCRANS TACTILES »). La note honnête « aucun audit automatique » est conservée. */
 const SITUATIONS = [
   { id: "lisible", title: "Un site difficile à parcourir", text: "Les visiteurs ne trouvent pas ce que vous faites, ni comment vous joindre, surtout sur un téléphone.", href: "/refonte-site-internet", link: "Voir la refonte de site internet" },
   { id: "perdues", title: "Des demandes qui se perdent", text: "Des messages arrivent par plusieurs canaux, sans suivi : certains restent sans réponse.", href: "/creation-site-internet", link: "Voir la création de site avec suivi des demandes" },

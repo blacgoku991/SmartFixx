@@ -1,8 +1,9 @@
 /* Méthode de prospection emailing en 4 étapes (lot 8, /methode) — composant serveur, au « je », sans
    durée chiffrée. Moment signature : un immeuble de quatre étages, collant à partir de 1024 px ; chaque
    étage s'allume quand son étape traverse l'écran (timelines de vue nommées, opacité seulement, sous
-   html[data-motion=on] sans pause globale). Sans mouvement, sans prise en charge ou sur mobile, tout est
-   allumé et chaque étape porte son propre numéro. Styles : components/secondary/secondary.css (sc-mt-…). */
+   html[data-motion=on] sans pause globale). Sous 1024 px, chaque étape devient un étage : numéro et
+   rangée de trois fenêtres, qui s'allume quand l'étape traverse l'écran. Sans mouvement ou sans prise en
+   charge, tout est allumé. Styles : components/secondary/secondary.css (sc-mt-…). */
 const STEPS = [
   { title: "Cadrer", text: "Votre offre, la cible visée, l’objectif de la campagne et le volume d’envois. Je vérifie aussi d’où viennent vos contacts et sur quelle base vous pouvez leur écrire." },
   { title: "Préparer", text: "Je contrôle votre fichier (doublons, adresses invalides, personnes désinscrites), je rédige les messages, vous les relisez et les validez. Un envoi de test part vers votre boîte avant tout lancement." },

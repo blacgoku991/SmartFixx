@@ -12,6 +12,8 @@ import { CampaignFlow } from "@/components/campaign-flow";
 import { Faq } from "@/components/faq";
 import type { CampaignConfig } from "@/lib/campaign-config";
 import { SITE_IDENTITY, mailHref } from "@/lib/site-identity";
+import { JsonLd } from "@/components/json-ld";
+import { serviceJsonLd } from "@/lib/seo";
 import { Facade, LinkCard } from "./shared";
 /* Groupe emailing (lot 8) : /prospection-emailing, /solutions, /methode, /tarifs, /garanties.
    Au « je », sans aucun prix ni montant, sans engagement non confirmé (data ciblée, B2C, « sources
@@ -74,9 +76,14 @@ function Checks({ items, className }: { items: { title: string; text: ReactNode 
   );
 }
 
+/* Description identique à la métadonnée de app/prospection-emailing/page.tsx (une seule source). */
+export const PROSPECTION_DESCRIPTION = "Prospection par email avec votre fichier de contacts : messages validés avant envoi, cadence maîtrisée, désinscription respectée et suivi des réponses.";
+
 export function ProspectionPage() {
   return (
     <>
+      {/* Service : septième prestation de /services (provider = Organization, sans offre ni prix). */}
+      <JsonLd data={serviceJsonLd({ name: "Prospection emailing", description: PROSPECTION_DESCRIPTION, path: "/prospection-emailing", areaServed: [...SITE_IDENTITY.AREAS] })} />
       <Hero
         title="Prospection par email"
         tagline="pour les professionnels"
