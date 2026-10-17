@@ -29,7 +29,7 @@ export function GuideArticle({ guide }: { guide: Guide }) {
         breadcrumbs={[{ name: "Conseils", path: "/conseils" }, { name: guide.title, path }]}
         title={fr(guide.title)}
         lead={fr(guide.description)}
-        actions={<><ButtonLink href={guide.cta.href} size="lg">{guide.cta.short ?? guide.cta.label}</ButtonLink><PhoneLink compact="sm" /></>}
+        actions={<><ButtonLink href={guide.cta.href} size="lg">{guide.cta.label}</ButtonLink><PhoneLink compact="sm" /></>}
         proofs={[
           `Guide ${num(index + 1)} · ${guide.category}`,
           `Lecture ${readingMinutes(guide)} min · par ${author}`,

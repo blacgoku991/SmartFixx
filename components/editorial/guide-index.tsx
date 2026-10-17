@@ -45,7 +45,7 @@ export function GuideIndex() {
         <Container>
           <SectionHead id="guides-titre" eyebrow="Trois situations, trois guides" title="Choisissez le guide qui correspond à votre situation" text="Chaque guide se lit en quelques minutes et renvoie vers la prestation concernée si vous voulez aller plus loin avec moi." />
           <div className="ed-cards">
-            {guides.map((g, i) => <GuideCard key={g.slug} guide={g} index={i} />)}
+            {guides.map((g, i) => <GuideCard key={g.slug} guide={g} index={i} headingLevel={3} />)}
           </div>
         </Container>
       </Section>
@@ -68,7 +68,7 @@ export function GuideIndex() {
       </Section>
       <CtaBand
         id="conseils-cta"
-        title="Une question après la lecture ?"
+        title="Une question après la lecture ?"
         text={<>Je vous réponds directement, sans standard, depuis <Place>Asnières-sur-Seine</Place>.</>}
         primaryHref="/contact?service=conseil"
         primaryLabel="Poser ma question"
