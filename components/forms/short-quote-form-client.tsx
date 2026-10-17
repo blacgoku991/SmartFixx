@@ -10,7 +10,7 @@ import { ArrowRight, Phone, Mail, AlertCircle, LockKeyhole } from "lucide-react"
 import { postJson, frenchError } from "@/lib/fetch-json";
 import { normalizePhone } from "@/lib/phone";
 import { cleanCampaign, projectKinds, otherNeeds, extraNeeds, completeWebsiteUrl, isWebsiteUrl, fieldMessages, CONTACT_REQUIRED, type ProjectKind, type OtherNeed } from "@/lib/project-options";
-import { SITE_IDENTITY, telHref, mailHref } from "@/lib/site-identity";
+import { EMAIL, PHONE_DISPLAY, telHref, mailHref } from "@/lib/contact-links";
 
 export type ShortQuoteFormProps = {
   defaultService?: "creation" | "refonte" | "autre";
@@ -154,8 +154,8 @@ export function ShortQuoteFormClient({ defaultService, otherService, campaign, v
         <p className="fm-success-text">Je vous recontacte par téléphone ou par email.</p>
         <p className="fm-success-text">Une précision à ajouter ? Appelez-moi directement :</p>
         <div className="fm-success-actions">
-          <a className="fm-contact" href={telHref}><Phone aria-hidden="true" /> <span className="fm-tabular">{SITE_IDENTITY.PHONE_DISPLAY}</span></a>
-          <a className="fm-contact" href={mailHref}><Mail aria-hidden="true" /> <span>{SITE_IDENTITY.EMAIL}</span></a>
+          <a className="fm-contact" href={telHref}><Phone aria-hidden="true" /> <span className="fm-tabular">{PHONE_DISPLAY}</span></a>
+          <a className="fm-contact" href={mailHref}><Mail aria-hidden="true" /> <span>{EMAIL}</span></a>
         </div>
       </div>
     );
@@ -278,7 +278,7 @@ export function ShortQuoteFormClient({ defaultService, otherService, campaign, v
       <button type="submit" className="sx-btn sx-btn--cta sx-btn--lg fm-submit" disabled={pending} aria-busy={pending || undefined}>
         {pending ? <><span className="fm-spinner" aria-hidden="true" /><span>Enregistrement…</span></> : <><span>Envoyer ma demande</span><ArrowRight className="sx-btn-icon" aria-hidden="true" /></>}
       </button>
-      <p className="fm-foot"><LockKeyhole aria-hidden="true" /><span>Votre demande est enregistrée dans mon espace de suivi, puis je vous recontacte. Ou appelez-moi au <a href={telHref} className="fm-tabular">{SITE_IDENTITY.PHONE_DISPLAY}</a>.</span></p>
+      <p className="fm-foot"><LockKeyhole aria-hidden="true" /><span>Votre demande est enregistrée dans mon espace de suivi, puis je vous recontacte. Ou appelez-moi au <a href={telHref} className="fm-tabular">{PHONE_DISPLAY}</a>.</span></p>
     </form>
   );
 }

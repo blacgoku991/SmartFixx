@@ -1,7 +1,8 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { ArrowRight, Phone } from "lucide-react";
 import CampaignLink from "@/components/campaign-link";
-import { SITE_IDENTITY, telHref } from "@/lib/site-identity";
+/* lib/contact-links et non lib/site-identity : ce module est aussi chargé par l'en-tête (client). */
+import { PHONE_DISPLAY, telHref } from "@/lib/contact-links";
 /* Actions (serveur). Le lien passe par CampaignLink : utm_campaign se propage dans le HTML serveur. */
 type ButtonLinkProps = {
   variant?: "cta" | "primary" | "ghost";
@@ -21,7 +22,7 @@ export function ButtonLink({ variant = "cta", href, icon = "arrow", size = "md",
    compact="sm" : icône seule sous 480 px, numéro en toutes lettres au-delà (même nom accessible). */
 export function PhoneLink({ compact = false, className, label }: { compact?: boolean | "sm"; className?: string; label?: string }) {
   const cls = ["sx-phone", compact === true ? "sx-phone--compact" : compact === "sm" ? "sx-phone--compact-sm" : "", className].filter(Boolean).join(" ");
-  if (compact === "sm") return <a href={telHref} className={cls} data-analytics="contact" aria-label={`Appeler Mohamed au ${SITE_IDENTITY.PHONE_DISPLAY}`}><span className="sx-phone-icon" aria-hidden="true"><Phone /></span><span className="sx-phone-number">{SITE_IDENTITY.PHONE_DISPLAY}</span></a>;
-  if (compact) return <a href={telHref} className={cls} data-analytics="contact" aria-label={`Appeler Mohamed au ${SITE_IDENTITY.PHONE_DISPLAY}`}><span className="sx-phone-icon"><Phone aria-hidden="true" /></span></a>;
-  return <a href={telHref} className={cls} data-analytics="contact"><span className="sx-phone-icon" aria-hidden="true"><Phone /></span><span className="sx-phone-number">{label ? <>{label} </> : null}{SITE_IDENTITY.PHONE_DISPLAY}</span></a>;
+  if (compact === "sm") return <a href={telHref} className={cls} data-analytics="contact" aria-label={`Appeler Mohamed au ${PHONE_DISPLAY}`}><span className="sx-phone-icon" aria-hidden="true"><Phone /></span><span className="sx-phone-number">{PHONE_DISPLAY}</span></a>;
+  if (compact) return <a href={telHref} className={cls} data-analytics="contact" aria-label={`Appeler Mohamed au ${PHONE_DISPLAY}`}><span className="sx-phone-icon"><Phone aria-hidden="true" /></span></a>;
+  return <a href={telHref} className={cls} data-analytics="contact"><span className="sx-phone-icon" aria-hidden="true"><Phone /></span><span className="sx-phone-number">{label ? <>{label} </> : null}{PHONE_DISPLAY}</span></a>;
 }

@@ -2,6 +2,7 @@
    JSON-LD. Identifiants confirmés par le propriétaire (extrait d'immatriculation fourni le 13/10/2026).
    L'adresse du domicile n'est JAMAIS publiée : seul le siège social (domiciliation) apparaît ; le lieu de
    travail est la ville seule. */
+import { EMAIL, PHONE_DISPLAY, PHONE_E164, mailHref, telHref } from './contact-links';
 export type Area={'@type':'City'|'AdministrativeArea'|'Country';name:string};
 /* PHONE_DISPLAY sépare les paires par U+00A0 (espace insécable) : un test doit utiliser
    /06[\s\u00A0]18[\s\u00A0]74[\s\u00A0]51[\s\u00A0]80/, jamais la chaîne à espaces simples. */
@@ -26,10 +27,10 @@ export const SITE_IDENTITY={
   /* Hébergeur du VPS : non confirmé par le propriétaire. Ne rien inventer (mentions : « Information en
      cours de mise à jour », point bloquant pour la mise en production). */
   HOST:null as null|{name:string;address:string;phone?:string},
-  PHONE_DISPLAY:['06','18','74','51','80'].join(NBSP),
-  PHONE_E164:'+33618745180',
+  PHONE_DISPLAY,
+  PHONE_E164,
   PHONE_SCHEMA:'+33 6 18 74 51 80',
-  EMAIL:'contact@smartfixx.fr',
+  EMAIL,
   AREAS:[
     {'@type':'City',name:'Asnières-sur-Seine'},
     {'@type':'AdministrativeArea',name:'Hauts-de-Seine'},
@@ -46,5 +47,4 @@ export const SITE_IDENTITY={
 /* Noms de lieux insécables : traits d'union U+2011 (présents dans SFX Display) et espaces insécables. Pour un
    titre ou un texte : nb(SITE_IDENTITY.WORK_CITY) ; en JSX, préférer <Place> (components/sx/place.tsx). */
 export const nb=(s:string)=>s.replace(/-/g,'\u2011').replace(/ /g,NBSP);
-export const telHref=`tel:${SITE_IDENTITY.PHONE_E164}`;
-export const mailHref=`mailto:${SITE_IDENTITY.EMAIL}`;
+export { telHref, mailHref };

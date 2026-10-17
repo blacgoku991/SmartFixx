@@ -1,18 +1,13 @@
 import Link from "@/components/campaign-link";
-import { PrivacyPreferences } from "./audience-measurement";
+import { PrivacyPreferences } from "./privacy-preferences";
 import { Cartouche } from "@/components/sx/cartouche";
 import { MotionToggle } from "@/components/sx/motion-gate";
 import { SITE_IDENTITY, mailHref, telHref } from "@/lib/site-identity";
-/* Brand : aussi utilisée par le panel et la page email (classes .brand, .brand-logo, .brand-product du
-   contrat legacy). Le nom accessible contient tout le texte visible (label-content-name-mismatch). */
-export function Brand() {
-  return (
-    <Link href="/" className="brand sx-brand" aria-label="SmartFixx par Mohamed, accueil">
-      <img className="brand-logo" src="/smartfixx-logo.webp" width="40" height="40" alt="" />
-      <span className="sx-brand-text"><span className="sx-brand-name">SmartFixx</span><span className="brand-product">par Mohamed</span></span>
-    </Link>
-  );
-}
+/* Brand vit dans components/brand-mark.tsx : l'en-tête public (composant client) l'importe de là, sans tirer ce
+   module (pied de page, liens, identité légale) dans le JavaScript de toutes les pages. Réexportée ici pour
+   le panel et la page email. */
+import { Brand } from "./brand-mark";
+export { Brand };
 const columns: { title: string; links: [string, string][] }[] = [
   { title: "Création & refonte", links: [["Création de site internet", "/creation-site-internet"], ["Refonte de site internet", "/refonte-site-internet"], ["Création de site à Asnières-sur-Seine", "/creation-site-internet-asnieres-sur-seine"], ["Île-de-France", "/agence-web-ile-de-france"], ["France, à distance", "/agence-web-france"]] },
   { title: "Prestations", links: [["Développement sur mesure", "/developpement-sur-mesure"], ["Automatisation", "/automatisation-informatique"], ["Sécurité web", "/cybersecurite"], ["Référencement SEO", "/referencement-seo"], ["Prospection emailing", "/prospection-emailing"], ["Toutes les prestations", "/services"]] },

@@ -11,19 +11,19 @@
    Les sections situées sous le premier écran ne sont mises en forme qu'à l'approche de l'écran
    (content-visibility: auto) : sur mobile, le style et la mise en page des ~900 éléments hors écran
    pesaient autant que le JavaScript au chargement (Lighthouse : « Style & Layout » 898 ms contre 207 ms sur
-   /mentions-legales). Hauteurs de réserve mesurées à 412 et 1 440 px ; « auto » retient ensuite la hauteur
+   /mentions-legales). Hauteurs de réserve mesurées à 412 et 1 440 px (choix et zone remesurés à 390 px après le compactage mobile) ; « auto » retient ensuite la hauteur
    réelle (pas de saut au retour). Le hero, le cartouche et « Pour qui » restent rendus immédiatement.
    Récit et méthode : seul leur contenu est différé (.hm-jr, .hm-steps-wrap), pas leur titre cinétique, dont
    les mots doivent garder une boîte réelle (layout-check reveal900 lit leur position ; une boîte sautée vaut
    0 px). */
 .hm-choice,.hm-jr,.hm-deliv-sec,.hm-works,.hm-steps-wrap,.hm-faq,.hm-zone,.hm-advice,.hm-demande{content-visibility:auto}
-.hm-choice{contain-intrinsic-size:auto 2770px}
+.hm-choice{contain-intrinsic-size:auto 2050px}
 .hm-jr{contain-intrinsic-size:auto 2550px}
 .hm-deliv-sec{contain-intrinsic-size:auto 1480px}
 .hm-works{contain-intrinsic-size:auto 1080px}
 .hm-steps-wrap{contain-intrinsic-size:auto 640px}
 .hm-faq{contain-intrinsic-size:auto 770px}
-.hm-zone{contain-intrinsic-size:auto 1340px}
+.hm-zone{contain-intrinsic-size:auto 1120px}
 .hm-advice{contain-intrinsic-size:auto 1240px}
 .hm-demande{contain-intrinsic-size:auto 2110px}
 @media (min-width:1024px){
@@ -209,6 +209,21 @@ html:has(#demande:target) :is(.hm-choice,.hm-jr,.hm-deliv-sec,.hm-works,.hm-step
 @media (min-width:640px){.hm-others-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (min-width:1180px){.hm-others-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .hm-others-all{margin:var(--sx-space-5) 0 0}
+/* Mobile (sous 640 px) : la section « Création ou refonte ? » mesurait 2 812 px à 390 px (recette finale).
+   Illustrations des deux cartes ramenées à 160 px, et « D'autres besoins » en liste compacte (intitulé et
+   prestation ; la phrase d'explication reste dans le HTML, mais n'est affichée qu'à partir de 640 px). */
+@media (max-width:639px){
+  .hm-twin-art{min-height:0;padding:var(--sx-space-4)}
+  .hm-twin-media{width:min(100%,160px)}
+  .hm-ba{width:min(100%,280px);height:172px}
+  .hm-ba-new b{font-size:17px}
+  .hm-others{margin-top:var(--sx-space-7)}
+  .hm-others-title{margin-bottom:var(--sx-space-4)}
+  .hm-others-list{gap:var(--sx-space-2)}
+  .hm-other{padding:var(--sx-space-3) var(--sx-space-4);row-gap:0}
+  .hm-other-label{font-size:1rem}
+  .hm-other-text{display:none}
+}
 .hm-link{display:inline-flex;align-items:center;gap:8px;min-height:44px;color:var(--sx-accent);font-weight:650;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
 .hm-link .hm-arrow{transition:transform var(--sx-dur-base) var(--sx-ease-out)}
 @media (hover:hover){.hm-link:hover .hm-arrow{transform:translate3d(3px,0,0)}}
@@ -370,6 +385,9 @@ html:has(#demande:target) :is(.hm-choice,.hm-jr,.hm-deliv-sec,.hm-works,.hm-step
 .hm-ring-center i{width:16px;height:22px;border-radius:2px;background:var(--sx-window-on);box-shadow:0 0 22px 6px rgba(255,182,72,.45)}
 .hm-ring-center em{padding:4px 12px;border-radius:999px;background:var(--sx-surface-2);box-shadow:inset 0 0 0 1px var(--sx-edge);color:var(--sx-text);font-size:14px;font-style:normal;font-weight:700;white-space:nowrap}
 @media (min-width:1024px){.hm-zone-grid{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);column-gap:var(--sx-space-8)}}
+/* Sous 768 px, le schéma (indicatif) est ramené à 280 px : à 390 px, il occupait 358 px de haut, plus de la
+   moitié de la section. Les étiquettes des anneaux restent lisibles (13 et 14 px). */
+@media (max-width:767px){.hm-zone-grid{gap:var(--sx-space-6)}.hm-rings-map{width:min(100%,280px)}}
 @keyframes hm-sweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes hm-pulse{0%{opacity:.8;transform:scale(.6)}40%{opacity:0;transform:scale(2.6)}100%{opacity:0;transform:scale(2.6)}}
 

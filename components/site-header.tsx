@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Menu } from "lucide-react";
 import Link from "@/components/campaign-link";
-import { Brand } from "@/components/brand";
+import { Brand } from "@/components/brand-mark";
 import { ButtonLink, PhoneLink } from "@/components/sx/actions";
 import { MotionToggle } from "@/components/sx/motion-gate";
 /* En-tête public (le lien d'évitement et le ThemeControl sont rendus avant lui par le layout racine). Mobile (60 px) : marque « par Mohamed », téléphone compact, pause des animations,
@@ -50,7 +50,21 @@ export function SiteHeader() {
     };
     document.addEventListener("click", close);
     document.addEventListener("keydown", close);
-    return () => { document.removeEventListener("click", close); document.removeEventListener("keydown", close); };
+    /* Menu ouvert (popover, sous 1520 px) : une tabulation après la dernière entrée sortait du panneau, qui
+       restait ouvert et cachait l'élément focalisé (WCAG 2.4.11). Le panneau se ferme dès que le focus part
+       ailleurs que dans le menu ou sur son bouton (qui le referme lui-même). */
+    const m = menu.current as (HTMLDivElement & { hidePopover?: () => void }) | null;
+    const leave = (e: FocusEvent) => {
+      const to = e.relatedTarget as Node | null;
+      if (!m || !to || m.contains(to) || (to as Element).closest?.(".sx-menu-button")) return;
+      /* Après le déplacement du focus : le panneau ne le contient plus, sa fermeture ne le ramène pas au bouton. */
+      setTimeout(() => {
+        try { if (m.matches(":popover-open")) m.hidePopover?.(); } catch {}
+        if (m.classList.contains("is-open")) { m.classList.remove("is-open"); document.querySelector(".sx-menu-button")?.setAttribute("aria-expanded", "false"); }
+      }, 0);
+    };
+    m?.addEventListener("focusout", leave);
+    return () => { document.removeEventListener("click", close); document.removeEventListener("keydown", close); m?.removeEventListener("focusout", leave); };
   }, []);
   function toggleFallback(e: React.MouseEvent<HTMLButtonElement>) {
     if ("popover" in HTMLElement.prototype) return;

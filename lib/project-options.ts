@@ -1,7 +1,7 @@
-/* Libellés des anciennes demandes (budget, calendrier) : lus par le panel seulement, jamais affichés au public. */
-export const budgets={a_definir:"À définir ensemble",moins_1000:"Moins de 1 000 €",de_1000_3000:"1 000 à 3 000 €",de_3000_10000:"3 000 à 10 000 €",plus_10000:"Plus de 10 000 €"};
-export const timelines={flexible:"Pas de date imposée",un_mois:"Dans le mois",trois_mois:"Dans les 3 mois",plus_tard:"Plus tard"};
-export function cleanCampaign(value:unknown){return typeof value==="string"&&/^[a-zA-Z0-9_-]{1,80}$/.test(value)?value:"site";}
+/* Les libellés des anciennes demandes (budget, calendrier), lus par le panel seulement, sont dans
+   lib/legacy-request-labels.ts : ce module-ci est chargé par le formulaire public. */
+/* cleanCampaign vit dans lib/campaign-href.ts (sans dépendance, importé par CampaignLink) ; réexporté ici. */
+export {cleanCampaign} from "./campaign-href";
 
 /* Formulaire court : type de projet (radio) et précision « Autre besoin » (liste native). */
 export const projectKinds=[

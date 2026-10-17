@@ -50,3 +50,12 @@ __pycache__/
 # Outillage de recette (scripts/qa) : dépendances et sorties locales, jamais versionnées
 scripts/qa/node_modules/
 scripts/qa/out/
+
+# Données d'exploitation : bases SQLite, sauvegardes et exports chiffrés, jamais versionnés
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
+*.smartfixx
+/data/
+backups/

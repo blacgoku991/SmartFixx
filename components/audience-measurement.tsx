@@ -28,4 +28,4 @@ export function AudienceMeasurement(){const path=usePathname();const[choice,setC
  if(hidden)return null;
  return <aside ref={box} className="sx-consent" data-sx-consent="" aria-labelledby="sx-consent-titre"><h2 className="sx-consent-title" id="sx-consent-titre">M’aider à améliorer le site ?{choice&&<button type="button" className="sx-consent-close" onClick={close} aria-label="Fermer les préférences"><X aria-hidden="true"/></button>}</h2><p className="sx-consent-text">Avec votre accord, je compte les pages consultées et les clics utiles, sans identifiant de visiteur ni contenu de formulaire. <Link href="/confidentialite">En savoir plus</Link></p><button type="button" className="sx-consent-btn" onClick={()=>choose('no')}>Refuser</button><button type="button" className="sx-consent-btn sx-consent-btn--yes" onClick={()=>choose('yes')}>Accepter</button></aside>;
 }
-export function PrivacyPreferences(){return <button type="button" className="privacy-settings" onClick={()=>window.dispatchEvent(new Event('smartfixx-privacy'))}>Gérer la mesure d’audience</button>}
+/* PrivacyPreferences (bouton du pied de page) : components/privacy-preferences.tsx. */

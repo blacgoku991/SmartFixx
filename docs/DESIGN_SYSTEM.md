@@ -19,7 +19,7 @@ un lot l'utilise, il ne le modifie pas. Un besoin non couvert se signale, il ne 
 | Métadonnées et JSON-LD | `lib/seo.ts` |
 | Client JSON défensif | `lib/fetch-json.ts` |
 | Réalisations | `lib/realisations.ts` |
-| Jetons de transition du panel et de la page email | `app/admin/legacy-tokens.css` (supprimé au lot 10) |
+| Règles de transition du panel et de la page email | `app/admin/legacy-tokens.css` : ses jetons `--sfx-*` sont supprimés au lot 10 (86 Ko → 3 Ko) ; le fichier garde les règles hors jetons encore actives (focus clavier hors couche, police du panel, couleurs des graphiques en thème clair) et n'est donc pas supprimé |
 
 ### Préfixes CSS par lot
 

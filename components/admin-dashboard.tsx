@@ -13,7 +13,7 @@ import { Sheet, SheetContent, SheetTitle, SheetDescription } from "./ui/sheet";
 import { StateLoading, StateEmpty, StateError } from "./sx/states";
 import { statuses, type RequestStatus } from "@/lib/admin-policy";
 import { serviceLabels, type ServiceId } from "@/lib/services";
-import { budgets, timelines } from "@/lib/project-options";
+import { budgets, timelines } from "@/lib/legacy-request-labels";
 import { formatEuro, formatNumber, plans } from "@/lib/offers";
 import { getJson, postJson, frenchError, type JsonResult } from "@/lib/fetch-json";
 import { displayPhone } from "@/lib/phone";

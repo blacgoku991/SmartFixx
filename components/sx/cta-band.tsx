@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { ButtonLink, PhoneLink } from "./actions";
 import { Skyline } from "./ambient";
-/* Bandeau d'appel de fin de page (serveur). Remplace NextStep (alias conservé dans components/next-step.tsx).
+/* Bandeau d'appel de fin de page (serveur). Remplace l'ancien NextStep
+   (components/next-step.tsx, supprimé au lot 10).
    Toujours nocturne (portée [data-sx-tone=night]) : en thème clair, la page part de l'aube et finit sur la
    ville de nuit, fenêtres allumées. Graine 5 : une autre ville que celle du hero (graine 0 par défaut). */
 export function CtaBand({ title, text, primaryHref = "/contact", primaryLabel = "Parler de mon projet", id = "cta-band-titre", phone = true, skyline = true }: { title: ReactNode; text?: ReactNode; primaryHref?: string; primaryLabel?: string; id?: string; phone?: boolean; skyline?: boolean }) {

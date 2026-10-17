@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { createElement, type CSSProperties, type ReactElement } from "react";
 /* Décor d'ambiance (serveur, aria-hidden par le conteneur [data-sx-ambient]) — amendement du mouvement :
    transform et opacity seulement, uniquement sous html[data-motion=on], suspendu hors écran par MotionGate
    (data-sx-visible) et par le contrôle global de pause, arrêté net en mouvement réduit.
@@ -54,19 +54,21 @@ function plan(count: number, seed: number, near: boolean, signalAt?: number): Bu
 const GRID = { tower: { px: 15, py: 20 }, b: { px: 13, py: 24 }, mansard: { px: 14, py: 24 }, pavillon: { px: 15, py: 20 }, far: { px: 11, py: 15 } } as const;
 function grid(b: Building, near: boolean) { return !near ? GRID.far : b.kind === "tower" ? (b.b ? GRID.b : GRID.tower) : GRID[b.kind]; }
 const at = (g: { px: number; py: number }, w: Win) => ({ left: `${9 + w.c * g.px}px`, bottom: `${8 + w.r * g.py}px` });
+/* Sérialisation compacte (charge RSC de chaque page à hero ou à bandeau) : enfants passés en arguments, sans
+   tableaux vides, null ni clés de fenêtre, et largeurs arrondies au centième (0,72 et non 0.7200000000000001).
+   Le DOM rendu est identique. */
+const round2 = (n: number) => Math.round(n * 100) / 100;
 function Plane({ items, near, signalAt }: { items: Building[]; near: boolean; signalAt?: number }) {
   return (
     <div className={`sx-skyline-plane sx-skyline-plane--${near ? "near" : "far"}`}>
       {items.map((b, i) => {
         const g = grid(b, near);
-        return (
-          <span className={["sx-skyline-b", b.b ? "sx-skyline-b--b" : "", b.kind !== "tower" ? `sx-skyline-b--${b.kind}` : "", signalAt === i ? "sx-skyline-b--signal" : ""].filter(Boolean).join(" ")} key={i} style={{ height: `${b.h}%`, flexGrow: b.w }}>
-            {b.floor !== undefined ? <i className="sx-floor" style={{ bottom: `${8 + b.floor * g.py}px` }} /> : null}
-            {b.on.map((w, j) => <i key={`o${j}`} className="sx-win is-on" style={at(g, w)} />)}
-            {b.twinkle.map((w, j) => <i key={`t${j}`} className="sx-win" style={{ ...at(g, w), animationDelay: `${w.d}s`, animationDuration: `${w.dur}s` }} />)}
-            {signalAt === i ? <i className="sx-win sx-win--signal is-lit" style={at(g, { c: 1, r: 1 })} /> : null}
-          </span>
-        );
+        const kids: ReactElement[] = [];
+        if (b.floor !== undefined) kids.push(<i className="sx-floor" style={{ bottom: `${8 + b.floor * g.py}px` }} />);
+        for (const w of b.on) kids.push(<i className="sx-win is-on" style={at(g, w)} />);
+        for (const w of b.twinkle) kids.push(<i className="sx-win" style={{ ...at(g, w), animationDelay: `${w.d}s`, animationDuration: `${w.dur}s` }} />);
+        if (signalAt === i) kids.push(<i className="sx-win sx-win--signal is-lit" style={at(g, { c: 1, r: 1 })} />);
+        return createElement("span", { key: i, className: ["sx-skyline-b", b.b ? "sx-skyline-b--b" : "", b.kind !== "tower" ? `sx-skyline-b--${b.kind}` : "", signalAt === i ? "sx-skyline-b--signal" : ""].filter(Boolean).join(" "), style: { height: `${b.h}%`, flexGrow: round2(b.w) } }, ...kids);
       })}
     </div>
   );
