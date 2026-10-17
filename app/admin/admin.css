@@ -127,9 +127,10 @@
   .rq-cards{display:none}
 }
 
-/* Contour ambre d'une nouvelle demande : une fois, 1,2 s, opacité seulement. */
+/* Contour ambre d'une nouvelle demande : une fois, 1,2 s, opacité seulement, et seulement quand le socle a
+   ouvert le mouvement (html[data-motion="on"], posé après load + idle) ; coupé par data-motion-paused. */
 @media (prefers-reduced-motion:no-preference){
-  .rq-card--new::after{content:'';position:absolute;inset:-1px;border:2px solid var(--sx-signal);border-radius:inherit;opacity:0;pointer-events:none;animation:rq-flash 1.2s ease-out 1}
+  html[data-motion="on"]:not([data-motion-paused]) .rq-card--new::after{content:'';position:absolute;inset:-1px;border:2px solid var(--sx-signal);border-radius:inherit;opacity:0;pointer-events:none;animation:rq-flash 1.2s ease-out 1}
 }
 @keyframes rq-flash{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
 
@@ -152,6 +153,13 @@
 .rq-select{width:100%;min-width:0;height:44px;padding:0 40px 0 12px;border:1px solid var(--sx-line-strong);border-radius:var(--sx-radius-window);background-color:var(--sx-bg);color:var(--sx-text);font:inherit;font-size:16px;appearance:none;-webkit-appearance:none;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--sx-text-muted) 50%),linear-gradient(135deg,var(--sx-text-muted) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px,6px 6px;background-repeat:no-repeat}
 .rq-select:focus-visible{outline:3px solid var(--sx-focus);outline-offset:2px}
 .rq-actions-live:empty{display:none}
+.rq-draft{margin:0;font-size:.875rem;font-weight:650;color:var(--sx-text)}
+.rq-expired{display:grid;gap:10px;justify-items:start;margin:0 0 16px;padding:14px 16px;border:1px solid var(--sx-signal);border-radius:var(--sx-radius-md,12px);background:var(--sx-surface-2,var(--sx-surface));color:var(--sx-text)}
+.rq-expired p{margin:0;font-size:.9375rem;line-height:1.5}
+.rq-expired,.rq-expired>p{min-width:0;max-width:100%}
+.rq-expired-bar{margin:0;font-size:.875rem;line-height:1.45;color:var(--sx-text)}
+.rq-expired-bar .rq-link{margin-left:2px}
+.rq-expired .rq-btn{max-width:100%;white-space:normal;text-align:left;padding-block:10px}
 .rq-notice{display:flex;gap:6px;align-items:center;margin:0;font-size:.875rem;font-weight:650;color:var(--sx-success)}
 .rq-sheet-body{display:grid;gap:4px;padding:8px 20px 40px}
 .rq-block{display:grid;gap:10px;padding:18px 0;border-bottom:1px solid var(--sx-line)}
