@@ -73,6 +73,14 @@ const VIGNETTES = [
   { kind: "phone" as const, url: "", ratio: "9/15", node: <FormVignette /> },
   { kind: "browser" as const, url: "votre-entreprise.fr/suivi", ratio: "6/5", node: <BoardVignette /> },
 ];
+/* Sans JavaScript, MotionGate ne tranche jamais et JourneyDriver ne pose pas data-step : à partir de
+   1 024 px, les vignettes 2 à 4 de la cellule collante restaient invisibles. Ce style, lu seulement quand le
+   script est désactivé (<noscript>), remet chaque vignette à côté de son chapitre, sans superposition ni
+   cellule collante. Aucun effet quand JavaScript est actif (le contenu de <noscript> n'est alors que du texte). */
+const NOSCRIPT_CSS =
+  "@media (min-width:1024px){.hm-jr .hm-jr-pair{display:grid;grid-column:1/-1;grid-template-columns:subgrid;align-items:center;padding-block:var(--sx-space-6)}" +
+  ".hm-jr .hm-jr-ch,.hm-jr .hm-jr-vg{grid-row:auto}.hm-jr .hm-jr-ch{grid-column:1;min-height:0}" +
+  ".hm-jr .hm-jr-vg{grid-column:2;position:static;height:auto;opacity:1;pointer-events:auto}}";
 export function RequestJourney() {
   return (
     <Section tone="night" id="parcours" labelledBy="parcours-titre" className="hm-journey" ambient={<><Glow size={680} top="8%" left="-18%" /><Glow size={520} bottom="-10%" right="-12%" alt duration={28} /></>}>
@@ -98,6 +106,7 @@ export function RequestJourney() {
             </div>
           ))}
         </div>
+        <noscript dangerouslySetInnerHTML={{ __html: `<style>${NOSCRIPT_CSS}</style>` }} />
         <JourneyDriver target="hm-jr" />
       </Container>
     </Section>

@@ -6,7 +6,10 @@ const T = "\u202F";
 export const HERO = {
   eyebrow: "Mohamed · SmartFixx · ",
   eyebrowShort: "Mohamed · Asnières (92)",
-  lead: "Un site qui présente votre entreprise et facilite les prises de contact. Je le conçois, je le construis et je reste votre seul interlocuteur.",
+  /* Chapeau : 2 lignes au plus sous 640 px (pages.md) ; la seconde phrase (leadMore) n'est affichée qu'à
+     partir de 640 px, la preuve « Un seul interlocuteur » la reprend sur mobile. */
+  lead: "Un site qui présente votre entreprise et facilite les prises de contact.",
+  leadMore: "Je le conçois, je le construis et je reste votre seul interlocuteur.",
   proofs: ["Un seul interlocuteur : moi, Mohamed".replace(" :", `${T}:`), "Téléphone direct, sans standard", "Pensé d’abord pour le mobile"],
   sceneLabel: "Démonstration : une demande arrive, du site au tableau de suivi",
   sceneDescription:

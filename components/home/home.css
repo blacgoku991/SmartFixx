@@ -37,12 +37,20 @@
   .hm-advice{contain-intrinsic-size:auto 840px}
   .hm-demande{contain-intrinsic-size:auto 1520px}
 }
+/* Saut vers #demande (CTA du hero, lien d'ancre natif) : les hauteurs de réserve ci-dessus sont des
+   estimations ; tant qu'une section n'a jamais été rendue, la position calculée de #demande est fausse
+   (mesuré en mode animé : 239 px trop loin à 390 px, 472 px à 1 440 px). Dès que #demande est la cible du
+   document, les sections qui la précèdent sont rendues pour de bon, avant le calcul du défilement.
+   Argument de :has() = identifiant + pseudo-classe, aucun attribut ; la règle ne s'applique qu'après le clic
+   (ou à l'arrivée sur /#demande). */
+html:has(#demande:target) :is(.hm-choice,.hm-jr,.hm-deliv-sec,.hm-works,.hm-steps-wrap,.hm-faq,.hm-zone,.hm-advice){content-visibility:visible}
 
 /* ================================================================ HERO */
 /* Ville du hero un peu plus basse que le défaut du socle (300 px au plus) : à 1 440 × 900, le H1 très
    présent (89 px) et la scène laissent ainsi voir les toits dans le premier écran. */
 .hm-hero{--sx-skyline-h:clamp(120px,13vw,196px)}
 .hm-hero-aside{display:none;min-width:0}
+@media (max-width:639px){.hm-lead-more{display:none}}
 @media (min-width:1024px){
   /* Premier écran 1 440 × 900, consentement ouvert : le bas du CTA reste au-dessus du haut de la carte de
      consentement (layout-check --checks=cta), malgré le H1 à 89 px sur trois lignes. */
@@ -70,7 +78,11 @@
 .hm-ms-call{flex:none;padding:3px 10px;border-radius:6px;background:var(--sx-accent-strong);color:var(--sx-on-accent);font-weight:650}
 .hm-ms-hero{display:grid;gap:4px}
 .hm-ms-kicker{color:var(--sx-accent);font-weight:650}
-.hm-ms-title{font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-size:clamp(17px,1.5vw,22px);font-weight:700;line-height:1.02;letter-spacing:-.01em;text-wrap:balance}
+/* Titres des maquettes (17 à 22 px) en police de texte, graisse 700 : en dessous de 24 px environ, SFX
+   Display perd le point des « i » sur un écran DPR 1 (« salle de baln »). La police de texte, plus large,
+   est un peu plus petite (18 px au plus) pour que le titre tienne sur deux lignes et laisse le formulaire
+   du mini-site entier dans le cadre. */
+.hm-ms-title{font-family:var(--sx-font-text);font-size:clamp(15px,1.2vw,18px);font-weight:700;line-height:1.15;letter-spacing:-.01em;text-wrap:balance}
 .hm-ms-text{color:var(--sx-text-muted)}
 .hm-ms-cards{display:flex;flex-wrap:wrap;gap:6px}
 .hm-ms-cards>span{padding:4px 10px;border-radius:999px;background:var(--sx-surface-2);color:var(--sx-text);font-weight:650;white-space:nowrap}
@@ -81,7 +93,7 @@
 /* Téléphone : formulaire court rempli (sous la pastille « Démonstration » du cadre). */
 .hm-mp{display:grid;grid-template-rows:repeat(3,auto) 1fr;align-content:start;gap:6px;height:100%;padding:40px 10px 10px;background:var(--sx-surface);color:var(--sx-text);font-size:12px;line-height:1.25}
 .hm-mp-fields{display:grid;gap:6px;min-width:0}
-.hm-mp-title{font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-size:17px;font-weight:700;line-height:1.05}
+.hm-mp-title{font-family:var(--sx-font-text);font-size:16px;font-weight:700;line-height:1.15}
 .hm-mp-field{display:grid;gap:1px;min-height:26px;padding:5px 8px;border:1px solid var(--sx-line-strong);border-radius:8px;background:var(--sx-bg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hm-mp-field small{font-size:12px;color:var(--sx-text-muted)}
 .hm-mp-field>span{overflow:hidden;text-overflow:ellipsis}
@@ -97,6 +109,9 @@
   .hm-ms>:not(.hm-ms-nav){margin-right:27%}
   .hm-ms::after{width:calc(27% - 18px)}
 }
+/* Scène la plus étroite (1 024 px environ) : le titre du téléphone passe sur deux lignes ; le champ « Nom »
+   s'efface pour que « Demande enregistrée » reste entière dans l'écran. */
+@container (max-width:460px){.hm-sc-phone .hm-mp-field:nth-child(2){display:none}}
 .hm-mp-ok::before{content:'';flex:none;width:8px;height:8px;border-radius:50%;background:var(--sx-success)}
 
 /* Lecture unique : toutes les animations partent ensemble et durent 6,4 s, leurs images clés portent le
@@ -123,6 +138,9 @@
      se rallume quand la carte « Nouvelle demande » arrive (une fois). Statique et allumée sans lecture
      (mode réduit, mobile où la scène est masquée, mouvement coupé). :has() à argument de classe. */
   html[data-motion='on'] .hm-hero:has(.hm-scene.is-playing) .sx-win--signal{animation:hm-win-on 6.4s linear both}
+  /* Pause de la scène par son propre bouton : la fenêtre signal s'arrête avec elle (sinon elle s'allumait
+     quelques secondes avant la carte « Nouvelle demande » à la reprise). */
+  html[data-motion='on'] .hm-hero:has(.hm-scene.is-paused) .sx-win--signal{animation-play-state:paused}
 }
 
 /* ============================================================ POUR QUI */
@@ -164,11 +182,19 @@
 .hm-ba-old i{display:block;height:7px;border-radius:2px;background:var(--sx-line-strong);opacity:.55}
 .hm-ba-old i:nth-child(2){width:90%}.hm-ba-old i:nth-child(3){width:60%}.hm-ba-old i:nth-child(4){width:75%}.hm-ba-old i:nth-child(5){width:40%}
 .hm-ba-new{right:0;bottom:0;width:66%;height:74%;gap:10px;padding:10px 14px 14px;background:var(--sx-surface);box-shadow:var(--sx-shadow-2),0 0 0 1px var(--sx-edge)}
-.hm-ba-new b{font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-size:19px;font-weight:700;line-height:1.02;letter-spacing:-.01em;color:var(--sx-text)}
+.hm-ba-new b{font-family:var(--sx-font-text);font-size:19px;font-weight:700;line-height:1.1;letter-spacing:-.01em;color:var(--sx-text)}
 .hm-ba-new em{justify-self:start;padding:6px 12px;border-radius:8px;background:var(--sx-accent-strong);color:var(--sx-on-accent);font-style:normal;font-weight:650;font-size:12px}
 .hm-twin:hover .hm-ba-new{transform:translate3d(0,-4px,0)}
 .hm-twin:hover .hm-ba-old{transform:rotate(-7deg) translate3d(-4px,2px,0)}
-@media (min-width:900px){.hm-twins{grid-template-columns:repeat(2,minmax(0,1fr))}.hm-twin-art{min-height:300px}}
+/* À partir de 900 px, les deux cartes partagent les rangées d'une même grille (subgrid) : illustration,
+   surtitre, titre, intitulé, liste et bouton tombent à la même hauteur des deux côtés (l'illustration de la
+   création, 260 px plus le rembourrage, dépassait de 8 px la hauteur minimale de celle de la refonte). */
+@media (min-width:900px){
+  .hm-twins{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:0}
+  .hm-twin{grid-row:span 6;grid-template-rows:subgrid;row-gap:0}
+  .hm-twin-art{min-height:300px}
+  .hm-twin-body{grid-row:span 5;grid-template-rows:subgrid;align-content:normal}
+}
 /* Autres prestations */
 .hm-others{margin-top:var(--sx-space-8)}
 .hm-others-title{margin:0 0 var(--sx-space-5);font-size:var(--sx-step-2)}
@@ -209,7 +235,7 @@
 /* Vignettes (contenu fictif lisible, 12 px au moins). */
 .hm-v{display:grid;align-content:start;gap:8px;height:100%;padding:14px;background:var(--sx-surface);color:var(--sx-text);font-size:12px;line-height:1.3}
 .hm-jr-frame--phone .hm-v{padding-top:44px}
-.hm-v-title{font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-size:19px;font-weight:700;line-height:1.05;letter-spacing:-.01em}
+.hm-v-title{font-family:var(--sx-font-text);font-size:19px;font-weight:700;line-height:1.15;letter-spacing:-.01em}
 .hm-v-text{color:var(--sx-text-muted)}
 .hm-v-query{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--sx-line-strong);border-radius:999px;background:var(--sx-bg);font-size:13px}
 .hm-v-query::before{content:'';flex:none;width:10px;height:10px;border:2px solid var(--sx-text-muted);border-radius:50%}
@@ -246,9 +272,20 @@
   .hm-jr-ch--1{grid-row:1}.hm-jr-ch--2{grid-row:2}.hm-jr-ch--3{grid-row:3}.hm-jr-ch--4{grid-row:4}
   .hm-jr-vg{grid-column:2;grid-row:1/span 4;align-self:start;position:sticky;top:calc(var(--sx-header-h) + 24px);height:min(600px,calc(100vh - var(--sx-header-h) - 48px));align-items:center;opacity:0;pointer-events:none}
   .hm-jr-frame--phone{width:min(270px,calc((100vh - var(--sx-header-h) - 120px) * .52))}
+  /* Navigateur : écran moins haut (4/3, puis 3/2 dès 1 400 px, au lieu de 6/5) et contenu à 14 px, pour que
+     la recherche et le tableau de suivi remplissent le cadre au lieu de laisser sa moitié basse vide. */
+  .hm-jr-frame--browser .sx-demo-screen{aspect-ratio:4/3}
+  .hm-jr-frame--browser .hm-v{gap:12px;padding:20px 22px;font-size:14px}
+  .hm-jr-frame--browser .hm-v-query,.hm-jr-frame--browser .hm-v-board-head{font-size:15px}
+  .hm-jr-frame--browser .hm-v-result{padding:10px 12px}
+  .hm-jr-frame--browser .hm-v-result small,.hm-jr-frame--browser .hm-v-rows small{font-size:13px}
+  .hm-jr-frame--browser .hm-v-result b{font-size:16px}
+  .hm-jr-frame--browser .hm-v-rows>span{padding:9px 12px}
+  .hm-jr-frame--browser .hm-v-ref--big{font-size:30px}
   .hm-jr:not([data-step]) .hm-jr-vg--1,.hm-jr[data-step='1'] .hm-jr-vg--1,.hm-jr[data-step='2'] .hm-jr-vg--2,.hm-jr[data-step='3'] .hm-jr-vg--3,.hm-jr[data-step='4'] .hm-jr-vg--4{opacity:1}
   html[data-motion='on']:not([data-motion-paused]) .hm-jr-vg{transition:opacity .3s cubic-bezier(.2,.7,.2,1)}
 }
+@media (min-width:1400px) and (prefers-reduced-motion:no-preference){.hm-jr-frame--browser .sx-demo-screen{aspect-ratio:3/2}}
 /* Fondu piloté par le défilement (timelines de vue nommées) : chapitre de hauteur h ≈ 72vh, il occupe le
    milieu de l'écran entre 29 % et 71 % de sa plage « cover » ; les fondus se croisent autour de ces bornes. */
 @keyframes hm-jr-first{0%,67%{opacity:1;transform:none}75%,100%{opacity:0;transform:translate3d(0,-28px,0) scale(.97)}}
@@ -286,7 +323,7 @@
 /* ============================================================ MÉTHODE */
 .hm-steps-wrap{position:relative}
 .hm-steps{position:relative;display:grid;gap:var(--sx-space-6);margin:0;padding:0;list-style:none}
-.hm-step{display:grid;grid-template-columns:56px minmax(0,1fr);column-gap:var(--sx-space-4);row-gap:6px}
+.hm-step{display:grid;grid-template-columns:56px minmax(0,1fr);align-content:start;column-gap:var(--sx-space-4);row-gap:6px}
 .hm-step-win{grid-row:1/span 2;position:relative;z-index:1;display:grid;place-items:center;width:56px;height:56px;border-radius:var(--sx-radius-window);background:var(--sx-surface-2);box-shadow:inset 0 0 0 1px var(--sx-line-strong),0 0 0 6px var(--sx-bg);color:var(--sx-signal-text);font-size:1.625rem;line-height:1}
 .hm-step h3{margin:6px 0 0;font-size:var(--sx-step-2)}
 .hm-step p{margin:0;color:var(--sx-text-muted)}
@@ -294,7 +331,10 @@
 .hm-steps-fill{position:absolute;inset:0;background:linear-gradient(180deg,var(--sx-signal),var(--sx-accent));transform-origin:50% 0}
 @media (min-width:1024px){
   .hm-steps{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sx-space-6)}
-  .hm-step{grid-template-columns:1fr;row-gap:var(--sx-space-3)}
+  /* Les 4 colonnes partagent 3 rangées (subgrid) : fenêtre, titre, texte alignés d'une colonne à l'autre,
+     que le titre tienne sur une ligne ou deux. */
+  .hm-steps{grid-template-rows:repeat(3,auto);row-gap:0}
+  .hm-step{grid-row:span 3;grid-template-columns:1fr;grid-template-rows:subgrid;row-gap:var(--sx-space-3)}
   .hm-step-win{grid-row:auto}
   .hm-step h3{margin-top:var(--sx-space-2)}
   .hm-steps-track{left:28px;right:28px;top:27px;bottom:auto;width:auto;height:2px}
