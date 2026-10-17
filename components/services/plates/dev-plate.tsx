@@ -20,7 +20,7 @@ export function DevPlate() {
       <Layer className="sv-dev-win" svg={<>
         <rect className="sv-p-card" x="16" y="46" width="328" height="150" rx="12" />
         <path className="sv-p-bar" d="M28 46H332A12 12 0 0 1 344 58V70H16V58A12 12 0 0 1 28 46Z" />
-        <rect className="sv-p-side" x="16" y="70" width="44" height="126" />
+        <path className="sv-p-side" d="M16.5 70H60V195.5H28.5A12 12 0 0 1 16.5 183.5Z" />
         {[82, 112, 142, 172].map((y, i) => <rect key={y} className={i === 0 ? "sv-p-icon sv-p-icon--on" : "sv-p-icon"} x="28" y={y} width="20" height="18" rx="5" />)}
       </>}>
         <T x={72} y={63} c="sv-tx--b">Interventions</T>

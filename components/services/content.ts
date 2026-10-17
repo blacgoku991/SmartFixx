@@ -33,7 +33,7 @@ export const servicePages: Partial<Record<"developpement" | "automatisation" | "
     plate: {
       kind: "dev",
       label: "Démonstration : tableau de bord et rôles, données fictives",
-      description: "Un tableau de bord d’interventions fictif. Trois rôles y accèdent à travers un contrôle des accès côté serveur : le gérant voit tout, le technicien ses dossiers, le client le suivi de son seul dossier.",
+      description: "Un tableau de bord d’interventions fictif. Trois rôles y accèdent à travers un contrôle des accès côté serveur : le gérant voit tout, le technicien ses dossiers, le client le suivi de son seul dossier.",
     },
     media: { base: "studio-web", src: "/studio-web.webp", alt: "" },
     when: {
@@ -109,7 +109,7 @@ export const servicePages: Partial<Record<"developpement" | "automatisation" | "
     plate: {
       kind: "secu",
       label: "Démonstration : périmètre autorisé et points exposés, cas fictif",
-      description: "Un périmètre autorisé contient le site public, un formulaire, un espace d’administration et des composants ; la messagerie et les postes restent hors périmètre. Trois points exposés sont repérés puis classés : urgent, important, plus tard.",
+      description: "Un périmètre autorisé contient le site public, un formulaire, un espace d’administration et des composants ; la messagerie et les postes restent hors périmètre. Trois points exposés sont repérés puis classés : urgent, important, plus tard.",
     },
     media: { base: "studio-security", src: "/studio-security.webp", alt: "" },
     when: {
@@ -147,7 +147,7 @@ export const servicePages: Partial<Record<"developpement" | "automatisation" | "
     plate: {
       kind: "seo",
       label: "Démonstration : arborescence et requête, résultat sans position",
-      description: "Une recherche « création site internet asnières » correspond à une page dédiée de l’arborescence d’un site fictif (accueil, création de site, refonte, page Asnières). Un résultat type s’affiche, sans aucune position.",
+      description: "Une recherche « création site internet asnières » correspond à la page Asnières de l’arborescence d’un site fictif (accueil, puis pages Asnières, création de site et refonte), qui s’allume. Un résultat type s’affiche, sans aucune position.",
     },
     media: { base: "studio-web", src: "/studio-web.webp", alt: "" },
     when: {

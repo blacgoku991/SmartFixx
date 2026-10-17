@@ -3,11 +3,12 @@ import { Layer, MarkNum, MarkShape, PlateFrame, T } from "./plate";
    résultat est un résultat TYPE (« votre-entreprise.fr »).
    Récit (6,4 s, une fois) : la requête s'écrit (un cache de la couleur du champ glisse et découvre le
    texte : translate composité, dans une fenêtre qui le rogne) ; l'arborescence se déplie ; la page qui
-   répond à l'intention s'allume, reliée à la requête ; le résultat type apparaît. */
+   répond à l'intention (la page locale Asnières, premier enfant) s'allume, reliée à la requête ; le
+   résultat type apparaît. */
 const PAGES = [
-  { y: 154, t: "Création de site" },
-  { y: 196, t: "Refonte de site" },
-  { y: 238, t: "Asnières (92)" },
+  { y: 154, t: "Asnières (92)" },
+  { y: 196, t: "Création de site" },
+  { y: 238, t: "Refonte de site" },
 ];
 export function SeoPlate() {
   return (
