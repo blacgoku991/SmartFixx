@@ -74,7 +74,7 @@ export function ServicesPage() {
         breadcrumbs={[{ name: "Prestations", path: "/services" }]}
         title={<>Prestations web :</>}
         tagline="création, refonte, automatisation, sécurité et SEO"
-        lead={<>Je conçois des sites pour les entreprises d’<Place>Asnières-sur-Seine</Place> et d’Île-de-France.</>}
+        lead={<>Je conçois des sites en Île-de-France, depuis <Place>Asnières-sur-Seine</Place>.</>}
         actions={<><ButtonLink variant="cta" href="/contact" size="lg">Parler de mon projet</ButtonLink><PhoneLink compact="sm" /></>}
         backdrop={<><Glow tone="blue" size={680} top="-240px" right="-200px" duration={26} /><Skyline seed={7} signal depth={false} /></>}
         aside={<Board />}
