@@ -32,4 +32,18 @@
   .email-action-card{border-radius:var(--sx-radius-lg)}
   /* Pied empilé à gauche : le sélecteur de thème flottant (bas droite) ne recouvre aucun lien. */
   .email-action-foot{flex-direction:column;align-items:flex-start;width:min(100%,640px)}
+  /* Carte resserrée : l'action tient au premier écran au-dessus du sélecteur de thème flottant (bas droite,
+     environ 60 px), et la marge basse garde ce dégagement une fois la page défilée. */
+  .email-action-card{margin:12px auto 72px;padding:22px 20px 24px}
+  .email-action-window{width:48px;height:64px;margin-bottom:14px;border-radius:24px 24px 6px 6px}
+  .email-action-icon svg{width:22px;height:22px}
+  .email-action-card h1{margin:8px 0 12px}
+  .email-action-text{font-size:1rem;line-height:1.6}
+  .email-action-actions{margin-top:20px}
+}
+/* 320 px (568 de haut) : quelques pixels de plus pour que le sélecteur ne touche pas le bouton. */
+@media (max-width:359.98px){
+  .email-action-window{width:40px;height:52px;margin-bottom:10px;border-radius:20px 20px 5px 5px}
+  .email-action-icon svg{width:20px;height:20px}
+  .email-action-text{font-size:.9375rem;line-height:1.55}
 }
