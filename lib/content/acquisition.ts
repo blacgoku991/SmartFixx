@@ -37,6 +37,8 @@ export type AcquisitionContent = {
     cta: string;
     proofs: string[];
   };
+  /* Chapeau de la section Réalisations : propre à chaque page (la liste des réalisations, elle, est commune). */
+  works: { title: string; text: string };
   steps: { eyebrow: string; title: string; text: string; items: Step[] };
   faq: { eyebrow: string; title: string; text: string; items: Faq[] };
   related: { title: string; intro: Rich; links: RelatedLink[] };
@@ -135,6 +137,7 @@ export const creation: AcquisitionContent & {
       { href: GUIDE_REFONTE.href, label: "Guide : préparer la refonte de son site", text: "Les décisions à prendre avant le design, utiles aussi pour un premier site." },
     ],
   },
+  works: { title: "Un exemple concret : ce site", text: "Le site que vous parcourez et le tableau de suivi où arrivent ses demandes : je les ai conçus et construits moi-même. Le tableau est montré en démonstration, avec des données fictives." },
   band: { title: "Votre site, pensé pour être compris et contacté", text: "Décrivez votre activité en quelques lignes : je vous réponds moi-même avec une proposition claire." },
 };
 
@@ -238,6 +241,7 @@ export const refonte: AcquisitionContent & {
       { href: "/referencement-seo", label: "Référencement SEO local", text: "Être trouvé pour ce que vous faites vraiment, dans votre zone." },
     ],
   },
+  works: { title: "Le niveau de finition visé après la refonte", text: "Ce site et son tableau de suivi des demandes montrent ce que j’applique à une refonte : pages lisibles sur mobile, formulaire relié à une vraie base, chaque demande suivie. Le tableau est montré en démonstration, avec des données fictives." },
   band: { title: "Votre site mérite une nouvelle version ?", text: "Donnez-moi l’adresse de votre site actuel et ce qui vous gêne : je vous réponds moi-même." },
 };
 

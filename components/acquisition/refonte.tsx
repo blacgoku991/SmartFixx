@@ -76,7 +76,7 @@ export function RefonteSections() {
 
       <Section id="realisations" tone="surface" labelledBy="aq-realisations-titre">
         <Container>
-          <SectionHead id="aq-realisations-titre" eyebrow="Réalisations" title="Ce que je construis, sans référence inventée" text="Le site que vous parcourez et le tableau de suivi où arrivent ses demandes : un exemple réel de mon travail, montré avec des données fictives." />
+          <SectionHead id="aq-realisations-titre" eyebrow="Réalisations" title={r.works.title} text={r.works.text} />
           <Realisations headingLevel={3} />
         </Container>
       </Section>
