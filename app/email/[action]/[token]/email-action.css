@@ -1,5 +1,5 @@
-/* Pages /email/stop|preferences/<jeton> et lien indisponible (lot 9) : jetons --sx- uniquement (plus de
-   var(--sfx-…) ni d'import de legacy-tokens.css). Destinataires externes : une carte centrée sous un ciel de
+/* Pages /email/stop|preferences/<jeton> et lien indisponible (lot 9) : jetons --sx- uniquement (plus aucun
+   jeton de transition du panel ni la feuille qui les déclare). Destinataires externes : une carte centrée sous un ciel de
    nuit (aube en clair), une fenêtre allumée qui s'éteint quand la désinscription est enregistrée, la ville
    statique en bas de page (aucune animation : pas de MotionGate ici). Boutons de 48 px (≥ 44 px).
    Classes préfixées email-action- (servies partout par la variante Sites). */

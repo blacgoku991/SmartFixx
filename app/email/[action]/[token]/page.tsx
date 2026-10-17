@@ -12,7 +12,7 @@ import './email-action.css';
    - interest → 307 vers emailDestination(campagne), même si le jeton est invalide.
    - stop et preferences : jeton vérifié côté serveur, action confirmée par POST /api/email/action.
    - jeton invalide ou action inconnue : 200 noindex, repli « mailto STOP ».
-   Présentation seulement : jetons --sx- (email-action.css), plus d'import de legacy-tokens.css. La ville
+   Présentation seulement : jetons --sx- (email-action.css), plus d'import de la feuille de transition du panel. La ville
    du fond est statique (pas de MotionGate ici : aucune animation). */
 export const dynamic='force-dynamic';
 export const metadata:Metadata={title:'Votre échange avec SmartFixx',robots:{index:false,follow:false},referrer:'no-referrer'};
