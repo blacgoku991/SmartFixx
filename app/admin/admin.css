@@ -157,6 +157,8 @@
 .rq-expired{display:grid;gap:10px;justify-items:start;margin:0 0 16px;padding:14px 16px;border:1px solid var(--sx-signal);border-radius:var(--sx-radius-md,12px);background:var(--sx-surface-2,var(--sx-surface));color:var(--sx-text)}
 .rq-expired p{margin:0;font-size:.9375rem;line-height:1.5}
 .rq-expired,.rq-expired>p{min-width:0;max-width:100%}
+.rq-expired-bar{margin:0;font-size:.875rem;line-height:1.45;color:var(--sx-text)}
+.rq-expired-bar .rq-link{margin-left:2px}
 .rq-expired .rq-btn{max-width:100%;white-space:normal;text-align:left;padding-block:10px}
 .rq-notice{display:flex;gap:6px;align-items:center;margin:0;font-size:.875rem;font-weight:650;color:var(--sx-success)}
 .rq-sheet-body{display:grid;gap:4px;padding:8px 20px 40px}

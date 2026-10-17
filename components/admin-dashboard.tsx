@@ -286,6 +286,7 @@ export function AdminDashboard({ name }: { name: string }) {
                   </select>
                   <button type="button" className="rq-btn rq-btn--primary" disabled={saving || !dirty} onClick={save}>{saving ? <RefreshCw aria-hidden="true" className="rq-spin" /> : <Save aria-hidden="true" />}{saving ? "Enregistrement…" : <span>Enregistrer<span className="rq-wide"> le suivi</span></span>}</button>
                 </div>
+                {sessionExpired ? <p className="rq-expired-bar" role="alert"><strong>Session expirée : rien n’a été enregistré.</strong> Votre note reste à l’écran. <a className="rq-link" href={LOGIN_URL} target="_blank" rel="noopener">Se reconnecter<span className="sr-only"> dans un nouvel onglet</span><ExternalLink aria-hidden="true" /></a></p> : null}
                 <div className="rq-actions-live" role="status" aria-live="polite">{notice ? <p className="rq-notice"><Check aria-hidden="true" />{notice}</p> : draftRestored && dirty ? <p className="rq-draft">Modification non enregistrée restaurée. Vérifiez-la puis enregistrez.</p> : null}</div>
               </div>
             ) : null}
@@ -293,7 +294,7 @@ export function AdminDashboard({ name }: { name: string }) {
 
           <div className="rq-sheet-body">
             {sessionExpired ? (
-              <div className="rq-expired" role="alert">
+              <div className="rq-expired">
                 <p><strong>Votre session a expiré : rien n’a été enregistré.</strong> Votre note reste à l’écran et une copie est gardée dans cet onglet.</p>
                 <p>Reconnectez-vous dans un nouvel onglet, revenez ici, puis cliquez de nouveau sur « Enregistrer le suivi ».</p>
                 <a className="rq-btn rq-btn--primary" href={LOGIN_URL} target="_blank" rel="noopener">Se reconnecter<span className="rq-wide"> dans un nouvel onglet</span><ExternalLink aria-hidden="true" /></a>
