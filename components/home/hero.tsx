@@ -1,10 +1,10 @@
-import { ButtonLink, PhoneLink } from "@/components/sx/actions";
+import { ArrowRight } from "lucide-react";
+import { PhoneLink } from "@/components/sx/actions";
 import { Eyebrow } from "@/components/sx/section";
 import { ProofList } from "@/components/sx/proof-list";
 import { Place } from "@/components/sx/place";
 import { Glow, Skyline } from "@/components/sx/ambient";
 import { ScenePlayer } from "@/components/sx/scene-player";
-import { nb } from "@/lib/site-identity";
 import { HERO } from "./content";
 import { HeroScene } from "./hero-scene";
 /* Hero de l'accueil (serveur). Composition équivalente à PageHero, avec les mêmes règles : data-sx-hero,
@@ -15,7 +15,14 @@ import { HeroScene } from "./hero-scene";
    vide de grille ajoutait 48 px d'écart sous les preuves sur mobile.
    Décor : ciel et halo sodium du socle, une lueur bleue, la ville nocturne (Skyline graine 0, fenêtre
    signal) dans le tiers inférieur du hero, qui occupe la réserve du consentement sur mobile. La fenêtre
-   signal s'allume quand la scène atteint « demande reçue » (home.css). */
+   signal s'allume quand la scène atteint « demande reçue » (home.css).
+   CTA « Parler de mon projet » : lien d'ancre natif, mêmes classes que ButtonLink (sx-btn sx-btn--cta
+   sx-btn--lg, data-analytics="contact"), et non ButtonLink. ButtonLink passe par next/link, qui change
+   l'adresse par history.pushState : la pseudo-classe :target n'est alors jamais posée, et home.css en a
+   besoin pour rendre les sections différées (content-visibility) avant le calcul du saut vers #demande.
+   Un lien d'ancre garde la requête courante (utm_campaign) : CampaignLink n'apporte rien ici.
+   H1 : noms de lieux insécables par white-space: nowrap (sx-nowrap), avec de vrais traits d'union
+   (U+002D) et non les U+2011 de nb()/Place, pour que le texte du titre corresponde aux recherches. */
 const NBSP = "\u00A0";
 export function HomeHero() {
   return (
@@ -32,11 +39,11 @@ export function HomeHero() {
           </Eyebrow>
           <h1 id="hero-titre" className="sx-h1 hm-h1">
             <span className="sx-h1-main">Création et <span className="sx-keyword">refonte</span> de sites{NBSP}internet</span>{" "}
-            <span className="sx-h1-tagline">pour les entreprises d’{nb("Asnières-sur-Seine")} et{NBSP}d’{nb("Île-de-France")}</span>
+            <span className="sx-h1-tagline">pour les entreprises d’<span className="sx-nowrap">Asnières-sur-Seine</span> et{NBSP}d’<span className="sx-nowrap">Île-de-France</span></span>
           </h1>
-          <p className="sx-lead hm-hero-lead">{HERO.lead}</p>
+          <p className="sx-lead hm-hero-lead">{HERO.lead}<span className="hm-lead-more"> {HERO.leadMore}</span></p>
           <div className="sx-hero-actions">
-            <ButtonLink variant="cta" href="#demande" size="lg">Parler de mon projet</ButtonLink>
+            <a href="#demande" className="sx-btn sx-btn--cta sx-btn--lg" data-analytics="contact"><span>Parler de mon projet</span><ArrowRight className="sx-btn-icon" aria-hidden="true" /></a>
             <PhoneLink compact="sm" />
           </div>
           <ProofList items={HERO.proofs} className="sx-hero-proofs hm-hero-proofs" />

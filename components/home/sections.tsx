@@ -55,7 +55,9 @@ export function Choice() {
         <div className="hm-twins">
           <article className="hm-twin hm-twin--creation sx-edge" aria-labelledby="twin-creation">
             <div className="hm-twin-art">
-              <Media src={creation.asset} base="studio-web" alt="" width={1024} height={1024} maxWidth={300} className="hm-twin-media" />
+              {/* maxWidth 260 = largeur affichée (.hm-twin-media) : sizes « 260px », soit le fichier de 480 px et non de
+                  768 px sur un mobile DPR 1,75 (14 Ko au lieu de 25 Ko, requête partie avant le LCP). */}
+              <Media src={creation.asset} base="studio-web" alt="" width={1024} height={1024} maxWidth={260} className="hm-twin-media" />
             </div>
             <div className="hm-twin-body">
               <p className="hm-twin-kicker">{CHOICE.creation.kicker}</p>
