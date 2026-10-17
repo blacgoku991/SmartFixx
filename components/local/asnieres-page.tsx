@@ -93,7 +93,7 @@ export function AsnieresPage() {
       />
       <PageHero
         className="lc-hero lc-hero--asnieres"
-        breadcrumbs={[{ name: "Zones d’intervention", path: "/agence-web-ile-de-france" }, { name: "Asnières-sur-Seine", path: PATH }]}
+        breadcrumbs={[{ name: "Île-de-France", path: "/agence-web-ile-de-france" }, { name: "Asnières-sur-Seine", path: PATH }]}
         title={<>Création de site internet à <span className="sx-keyword"><Commune>Asnières-sur-Seine</Commune></span></>}
         tagline="création et refonte pour les commerces et les artisans"
         lead={<>Je travaille depuis <Commune>Asnières-sur-Seine</Commune>. Cette page ne présente pas un établissement ouvert au public : on se voit chez vous ou en visio.</>}
