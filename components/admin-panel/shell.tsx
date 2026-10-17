@@ -51,7 +51,8 @@ export function PanelShell({ name, initialTab, signoutHref, hostingNote, vps }: 
   /* Avant les effets des écrans (qui lancent leurs requêtes) : base de connexion et onglet de retour. */
   useLayoutEffect(() => { configurePanel({ loginBase: vps ? "/admin/login?retour=" : "/admin?tab=", tab: tab as PanelTab }); }, [vps, tab]);
 
-  /* html.sx-admin : ThemeControl dans la barre du haut, plus jamais flottant sur le contenu. */
+  /* html.sx-admin : ThemeControl dans la barre du haut, plus jamais flottant sur le contenu. workspace.css le
+     place déjà ainsi dès le HTML serveur (:root:has(.pn-app)) : la classe ne provoque aucun saut. */
   useEffect(() => {
     const html = document.documentElement;
     html.classList.add("sx-admin");

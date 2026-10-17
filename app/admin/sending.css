@@ -3,14 +3,14 @@
    classe correspondante dans le code, sont retirées. */
 
 /* Réglages d'envoi */
-.pn-smtp{display:grid;gap:16px;min-width:0}
-.pn-smtp-steps{display:grid;gap:14px;margin:0;padding:0;list-style:none}
-.pn-smtp-step{overflow:hidden;border:1px solid var(--sx-line);border-radius:var(--sx-radius-lg);background:var(--sx-surface)}
+.pn-smtp{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;min-width:0}
+.pn-smtp-steps{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-width:0;margin:0;padding:0;list-style:none}
+.pn-smtp-step{min-width:0;overflow:hidden;border:1px solid var(--sx-line);border-radius:var(--sx-radius-lg);background:var(--sx-surface)}
 .pn-smtp-step.is-done{border-color:color-mix(in srgb,var(--sx-success) 45%,var(--sx-line))}
 .pn-smtp-step-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:12px 16px;background:var(--sx-surface-2)}
 .pn-smtp-step-head .pn-h3{flex:1 1 180px}
 .pn-smtp-step.is-done .pn-step-num{border-color:var(--sx-success);background:color-mix(in srgb,var(--sx-success) 18%,var(--sx-surface));color:var(--sx-success)}
-.pn-smtp-step-body{display:grid;gap:14px;min-width:0;padding:16px}
+.pn-smtp-step-body{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-width:0;padding:16px}
 .pn-checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:8px}
 .pn-checks>div{display:grid;gap:2px;padding:10px 12px;border-radius:var(--sx-radius-md);background:var(--sx-surface-2)}
 .pn-checks span{color:var(--sx-text-muted);font-size:.8125rem;font-weight:600}
@@ -24,7 +24,7 @@
 .pn-smtp-error p{margin:0;font-size:.875rem}
 
 /* Journal */
-.pn-journal{display:grid;gap:14px;min-width:0}
+.pn-journal{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-width:0}
 .pn-journal-status,.pn-journal-tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
 .pn-health{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:8px;margin:0}
 .pn-health>div{padding:10px 12px;border-radius:var(--sx-radius-md);background:var(--sx-surface-2)}

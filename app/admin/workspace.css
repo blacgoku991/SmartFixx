@@ -1,14 +1,21 @@
 /* Panel (lot 6) — shell, éléments communs, tableau de bord, acquisition, désinscriptions & emails, pages de
    connexion, de déconnexion et de transfert. Préfixe pn-, jetons --sx- uniquement (clair et sombre), hors
-   couche. Aucune classe sx- redéclarée, aucun sélecteur global : la seule règle sur <html> porte la classe
-   sx-admin, posée par le shell, qui place le ThemeControl du layout dans la barre du haut (contrat du lot 0).
+   couche. Aucune classe sx- redéclarée, aucun sélecteur global : les seules règles sur <html> portent la classe
+   sx-admin (posée par le shell) ou :has(.pn-app) (présent dès le HTML serveur), et placent le ThemeControl du
+   layout dans la barre du haut (contrat du lot 0) sans saut après l'hydratation.
    Points de rupture : mobile < 768 px (barre du haut 56 px, barre basse 64 px), tablette 768-1023 px (rail
    72 px et infobulles), ordinateur ≥ 1024 px (rail 232 px). Le contenu des écrans réagit à sa propre
    largeur (requêtes de conteneur pn). Mouvement : survol et appui seulement, coupés en mode réduit. */
 
 /* --- ThemeControl dans l'emplacement réservé de la barre du haut --- */
-html.sx-admin{--sx-admin-theme-top:6px;--sx-admin-theme-right:12px}
-@media (min-width:768px){html.sx-admin{--sx-admin-theme-top:10px;--sx-admin-theme-right:20px}}
+html.sx-admin,:root:has(.pn-app){--sx-admin-theme-top:6px;--sx-admin-theme-right:12px}
+@media (min-width:768px){html.sx-admin,:root:has(.pn-app){--sx-admin-theme-top:10px;--sx-admin-theme-right:20px}}
+/* Même place dès le HTML serveur : sans cela, le contrôle flotte en bas jusqu'à l'effet qui pose sx-admin,
+   puis saute en haut (décalage de mise en page mesuré à 0,075-0,087). */
+:root:has(.pn-app) .theme-control{top:var(--sx-admin-theme-top);right:var(--sx-admin-theme-right);bottom:auto;left:auto}
+:root:has(.pn-app) .theme-control>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* Volet, feuille « Plus » ou dialogue ouvert : le contrôle ne reste pas actif au-dessus du voile modal. */
+:root:has(.pn-app):has([data-slot=sheet-overlay][data-state=open],[data-slot=dialog-overlay][data-state=open],[data-slot=alert-dialog-overlay][data-state=open]) .theme-control{visibility:hidden}
 
 /* --- Socle du panel --- */
 .pn-app{min-height:100vh;min-height:100dvh;background:var(--sx-bg);color:var(--sx-text);font-family:var(--sx-font-text);font-size:1rem;line-height:1.5}
@@ -97,7 +104,7 @@ html.sx-admin{--sx-admin-theme-top:6px;--sx-admin-theme-right:12px}
 .pn-more-note{display:flex;align-items:center;gap:10px;margin:0;padding:12px 24px 20px;border-top:1px solid var(--sx-line);color:var(--sx-text-muted);font-size:.875rem}
 
 /* --- Écran --- */
-.pn-screen{container:pn / inline-size;display:grid;gap:24px;width:min(1400px,100%);margin-inline:auto;padding:clamp(16px,3vw,40px) clamp(16px,3vw,40px) 48px;min-width:0}
+.pn-screen{container:pn / inline-size;display:grid;grid-template-columns:minmax(0,1fr);gap:24px;width:min(1400px,100%);margin-inline:auto;padding:clamp(16px,3vw,40px) clamp(16px,3vw,40px) 48px;min-width:0}
 .pn-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
 .pn-head-text{min-width:0;max-width:72ch}
 .pn-eyebrow{display:flex;align-items:center;gap:8px;margin:0 0 6px;color:var(--sx-text-muted);font-size:.875rem;font-weight:620;line-height:1.3}
@@ -125,7 +132,7 @@ html.sx-admin{--sx-admin-theme-top:6px;--sx-admin-theme-right:12px}
 .pn-span-2{grid-column:1 / -1}
 
 /* --- Boutons --- */
-.pn-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border:1px solid transparent;border-radius:var(--sx-radius-window);background:transparent;color:var(--sx-text);font:inherit;font-size:.9375rem;font-weight:650;line-height:1.15;text-align:center;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform 140ms var(--sx-ease-out),background-color 140ms,border-color 140ms}
+.pn-btn{display:inline-flex;max-width:100%;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border:1px solid transparent;border-radius:var(--sx-radius-window);background:transparent;color:var(--sx-text);font:inherit;font-size:.9375rem;font-weight:650;line-height:1.15;text-align:center;text-decoration:none;white-space:nowrap;cursor:pointer;transition:transform 140ms var(--sx-ease-out),background-color 140ms,border-color 140ms}
 .pn-btn svg{flex:none;width:18px;height:18px}
 .pn-btn:active:not(:disabled){transform:scale(.98)}
 .pn-btn:disabled{cursor:not-allowed;opacity:.55}
@@ -149,13 +156,15 @@ html.sx-admin{--sx-admin-theme-top:6px;--sx-admin-theme-right:12px}
   @media (hover:hover){.pn-btn:hover:not(:disabled){transform:translateY(-1px)}}
 }
 @media (prefers-reduced-motion:reduce){.pn-btn{transition:none}.pn-btn:active:not(:disabled){transform:none}}
+/* Petits écrans : un libellé long passe à la ligne dans sa carte ou son volet au lieu de les élargir. */
+@media (max-width:479.98px){:is(.pn-card,.pn-subcard,.pn-sheet-body,.pn-disclosure-body,.pn-dialog) .pn-btn{white-space:normal}.pn-stop-main>.pn-btn{justify-self:stretch}}
 .pn-close{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:none;min-width:44px;min-height:44px;padding:0 12px;border:1px solid var(--sx-line-strong);border-radius:var(--sx-radius-window);background:transparent;color:var(--sx-text);font:inherit;font-size:.875rem;font-weight:650;cursor:pointer}
 .pn-close svg{width:18px;height:18px}
 .pn-close:hover:not(:disabled){background:var(--sx-surface-2)}
 
 /* --- Champs --- */
-.pn-form{display:grid;gap:16px;min-width:0}
-.pn-fields{display:grid;gap:16px}
+.pn-form{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;min-width:0}
+.pn-fields{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;min-width:0}
 .pn-fields--2{grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))}
 .pn-field,.pn-label{display:grid;gap:6px;min-width:0;color:var(--sx-text);font-size:.875rem;font-weight:620;line-height:1.35}
 .pn-label{display:block}
@@ -187,13 +196,13 @@ html.sx-admin{--sx-admin-theme-top:6px;--sx-admin-theme-right:12px}
 .pn-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 
 /* --- Cartes, alertes, états --- */
-.pn-card{display:grid;align-content:start;gap:12px;min-width:0;padding:clamp(16px,2.4vw,24px);border:1px solid var(--sx-line);border-radius:var(--sx-radius-lg);background:var(--sx-surface);box-shadow:var(--sx-shadow-1)}
+.pn-card{display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:12px;min-width:0;padding:clamp(16px,2.4vw,24px);border:1px solid var(--sx-line);border-radius:var(--sx-radius-lg);background:var(--sx-surface);box-shadow:var(--sx-shadow-1)}
 .pn-card--flush{gap:0;padding:0;overflow:hidden}
 .pn-card-head{display:flex;align-items:flex-start;gap:14px;min-width:0}
 .pn-card-head--split{flex-wrap:wrap;align-items:center;justify-content:space-between}
 @container pn (max-width:480px){.pn-card-head:not(.pn-card-head--split){flex-direction:column;gap:10px}}
 .pn-icon-tile{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;border-radius:var(--sx-radius-md);background:color-mix(in srgb,var(--sx-accent) 16%,var(--sx-surface));color:var(--sx-accent)}
-.pn-subcard{display:grid;align-content:start;gap:10px;min-width:0;padding:16px;border-radius:var(--sx-radius-md);background:var(--sx-surface-2)}
+.pn-subcard{display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:10px;min-width:0;padding:16px;border-radius:var(--sx-radius-md);background:var(--sx-surface-2)}
 .pn-subcard--row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 .pn-subcard--row>div{display:grid;gap:4px;min-width:min(100%,280px);flex:1}
 .pn-alert{display:flex;align-items:flex-start;gap:10px;margin:0;padding:12px 14px;border:1px solid;border-radius:var(--sx-radius-md);color:var(--sx-text);font-size:.9375rem;line-height:1.45}
@@ -244,6 +253,7 @@ html.sx-admin{--sx-admin-theme-top:6px;--sx-admin-theme-right:12px}
 .pn-disclosure[open]>summary::before{margin-bottom:6px;transform:rotate(45deg)}
 .pn-disclosure>summary:hover{background:var(--sx-surface-2)}
 .pn-disclosure-body{display:grid;gap:12px;padding:4px 16px 16px;min-width:0}
+.pn-disclosure-body:not(.pn-grid-2){grid-template-columns:minmax(0,1fr)}
 .pn-disclosure-body p{margin:0}
 .pn-disclosure-body code,.pn-app code{padding:1px 5px;border-radius:5px;background:var(--sx-surface-3);font-family:var(--sx-font-mono);font-size:.8125rem}
 .pn-disclosure--card{border-radius:var(--sx-radius-lg)}
@@ -271,7 +281,7 @@ html.sx-admin{--sx-admin-theme-top:6px;--sx-admin-theme-right:12px}
 .pn-sheet-head{position:sticky;top:0;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--sx-line);background:var(--sx-surface)}
 .pn-sheet-head>div{display:grid;gap:4px;min-width:0}
 .pn-sheet-title{margin:0;color:var(--sx-text);font-size:1.25rem;font-weight:740;line-height:1.25}
-.pn-sheet-body{flex:1;display:grid;align-content:start;gap:16px;min-height:0;padding:20px;overflow-y:auto}
+.pn-sheet-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:16px;min-height:0;padding:20px;overflow-y:auto}
 .pn-more .pn-sheet-head{position:static;border-bottom:0;background:transparent;align-items:center}
 .pn-dialog{display:grid;gap:16px;width:min(540px,calc(100% - 32px));max-width:none;padding:24px;border:1px solid var(--sx-line-strong);border-radius:var(--sx-radius-lg);background:var(--sx-surface);color:var(--sx-text);font-family:var(--sx-font-text);font-size:1rem;line-height:1.5;box-shadow:var(--sx-shadow-2)}
 .pn-dialog-form{display:grid;gap:16px}
@@ -358,7 +368,7 @@ html.sx-admin{--sx-admin-theme-top:6px;--sx-admin-theme-right:12px}
 /* --- Désinscriptions & emails --- */
 .pn-stop{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;border-color:color-mix(in srgb,var(--sx-accent) 35%,var(--sx-line));scroll-margin-top:80px}
 @container pn (min-width:860px){.pn-stop{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}}
-.pn-stop-main{display:grid;align-content:start;justify-items:start;gap:12px;min-width:0}
+.pn-stop-main{display:grid;grid-template-columns:minmax(0,1fr);align-content:start;justify-items:start;gap:12px;min-width:0}
 .pn-stop-main .pn-form{width:100%}
 .pn-stop-count{display:flex;align-items:baseline;gap:10px;margin:0}
 .pn-stop-count strong{font-family:var(--sx-font-display);font-stretch:var(--sx-display-stretch);font-size:clamp(2.5rem,2rem + 2vw,3.5rem);line-height:1;font-variant-numeric:tabular-nums}
