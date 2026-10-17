@@ -1,1 +1,49 @@
-.email-action-page{min-height:100vh;background:radial-gradient(ellipse at 70% 20%,var(--sfx-d-surface-314ea933),transparent 55%),var(--sfx-d-surface-080e1c);color:var(--sfx-d-text-edf2ff);padding:32px clamp(20px,6vw,90px)}.email-action-page>header,.email-action-page>footer{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:1100px;margin:auto}.email-action-page>header>a:not(.brand),.email-action-page>footer{font-size:14px;color:var(--sfx-d-text-afc1e3)}.email-action-page>footer{justify-content:center;margin-top:50px;flex-wrap:wrap}.email-action-card{position:relative;max-width:800px;margin:70px auto 0;padding:clamp(26px,6vw,65px);border:1px solid var(--sfx-d-border-364c77);border-radius:30px;background:linear-gradient(130deg,var(--sfx-d-surface-192a48),var(--sfx-d-surface-101a30));overflow:hidden}.email-action-card h1{max-width:560px;font-size:clamp(32px,5vw,54px);line-height:1.06;letter-spacing:-.045em;margin:22px 0}.email-action-card>p:not(.eyebrow){max-width:580px;color:var(--sfx-d-text-b1c4e7);font-size:16px;line-height:1.85;margin-bottom:28px}.email-action-card .eyebrow{color:var(--sfx-d-text-a6baff);font-size:12px}.email-action-icon{display:grid;place-items:center;width:60px;height:60px;border-radius:17px;border:1px solid var(--sfx-d-border-6581bd);background:var(--sfx-d-surface-314d8233);color:var(--sfx-d-text-b4c7ff);margin-bottom:35px}.email-action-card .button{max-width:100%;white-space:normal;text-align:center}.email-action-card>small{display:block;color:var(--sfx-d-text-849ec7);line-height:1.7;font-size:12px;margin-top:20px}.email-action-art{float:right;width:clamp(110px,20vw,200px);height:auto;margin:-25px -20px 0 10px;filter:drop-shadow(0 25px 40px var(--sfx-d-fixed-0a173ecc))}.email-action-card .form-error{color:var(--sfx-d-text-ffb4b4)!important;margin-top:20px}.email-action-card .email-reference{font-family:monospace;font-size:14px;color:var(--sfx-d-text-bdd0ff)}@media(max-width:600px){.email-action-page>header>a:not(.brand){display:none}.email-action-card{margin-top:40px;border-radius:23px}.email-action-art{margin:-10px -12px 0 0;width:140px}.email-action-icon{margin-bottom:28px}.email-action-page>footer{font-size:12px}}
+/* Pages /email/stop|preferences/<jeton> et lien indisponible (lot 9) : jetons --sx- uniquement (plus aucun
+   jeton de transition du panel ni la feuille qui les déclare). Destinataires externes : une carte centrée sous un ciel de
+   nuit (aube en clair), une fenêtre allumée qui s'éteint quand la désinscription est enregistrée, la ville
+   statique en bas de page (aucune animation : pas de MotionGate ici). Boutons de 48 px (≥ 44 px).
+   Classes préfixées email-action- (servies partout par la variante Sites). */
+.email-action-page{position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;padding:20px var(--sx-gutter) calc(var(--sx-skyline-h) + 8px);background:var(--sx-grain),var(--sx-sodium),var(--sx-sky);color:var(--sx-text);overflow:clip}
+.email-action-city{position:absolute;left:0;right:0;bottom:0;height:var(--sx-skyline-h);z-index:-1;pointer-events:none}
+.email-action-head,.email-action-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;width:min(100%,1100px);margin-inline:auto}
+.email-action-home{display:inline-flex;align-items:center;min-height:44px;color:var(--sx-text-muted);font-size:.9375rem;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.email-action-home:hover{color:var(--sx-text)}
+.email-action-card{position:relative;width:min(100%,640px);margin:clamp(28px,7vh,72px) auto 0;padding:clamp(24px,5vw,48px);border:1px solid var(--sx-line);border-radius:var(--sx-radius-xl);background:var(--sx-surface);box-shadow:var(--sx-shadow-2)}
+.email-action-card::before{content:'';position:absolute;left:28px;right:28px;top:-1px;height:3px;border-radius:0 0 3px 3px;background:linear-gradient(90deg,transparent,var(--sx-accent),transparent);opacity:.7}
+/* Fenêtre : allumée tant que les emails (ou la mesure) continuent, éteinte une fois le choix enregistré. */
+.email-action-window{display:grid;place-items:center;width:60px;height:80px;margin-bottom:var(--sx-space-5);border-radius:30px 30px 6px 6px;background:radial-gradient(130% 100% at 50% 100%,#FFC56E,var(--sx-window-on) 60%);color:var(--sx-on-cta);box-shadow:0 0 0 6px color-mix(in srgb,var(--sx-window-on) 14%,transparent),0 0 36px 8px rgba(255,182,72,.28)}
+.email-action-window.is-off,.email-action-window.is-done{background:var(--sx-surface-3);color:var(--sx-text);box-shadow:inset 0 0 0 1px var(--sx-line-strong)}
+.email-action-icon{display:grid;place-items:center}
+.email-action-icon svg{width:26px;height:26px}
+.email-action-kicker{margin:0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sx-text-muted)}
+.email-action-card h1{margin:10px 0 16px;max-width:16ch;font-size:clamp(2rem,1.5rem + 2.4vw,3.25rem);line-height:1.02;letter-spacing:var(--sx-tracking-title);text-wrap:balance}
+.email-action-text{margin:0;max-width:54ch;color:var(--sx-text-muted);font-size:1.0625rem;line-height:1.65}
+.email-action-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:var(--sx-space-6)}
+.email-action-button{max-width:100%;min-height:48px;font-size:.9375rem;white-space:normal;text-align:center}
+.email-action-button[disabled]{opacity:.7;cursor:progress;transform:none}
+.email-action-error{margin-top:var(--sx-space-5);padding:14px 16px;border:1px solid color-mix(in srgb,var(--sx-danger) 45%,var(--sx-line));border-radius:var(--sx-radius-md);background:color-mix(in srgb,var(--sx-danger) 8%,var(--sx-surface))}
+.email-action-error .form-error{margin:0}
+.email-action-fallback{margin:8px 0 0;font-size:.9375rem;line-height:1.55;color:var(--sx-text-muted)}
+.email-action-fallback a,.email-action-foot a{color:var(--sx-accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.email-action-foot{justify-content:center;flex-wrap:wrap;gap:4px 24px;margin-top:auto;padding-top:var(--sx-space-7);font-size:.875rem}
+.email-action-foot a{display:inline-flex;align-items:center;min-height:44px;color:var(--sx-text-muted)}
+@media (max-width:599.98px){
+  .email-action-home{font-size:.875rem}
+  .email-action-card{border-radius:var(--sx-radius-lg)}
+  /* Pied empilé à gauche : le sélecteur de thème flottant (bas droite) ne recouvre aucun lien. */
+  .email-action-foot{flex-direction:column;align-items:flex-start;width:min(100%,640px)}
+  /* Carte resserrée : l'action tient au premier écran au-dessus du sélecteur de thème flottant (bas droite,
+     environ 60 px), et la marge basse garde ce dégagement une fois la page défilée. */
+  .email-action-card{margin:12px auto 72px;padding:22px 20px 24px}
+  .email-action-window{width:48px;height:64px;margin-bottom:14px;border-radius:24px 24px 6px 6px}
+  .email-action-icon svg{width:22px;height:22px}
+  .email-action-card h1{margin:8px 0 12px}
+  .email-action-text{font-size:1rem;line-height:1.6}
+  .email-action-actions{margin-top:20px}
+}
+/* 320 px (568 de haut) : quelques pixels de plus pour que le sélecteur ne touche pas le bouton. */
+@media (max-width:359.98px){
+  .email-action-window{width:40px;height:52px;margin-bottom:10px;border-radius:20px 20px 5px 5px}
+  .email-action-icon svg{width:20px;height:20px}
+  .email-action-text{font-size:.9375rem;line-height:1.55}
+}

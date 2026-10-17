@@ -1,11 +1,19 @@
-import {notFound} from "next/navigation";
-import Link from "@/components/campaign-link";
-import {ArrowUpRight} from "lucide-react";
-import {SiteHeader} from "@/components/site-header";
-import {Footer} from "@/components/brand";
-import {JsonLd} from "@/components/json-ld";
-import {guides} from "@/lib/guides";
-import {pageMeta,breadcrumb,SITE_URL} from "@/lib/seo";
-export function generateStaticParams(){return guides.map(g=>({slug:g.slug}));}
-export async function generateMetadata({params}:{params:Promise<{slug:string}>}){const slug=(await params).slug;const article=guides.find(g=>g.slug===slug);return article?pageMeta(`${article.title} — SmartFixx`,article.description,`/conseils/${slug}`):{};}
-export default async function Article({params}:{params:Promise<{slug:string}>}){const slug=(await params).slug;const g=guides.find(g=>g.slug===slug);if(!g)notFound();return <><SiteHeader/><main id="contenu"><JsonLd data={breadcrumb([{name:"Conseils",path:"/conseils"},{name:g.title,path:`/conseils/${g.slug}`}])}/><JsonLd data={{"@context":"https://schema.org","@type":"Article",headline:g.title,description:g.description,datePublished:"2026-09-15",dateModified:"2026-09-15",inLanguage:"fr-FR",author:{"@type":"Organization",name:"SmartFixx",url:SITE_URL},publisher:{"@id":`${SITE_URL}/#organization`},mainEntityOfPage:`${SITE_URL}/conseils/${g.slug}`}}/><article className="container editorial-article"><header><Link href="/conseils" className="text-link">← Tous les conseils</Link><p className="eyebrow">{g.category} / 15 SEPTEMBRE 2026</p><h1>{g.title}</h1><p>{g.description}</p></header><div className="article-body">{g.sections.map(s=><section key={s.title}><h2>{s.title}</h2>{s.paragraphs.map(p=><p key={p}>{p}</p>)}</section>)}{g.source&&<p className="article-source">Pour aller plus loin : <a href={g.source.url} target="_blank" rel="noreferrer">{g.source.label}</a>.</p>}<aside className="article-cta"><h2>Et dans votre entreprise ?</h2><p>Parlons de votre situation pour définir une prochaine étape adaptée.</p><Link href={g.service==="emailing"?"/tarifs":`/contact?service=${g.service}`} className="button button-primary">Avancer sur mon projet <ArrowUpRight size={18}/></Link></aside></div></article></main><Footer/></>}
+import { notFound } from "next/navigation";
+import { PublicShell } from "@/components/sx";
+import { GuideArticle } from "@/components/editorial/guide-article";
+import { guides } from "@/lib/guides";
+import { pageMeta } from "@/lib/seo";
+/* Guide (lot 9) : métadonnées de lib/guides.ts (seoTitle, seoDescription, og:type article avec dates
+   réelles), notFound() pour un slug inconnu (vraie 404, voir vps/overlay/next.config.ts). */
+export function generateStaticParams() { return guides.map((g) => ({ slug: g.slug })); }
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const slug = (await params).slug;
+  const g = guides.find((x) => x.slug === slug);
+  return g ? pageMeta(g.seoTitle, g.seoDescription, `/conseils/${g.slug}`, { type: "article", publishedTime: g.datePublished, modifiedTime: g.dateModified }) : {};
+}
+export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {
+  const slug = (await params).slug;
+  const g = guides.find((x) => x.slug === slug);
+  if (!g) notFound();
+  return <PublicShell><GuideArticle guide={g} /></PublicShell>;
+}

@@ -1,7 +1,48 @@
-import { Footer } from "@/components/brand";
-import { ShieldCheck, ArrowUpRight } from "lucide-react";
-import Link from "next/link";
-import { SiteHeader } from "@/components/site-header";
-export function LegalLayout({title, eyebrow, children}: {title:string;eyebrow:string;children:React.ReactNode}) {
-  return <><SiteHeader/><main id="contenu" className={`legal-page ${eyebrow==="NOS GARANTIES"?"guarantees-page":""}`}><div className="container legal-intro"><p className="eyebrow">{eyebrow} / SMARTFIXX REACH</p><h1>{title}</h1>{eyebrow==="NOS GARANTIES"&&<div className="guarantees-seal"><ShieldCheck size={44}/><span>UN CADRE CLAIR.<br/><strong>Avant le premier envoi.</strong></span></div>}</div><div className="container legal-body"><aside className="legal-side"><span>EN TOUTE CLARTÉ</span><p>Des conditions lisibles, des choix éclairés et une équipe à votre écoute.</p><Link href="/contact" className="text-link">Une question ? <ArrowUpRight size={18}/></Link></aside><div className="legal-main">{children}</div></div></main><Footer/></>;
+import type { ReactNode } from "react";
+import { ButtonLink, Glow, PageHero, PhoneLink, PublicShell, Section } from "@/components/sx";
+import { ReadingLayout, type TocItem } from "@/components/editorial/reading";
+import { SITE_IDENTITY, mailHref, telHref } from "@/lib/site-identity";
+/* Pages légales (lot 9) : PublicShell, hero de lecture (fil d'Ariane, H1, chapeau), puis le gabarit de
+   lecture (sommaire-façade collant, chapitres numérotés) et, sous le sommaire, le contact direct.
+   Compatibilité : /garanties (lot 8) appelle encore LegalLayout avec { title, eyebrow, children } sans
+   sommaire ; ce cas rend la même page sans sommaire, et le lot 8 la remplace par son propre gabarit.
+   Plus de « une équipe à votre écoute » : un seul interlocuteur, Mohamed. */
+type LegalLayoutProps = {
+  title: string;
+  eyebrow?: string;
+  lead?: ReactNode;
+  path?: string;
+  crumb?: string;
+  toc?: TocItem[];
+  children: ReactNode;
+};
+export function LegalLayout({ title, eyebrow, lead, path, crumb, toc, children }: LegalLayoutProps) {
+  const contact = (
+    <div className="ed-toc-note ed-toc-contact">
+      <p>Une question sur cette page{" "}? Écrivez-moi ou appelez-moi{" "}:</p>
+      <a href={mailHref}>{SITE_IDENTITY.EMAIL}</a>
+      <a href={telHref} className="sx-tabular sx-nowrap">{SITE_IDENTITY.PHONE_DISPLAY}</a>
+    </div>
+  );
+  return (
+    <PublicShell>
+      <PageHero
+        className="ed-hero ed-hero--legal"
+        breadcrumbs={path ? [{ name: crumb ?? title, path }] : undefined}
+        eyebrow={path ? undefined : eyebrow}
+        eyebrowDot={false}
+        title={title}
+        lead={lead}
+        actions={<><ButtonLink variant="ghost" href={mailHref} size="lg">Écrire à Mohamed</ButtonLink><PhoneLink compact="sm" /></>}
+        backdrop={<><Glow tone="blue" size={640} top="-320px" right="-200px" /><span className="ed-legal-grid" /></>}
+      />
+      <Section className="ed-reading-section ed-reading-section--legal">
+        {toc?.length ? (
+          <ReadingLayout tocLabel="Sur cette page" toc={toc} aside={contact}>{children}</ReadingLayout>
+        ) : (
+          <div className="sx-container ed-reading ed-reading--plain"><div className="ed-body ed-legacy">{children}{contact}</div></div>
+        )}
+      </Section>
+    </PublicShell>
+  );
 }
