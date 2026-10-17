@@ -323,6 +323,9 @@ html.sx-admin,:root:has(.pn-app){--sx-admin-theme-top:6px;--sx-admin-theme-right
   .pn-todo{grid-template-columns:minmax(0,1fr)}
   .pn-todo-city{grid-template-columns:repeat(6,12px);gap:5px;justify-self:start;padding:8px}
   .pn-todo-city .pn-win{width:12px;height:15px}
+  /* Trois lignes réservées : « Lecture des demandes… » (une ligne) ne pousse plus la page à l'arrivée des
+     données (décalage de 0,024 mesuré à 390 px). */
+  .pn-todo-text p{min-height:4.5em}
 }
 .pn-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:12px}
 .pn-metrics--3{grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))}
