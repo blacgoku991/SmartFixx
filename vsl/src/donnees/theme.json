@@ -1,0 +1,36 @@
+{
+  "_lisezmoi": "Couleurs et polices de la VSL, reprises des jetons --sx-* de app/globals.css. L'ambre (cta) est réservé à l'appel à l'action et aux fenêtres allumées de la ville.",
+  "couleurs": {
+    "fond": "#070B18",
+    "surface": "#0E1730",
+    "surface2": "#172242",
+    "surface3": "#1F2D54",
+    "ligne": "#24335C",
+    "ligneForte": "#6B7DA8",
+    "texte": "#EEF2FB",
+    "texteDoux": "#AAB6D2",
+    "texteFaible": "#8C9ABB",
+    "accent": "#8EA2FF",
+    "accentFort": "#4361FF",
+    "cta": "#FFB648",
+    "ctaClair": "#FFC56E",
+    "surCta": "#0A0F1E",
+    "succes": "#5BD69A",
+    "danger": "#FF9696",
+    "violet": "#C2AEFF",
+    "cielHaut": "#070B18",
+    "cielMilieu": "#0D1638",
+    "cielBas": "#2A1E3A",
+    "indigo": "#2A2370",
+    "facadeLoin": "#0E1838",
+    "facadeProche": "#121D42",
+    "fenetreEteinte": "rgba(142,162,255,0.07)",
+    "fenetreTiede": "rgba(255,197,110,0.55)",
+    "fenetreAllumee": "#FFB648"
+  },
+  "polices": {
+    "titre": "SFX Display",
+    "titreEtroit": "SFX Display Etroit",
+    "texte": "Inter"
+  }
+}

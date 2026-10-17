@@ -1,0 +1,23 @@
+{
+  "principale": {
+    "fichier": "musique/smartfixx-musique-principale.wav",
+    "duree_s": 42.53,
+    "lufs": -20,
+    "crete_dbtp": -9.8,
+    "bpm": 93.87
+  },
+  "courte": {
+    "fichier": "musique/smartfixx-musique-courte.wav",
+    "duree_s": 15,
+    "lufs": -20,
+    "crete_dbtp": -10.4,
+    "bpm": 92.82
+  },
+  "boucle": {
+    "fichier": "musique/smartfixx-musique-boucle.wav",
+    "duree_s": 5,
+    "lufs": -20,
+    "crete_dbtp": -10.6,
+    "bpm": 96
+  }
+}

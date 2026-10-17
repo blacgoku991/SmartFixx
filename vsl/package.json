@@ -1,0 +1,24 @@
+{
+  "name": "smartfixx-vsl",
+  "private": true,
+  "version": "1.0.0",
+  "description": "VSL motion design SmartFixx : projet Remotion éditable, audio et exports.",
+  "type": "module",
+  "scripts": {
+    "studio": "node outils/prepare-public.mjs && remotion studio src/index.ts",
+    "verifier": "tsc --noEmit",
+    "rendu": "node outils/rendu.mjs",
+    "controle": "node outils/controle.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.533",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "remotion": "4.0.533"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.12",
+    "ffmpeg-static": "5.2.0",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,11 @@
+node_modules/
+# fichiers intermédiaires des scripts audio
+audio/voix/.tmp/
+audio/**/.*.f32.wav
+# copie des mixages pour le studio (outils/prepare-public.mjs), rendus intermédiaires
+public/audio/
+.rendu/
+# exports vidéo et miniatures : plus versionnés tant qu'ils sont provisoires (voix de repérage) ;
+# les livrer en pièce jointe de release une fois définitifs. controle.json et les SRT restent suivis.
+exports/*.mp4
+exports/*.jpg

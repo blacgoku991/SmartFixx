@@ -1,0 +1,163 @@
+{
+  "_lisezmoi": "Source unique des textes de la VSL SmartFixx. 'voix' = texte envoyé à la synthèse (balises entre crochets = direction de jeu, non prononcées). 'cartons' = sous-titres incrustés et SRT, 2 lignes de 32 caractères au plus. 'estimation_s' = durée parlée estimée, utilisée seulement tant que la voix définitive du segment manque. Après modification : node vsl/audio/outils/minutage.mjs",
+  "voix_retenue": {
+    "service": "ElevenLabs",
+    "modele": "eleven_v4",
+    "voice_id": "MAZdzkb78f8SA7DNBT41",
+    "nom": "Nico (French Ads, accent parisien)",
+    "flow_id": "7NHAMcW9YDcvAPzxY1rf"
+  },
+  "segments": {
+    "P1": {
+      "role": "Accroche",
+      "voix": "Quand un client découvre votre entreprise en ligne… comprend-il tout de suite pourquoi vous choisir ?",
+      "cartons": [
+        ["Quand un client découvre", "votre entreprise en ligne…"],
+        ["comprend-il tout de suite", "pourquoi vous choisir ?"]
+      ],
+      "estimation_s": 5.3
+    },
+    "P2": {
+      "role": "Problème",
+      "voix": "Un texte difficile à lire, une offre floue, un bouton de contact introuvable sur mobile… Chaque détail peut freiner la prise de contact.",
+      "cartons": [
+        ["Un texte difficile à lire,", "une offre floue,"],
+        ["un bouton de contact", "introuvable sur mobile…"],
+        ["Chaque détail peut freiner", "la prise de contact."]
+      ],
+      "estimation_s": 8.3
+    },
+    "P3": {
+      "role": "Solution : le site",
+      "voix": "SmartFixx crée votre site : un design soigné, une lecture confortable sur mobile, des services clairement présentés…",
+      "cartons": [
+        ["SmartFixx crée votre site :", "un design soigné,"],
+        ["une lecture confortable", "sur mobile,"],
+        ["des services clairement", "présentés…"]
+      ],
+      "estimation_s": 7.0
+    },
+    "P4": {
+      "role": "Solution : le formulaire",
+      "voix": "Et un formulaire simple, pour recevoir vos demandes.",
+      "cartons": [
+        ["Et un formulaire simple,", "pour recevoir vos demandes."]
+      ],
+      "estimation_s": 2.4
+    },
+    "P5": {
+      "role": "Bascule refonte",
+      "voix": "Vous avez déjà un site ?",
+      "cartons": [
+        ["Vous avez déjà un site ?"]
+      ],
+      "estimation_s": 1.4
+    },
+    "P6": {
+      "role": "Refonte et outils",
+      "voix": "SmartFixx peut le repenser… et connecter vos outils, pour que chaque demande arrive dans un tableau de suivi clair.",
+      "cartons": [
+        ["SmartFixx peut le repenser…"],
+        ["et connecter vos outils,", "pour que chaque demande"],
+        ["arrive dans un tableau", "de suivi clair."]
+      ],
+      "estimation_s": 7.0
+    },
+    "P7": {
+      "role": "Appel à l'action",
+      "voix": "[warmly] Parlez de votre projet sur smartfixx.fr… et demandez votre devis.",
+      "cartons": [
+        ["Parlez de votre projet", "sur smartfixx.fr…"],
+        ["et demandez votre devis."]
+      ],
+      "estimation_s": 4.2
+    },
+    "C2": {
+      "role": "Offre condensée (version courte)",
+      "voix": "SmartFixx crée ou modernise votre site : clair sur mobile, avec un formulaire pour vos demandes.",
+      "cartons": [
+        ["SmartFixx crée ou modernise", "votre site :"],
+        ["clair sur mobile, avec", "un formulaire pour vos demandes."]
+      ],
+      "estimation_s": 5.6
+    },
+    "A1": {
+      "role": "Accroche alternative 1 : l'envie de contacter",
+      "voix": "Votre site donne-t-il envie de vous contacter ?",
+      "cartons": [
+        ["Votre site donne-t-il envie", "de vous contacter ?"]
+      ],
+      "estimation_s": 2.6
+    },
+    "A2": {
+      "role": "Accroche alternative 2 : la lecture sur mobile",
+      "voix": "Sur mobile, comprend-on votre offre d'un coup d'œil ?",
+      "cartons": [
+        ["Sur mobile, comprend-on", "votre offre d'un coup d'œil ?"]
+      ],
+      "estimation_s": 3.0
+    },
+    "A3": {
+      "role": "Accroche alternative 3 : la clarté qui guide",
+      "voix": "Un site clair, et vos clients savent où vous écrire.",
+      "cartons": [
+        ["Un site clair, et vos clients", "savent où vous écrire."]
+      ],
+      "estimation_s": 3.0
+    }
+  },
+  "montages": {
+    "principale": {
+      "titre": "VSL principale (9:16 et 16:9, même voix)",
+      "debut_s": 0.35,
+      "pistes": [
+        { "segment": "P1" },
+        { "segment": "P2", "respiration_avant_s": 0.45 },
+        { "segment": "P3", "respiration_avant_s": 0.55 },
+        { "segment": "P4", "respiration_avant_s": 0.2 },
+        { "segment": "P5", "respiration_avant_s": 0.7 },
+        { "segment": "P6", "respiration_avant_s": 0.3 },
+        { "segment": "P7", "respiration_avant_s": 0.65, "ecran_final": true }
+      ],
+      "fin_apres_voix_s": 3.2,
+      "duree_min_s": 35,
+      "duree_max_s": 45
+    },
+    "courte": {
+      "titre": "Version courte 15 s (9:16)",
+      "debut_s": 0.25,
+      "pistes": [
+        { "segment": "A1" },
+        { "segment": "C2", "respiration_avant_s": 0.3 },
+        { "segment": "P7", "respiration_avant_s": 0.35, "ecran_final": true }
+      ],
+      "duree_fixe_s": 15.0,
+      "fin_apres_voix_min_s": 0.6,
+      "duree_max_s": 15
+    },
+    "accroche-1": {
+      "titre": "Accroche alternative 1",
+      "debut_s": 0.15,
+      "pistes": [{ "segment": "A1" }],
+      "fin_apres_voix_s": 0.5,
+      "duree_min_s": 3,
+      "duree_max_s": 4
+    },
+    "accroche-2": {
+      "titre": "Accroche alternative 2",
+      "debut_s": 0.15,
+      "pistes": [{ "segment": "A2" }],
+      "fin_apres_voix_s": 0.5,
+      "duree_min_s": 3,
+      "duree_max_s": 4
+    },
+    "accroche-3": {
+      "titre": "Accroche alternative 3",
+      "debut_s": 0.15,
+      "pistes": [{ "segment": "A3" }],
+      "fin_apres_voix_s": 0.5,
+      "duree_min_s": 3,
+      "duree_max_s": 4
+    }
+  }
+}

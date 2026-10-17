@@ -1,0 +1,9 @@
+{
+  "_lisezmoi": "Captures et images utilisées par les scènes (chemins relatifs à vsl/public). Pour changer une capture : remplacer le fichier, ou pointer ici vers un autre fichier de mêmes proportions. Les coordonnées des champs du formulaire viennent de public/captures/captures.json (outils/captures.cjs).",
+  "logo": "marque/smartfixx-logo.webp",
+  "siteDesktop": "captures/accueil-desktop.jpg",
+  "siteDesktop2": "captures/creation-desktop.jpg",
+  "siteMobile": "captures/accueil-mobile.jpg",
+  "pageFormulaireMobile": "captures/creation-mobile-page.jpg",
+  "pageFormulaireMobileCle": "creation-mobile-page"
+}

@@ -1,0 +1,135 @@
+{
+  "principale": {
+    "mix": "mix/smartfixx-vsl-principale-mix.wav",
+    "voix": "mix/smartfixx-vsl-principale-voix.wav",
+    "duree_s": 42.53,
+    "lufs": -14.2,
+    "crete_dbtp": -1.7,
+    "ecart_voix_musique_min_db": 17.6,
+    "ecarts_par_segment": [
+      {
+        "segment": "P1",
+        "voix_lufs": -18,
+        "musique_lufs": -36.7,
+        "ecart_db": 18.7
+      },
+      {
+        "segment": "P2",
+        "voix_lufs": -18,
+        "musique_lufs": -35.6,
+        "ecart_db": 17.6
+      },
+      {
+        "segment": "P3",
+        "voix_lufs": -18,
+        "musique_lufs": -39.2,
+        "ecart_db": 21.2
+      },
+      {
+        "segment": "P4",
+        "voix_lufs": -18,
+        "musique_lufs": -36.9,
+        "ecart_db": 18.9
+      },
+      {
+        "segment": "P5",
+        "voix_lufs": -18,
+        "musique_lufs": -38.1,
+        "ecart_db": 20.1
+      },
+      {
+        "segment": "P6",
+        "voix_lufs": -18,
+        "musique_lufs": -38.5,
+        "ecart_db": 20.5
+      },
+      {
+        "segment": "P7",
+        "voix_lufs": -18,
+        "musique_lufs": -38.4,
+        "ecart_db": 20.4
+      }
+    ],
+    "provisoire": true
+  },
+  "courte": {
+    "mix": "mix/smartfixx-vsl-courte-mix.wav",
+    "voix": "mix/smartfixx-vsl-courte-voix.wav",
+    "duree_s": 15,
+    "lufs": -14.2,
+    "crete_dbtp": -1.7,
+    "ecart_voix_musique_min_db": 20.8,
+    "ecarts_par_segment": [
+      {
+        "segment": "A1",
+        "voix_lufs": -18.1,
+        "musique_lufs": -40.4,
+        "ecart_db": 22.3
+      },
+      {
+        "segment": "C2",
+        "voix_lufs": -18,
+        "musique_lufs": -38.8,
+        "ecart_db": 20.8
+      },
+      {
+        "segment": "P7",
+        "voix_lufs": -18,
+        "musique_lufs": -39,
+        "ecart_db": 21
+      }
+    ],
+    "provisoire": true
+  },
+  "accroche-1": {
+    "mix": "mix/smartfixx-vsl-accroche-1-mix.wav",
+    "voix": "mix/smartfixx-vsl-accroche-1-voix.wav",
+    "duree_s": 3.222,
+    "lufs": -14.2,
+    "crete_dbtp": -1.7,
+    "ecart_voix_musique_min_db": 21.4,
+    "ecarts_par_segment": [
+      {
+        "segment": "A1",
+        "voix_lufs": -18.1,
+        "musique_lufs": -39.5,
+        "ecart_db": 21.4
+      }
+    ],
+    "provisoire": true
+  },
+  "accroche-2": {
+    "mix": "mix/smartfixx-vsl-accroche-2-mix.wav",
+    "voix": "mix/smartfixx-vsl-accroche-2-voix.wav",
+    "duree_s": 3.624,
+    "lufs": -14.2,
+    "crete_dbtp": -1.7,
+    "ecart_voix_musique_min_db": 20.6,
+    "ecarts_par_segment": [
+      {
+        "segment": "A2",
+        "voix_lufs": -18,
+        "musique_lufs": -38.6,
+        "ecart_db": 20.6
+      }
+    ],
+    "provisoire": true
+  },
+  "accroche-3": {
+    "mix": "mix/smartfixx-vsl-accroche-3-mix.wav",
+    "voix": "mix/smartfixx-vsl-accroche-3-voix.wav",
+    "duree_s": 3.626,
+    "lufs": -14.1,
+    "crete_dbtp": -1.7,
+    "ecart_voix_musique_min_db": 21.8,
+    "ecarts_par_segment": [
+      {
+        "segment": "A3",
+        "voix_lufs": -18,
+        "musique_lufs": -39.8,
+        "ecart_db": 21.8
+      }
+    ],
+    "provisoire": true
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "_lisezmoi": "Textes affichés à l'écran (hors sous-titres, qui viennent de vsl/audio/minutage.json). Modifiables sans toucher aux scènes. Règles : ni prix, ni délai, ni avis, ni chiffre inventé ; toute donnée de site client ou de tableau de suivi est fictive et porte l'étiquette « Démonstration ».",
+  "demonstration": "Démonstration",
+  "accroche": {
+    "url": "votre-entreprise.fr",
+    "surtitre": "Un client découvre votre site",
+    "titre": [
+      "Pourquoi vous",
+      "choisir ?"
+    ]
+  },
+  "maquetteAvant": {
+    "marque": "Votre Entreprise",
+    "menu": [
+      "Accueil",
+      "Société",
+      "Historique",
+      "Valeurs",
+      "Partenaires",
+      "Actualités",
+      "Galerie",
+      "Liens",
+      "Infos"
+    ],
+    "titre": "Bienvenue sur notre site internet officiel",
+    "chapeau": "Des solutions globales et innovantes pour tous vos besoins, au service de votre satisfaction depuis toujours.",
+    "paragraphe": "Notre société vous accueille et vous propose un ensemble de prestations variées adaptées à chaque situation particulière dans le respect des normes en vigueur et selon les modalités définies au préalable avec nos partenaires et collaborateurs qualifiés. Pour toute information complémentaire, merci de consulter les rubriques correspondantes ou de vous rapprocher de nos services compétents aux horaires habituels d'ouverture.",
+    "contact": "Nous contacter"
+  },
+  "maquetteApres": {
+    "marque": "Votre Entreprise",
+    "menu": [
+      "Prestations",
+      "Zone",
+      "Contact"
+    ],
+    "bouton": "Appeler",
+    "surtitre": "Exemple : artisan plombier",
+    "titre": [
+      "Votre salle de bain refaite,",
+      "sans mauvaise surprise"
+    ],
+    "chapeau": "Dépannage, rénovation, chauffe-eau : un devis clair après un premier échange.",
+    "services": [
+      "Dépannage",
+      "Salle de bain",
+      "Chauffe-eau"
+    ],
+    "formulaireTitre": "Demande de devis",
+    "champs": [
+      "Salle de bain",
+      "M. Dupont",
+      "dupont@example.test"
+    ],
+    "envoyer": "Envoyer"
+  },
+  "problemes": {
+    "etiquettes": [
+      "Texte illisible",
+      "Offre floue",
+      "Contact introuvable"
+    ],
+    "conclusion": [
+      "Chaque détail",
+      "compte."
+    ]
+  },
+  "design": {
+    "titres": [
+      [
+        "Un design",
+        "soigné."
+      ],
+      [
+        "Lisible",
+        "sur mobile."
+      ],
+      [
+        "Des services",
+        "clairs."
+      ]
+    ],
+    "services": [
+      "Création de site",
+      "Refonte",
+      "Automatisation",
+      "Référencement"
+    ]
+  },
+  "formulaire": {
+    "titre": [
+      "Un formulaire",
+      "simple."
+    ],
+    "saisie": {
+      "nom": "Camille D.",
+      "activite": "Boulangerie",
+      "email": "camille@example.test"
+    },
+    "confirmation": "Demande envoyée"
+  },
+  "refonte": {
+    "question": [
+      "Déjà",
+      "un site ?"
+    ],
+    "repense": [
+      "Repensé."
+    ],
+    "outils": [
+      "Formulaire",
+      "Email",
+      "Tableau de suivi"
+    ],
+    "outilsTitre": [
+      "Vos outils,",
+      "connectés."
+    ],
+    "suivi": [
+      "Un suivi",
+      "clair."
+    ]
+  },
+  "panel": {
+    "fil": "Votre Entreprise / Suivi",
+    "titre": "Vos demandes",
+    "aTraiter": "À traiter",
+    "colonnes": [
+      "Contact",
+      "Besoin",
+      "Statut"
+    ],
+    "nouvelle": {
+      "contact": "M. Dupont",
+      "detail": "dupont@example.test",
+      "besoin": "Salle de bain",
+      "statut": "Nouvelle",
+      "quand": "à l'instant"
+    },
+    "precedente": {
+      "contact": "Mme Leroy",
+      "detail": "Téléphone",
+      "besoin": "Dépannage",
+      "statut": "En cours",
+      "quand": "hier"
+    }
+  },
+  "final": {
+    "accroche": [
+      "Parlez de",
+      "votre projet."
+    ],
+    "url": "smartfixx.fr",
+    "cta": "Demandez votre devis",
+    "signature": "Création et refonte de sites, par Mohamed",
+    "lieu": "Asnières-sur-Seine · Île-de-France"
+  },
+  "courte": {
+    "titre": [
+      "Envie de vous",
+      "contacter ?"
+    ],
+    "transformation": [
+      "Crée",
+      "ou modernise."
+    ],
+    "mobile": [
+      "Clair",
+      "sur mobile."
+    ]
+  },
+  "accroches": {
+    "A1": {
+      "titre": [
+        "Envie de vous",
+        "contacter ?"
+      ]
+    },
+    "A2": {
+      "titre": [
+        "D'un coup",
+        "d'œil ?"
+      ]
+    },
+    "A3": {
+      "titre": [
+        "Un site clair.",
+        "Un contact facile."
+      ]
+    }
+  },
+  "miniature": {
+    "titre": [
+      "Un site clair",
+      "qui facilite",
+      "le contact."
+    ],
+    "sous": "Création et refonte de sites · Asnières-sur-Seine"
+  }
+}

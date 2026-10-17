@@ -1,0 +1,71 @@
+{
+  "cible_lufs": -18,
+  "segments": {
+    "P1": {
+      "fichier": "voix/P1.wav",
+      "statut": "definitive",
+      "source": "ElevenLabs eleven_v4, voix Nico, prise NTzJIo7iogycFTlLFtXn (variantes/P1_v3.mp3)",
+      "duree_s": 5.723
+    },
+    "P2": {
+      "fichier": "voix/P2.wav",
+      "statut": "definitive",
+      "source": "ElevenLabs eleven_v4, voix Nico, prise Rd2WuLAkjLXcJu4U2fVw (variantes/P2_v2.mp3)",
+      "duree_s": 8.332
+    },
+    "P3": {
+      "fichier": "voix/provisoire/P3_PROVISOIRE.wav",
+      "statut": "PROVISOIRE",
+      "source": "espeak-ng (synthèse locale de repérage), étirée à estimation_s ; NE PAS DIFFUSER",
+      "duree_s": 6.978
+    },
+    "P4": {
+      "fichier": "voix/P4.wav",
+      "statut": "definitive",
+      "source": "ElevenLabs eleven_v4, voix Nico, prise H7vtrSKAPzFOdbgT4UpK (variantes/P4_v1.mp3)",
+      "duree_s": 2.58
+    },
+    "P5": {
+      "fichier": "voix/provisoire/P5_PROVISOIRE.wav",
+      "statut": "PROVISOIRE",
+      "source": "espeak-ng (synthèse locale de repérage), étirée à estimation_s ; NE PAS DIFFUSER",
+      "duree_s": 1.375
+    },
+    "P6": {
+      "fichier": "voix/provisoire/P6_PROVISOIRE.wav",
+      "statut": "PROVISOIRE",
+      "source": "espeak-ng (synthèse locale de repérage), étirée à estimation_s ; NE PAS DIFFUSER",
+      "duree_s": 6.966
+    },
+    "P7": {
+      "fichier": "voix/provisoire/P7_PROVISOIRE.wav",
+      "statut": "PROVISOIRE",
+      "source": "espeak-ng (synthèse locale de repérage), étirée à estimation_s ; NE PAS DIFFUSER",
+      "duree_s": 4.176
+    },
+    "C2": {
+      "fichier": "voix/provisoire/C2_PROVISOIRE.wav",
+      "statut": "PROVISOIRE",
+      "source": "espeak-ng (synthèse locale de repérage), étirée à estimation_s ; NE PAS DIFFUSER",
+      "duree_s": 5.578
+    },
+    "A1": {
+      "fichier": "voix/provisoire/A1_PROVISOIRE.wav",
+      "statut": "PROVISOIRE",
+      "source": "espeak-ng (synthèse locale de repérage), étirée à estimation_s ; NE PAS DIFFUSER",
+      "duree_s": 2.572
+    },
+    "A2": {
+      "fichier": "voix/provisoire/A2_PROVISOIRE.wav",
+      "statut": "PROVISOIRE",
+      "source": "espeak-ng (synthèse locale de repérage), étirée à estimation_s ; NE PAS DIFFUSER",
+      "duree_s": 2.974
+    },
+    "A3": {
+      "fichier": "voix/provisoire/A3_PROVISOIRE.wav",
+      "statut": "PROVISOIRE",
+      "source": "espeak-ng (synthèse locale de repérage), étirée à estimation_s ; NE PAS DIFFUSER",
+      "duree_s": 2.976
+    }
+  }
+}

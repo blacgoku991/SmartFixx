@@ -1,0 +1,632 @@
+{
+  "_lisezmoi": "Généré par vsl/audio/outils/minutage.mjs, ne pas éditer à la main. Temps en secondes depuis le début de la vidéo. Les fichiers de voix sont relatifs à vsl/audio/. Un segment au statut PROVISOIRE n'a pas encore sa prise ElevenLabs.",
+  "segments_provisoires": [
+    "P3",
+    "P5",
+    "P6",
+    "P7",
+    "C2",
+    "A1",
+    "A2",
+    "A3"
+  ],
+  "montages": {
+    "principale": {
+      "titre": "VSL principale (9:16 et 16:9, même voix)",
+      "duree_s": 42.53,
+      "voix_debut_s": 0.35,
+      "voix_fin_s": 39.33,
+      "ecran_final_debut_s": 35.154,
+      "ecran_final_tenu_s": 7.376,
+      "provisoire": true,
+      "segments": [
+        {
+          "id": "P1",
+          "role": "Accroche",
+          "debut_s": 0.35,
+          "fin_s": 6.073,
+          "duree_s": 5.723,
+          "ecran_final": false,
+          "fichier": "voix/P1.wav",
+          "statut": "definitive",
+          "texte_voix": "Quand un client découvre votre entreprise en ligne… comprend-il tout de suite pourquoi vous choisir ?",
+          "cartons": [
+            {
+              "debut_s": 0.27,
+              "fin_s": 3.186,
+              "lignes": [
+                "Quand un client découvre",
+                "votre entreprise en ligne…"
+              ]
+            },
+            {
+              "debut_s": 3.186,
+              "fin_s": 6.473,
+              "lignes": [
+                "comprend-il tout de suite",
+                "pourquoi vous choisir ?"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P2",
+          "role": "Problème",
+          "debut_s": 6.523,
+          "fin_s": 14.855,
+          "duree_s": 8.332,
+          "ecran_final": false,
+          "fichier": "voix/P2.wav",
+          "statut": "definitive",
+          "texte_voix": "Un texte difficile à lire, une offre floue, un bouton de contact introuvable sur mobile… Chaque détail peut freiner la prise de contact.",
+          "cartons": [
+            {
+              "debut_s": 6.473,
+              "fin_s": 9.222,
+              "lignes": [
+                "Un texte difficile à lire,",
+                "une offre floue,"
+              ]
+            },
+            {
+              "debut_s": 9.222,
+              "fin_s": 12.177,
+              "lignes": [
+                "un bouton de contact",
+                "introuvable sur mobile…"
+              ]
+            },
+            {
+              "debut_s": 12.177,
+              "fin_s": 15.255,
+              "lignes": [
+                "Chaque détail peut freiner",
+                "la prise de contact."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P3",
+          "role": "Solution : le site",
+          "debut_s": 15.405,
+          "fin_s": 22.383,
+          "duree_s": 6.978,
+          "ecran_final": false,
+          "fichier": "voix/provisoire/P3_PROVISOIRE.wav",
+          "statut": "PROVISOIRE",
+          "texte_voix": "SmartFixx crée votre site : un design soigné, une lecture confortable sur mobile, des services clairement présentés…",
+          "cartons": [
+            {
+              "debut_s": 15.325,
+              "fin_s": 18.414,
+              "lignes": [
+                "SmartFixx crée votre site :",
+                "un design soigné,"
+              ]
+            },
+            {
+              "debut_s": 18.414,
+              "fin_s": 20.587,
+              "lignes": [
+                "une lecture confortable",
+                "sur mobile,"
+              ]
+            },
+            {
+              "debut_s": 20.587,
+              "fin_s": 22.543,
+              "lignes": [
+                "des services clairement",
+                "présentés…"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P4",
+          "role": "Solution : le formulaire",
+          "debut_s": 22.583,
+          "fin_s": 25.163,
+          "duree_s": 2.58,
+          "ecran_final": false,
+          "fichier": "voix/P4.wav",
+          "statut": "definitive",
+          "texte_voix": "Et un formulaire simple, pour recevoir vos demandes.",
+          "cartons": [
+            {
+              "debut_s": 22.543,
+              "fin_s": 25.563,
+              "lignes": [
+                "Et un formulaire simple,",
+                "pour recevoir vos demandes."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P5",
+          "role": "Bascule refonte",
+          "debut_s": 25.863,
+          "fin_s": 27.238,
+          "duree_s": 1.375,
+          "ecran_final": false,
+          "fichier": "voix/provisoire/P5_PROVISOIRE.wav",
+          "statut": "PROVISOIRE",
+          "texte_voix": "Vous avez déjà un site ?",
+          "cartons": [
+            {
+              "debut_s": 25.783,
+              "fin_s": 27.498,
+              "lignes": [
+                "Vous avez déjà un site ?"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P6",
+          "role": "Refonte et outils",
+          "debut_s": 27.538,
+          "fin_s": 34.504,
+          "duree_s": 6.966,
+          "ecran_final": false,
+          "fichier": "voix/provisoire/P6_PROVISOIRE.wav",
+          "statut": "PROVISOIRE",
+          "texte_voix": "SmartFixx peut le repenser… et connecter vos outils, pour que chaque demande arrive dans un tableau de suivi clair.",
+          "cartons": [
+            {
+              "debut_s": 27.498,
+              "fin_s": 29.383,
+              "lignes": [
+                "SmartFixx peut le repenser…"
+              ]
+            },
+            {
+              "debut_s": 29.383,
+              "fin_s": 32.111,
+              "lignes": [
+                "et connecter vos outils,",
+                "pour que chaque demande"
+              ]
+            },
+            {
+              "debut_s": 32.111,
+              "fin_s": 34.904,
+              "lignes": [
+                "arrive dans un tableau",
+                "de suivi clair."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P7",
+          "role": "Appel à l'action",
+          "debut_s": 35.154,
+          "fin_s": 39.33,
+          "duree_s": 4.176,
+          "ecran_final": true,
+          "fichier": "voix/provisoire/P7_PROVISOIRE.wav",
+          "statut": "PROVISOIRE",
+          "texte_voix": "Parlez de votre projet sur smartfixx.fr… et demandez votre devis.",
+          "cartons": [
+            {
+              "debut_s": 35.074,
+              "fin_s": 37.808,
+              "lignes": [
+                "Parlez de votre projet",
+                "sur smartfixx.fr…"
+              ]
+            },
+            {
+              "debut_s": 37.808,
+              "fin_s": 40.13,
+              "lignes": [
+                "et demandez votre devis."
+              ]
+            }
+          ]
+        }
+      ],
+      "sous_titres": [
+        {
+          "index": 1,
+          "debut_s": 0.27,
+          "fin_s": 3.186,
+          "lignes": [
+            "Quand un client découvre",
+            "votre entreprise en ligne…"
+          ]
+        },
+        {
+          "index": 2,
+          "debut_s": 3.186,
+          "fin_s": 6.473,
+          "lignes": [
+            "comprend-il tout de suite",
+            "pourquoi vous choisir ?"
+          ]
+        },
+        {
+          "index": 3,
+          "debut_s": 6.473,
+          "fin_s": 9.222,
+          "lignes": [
+            "Un texte difficile à lire,",
+            "une offre floue,"
+          ]
+        },
+        {
+          "index": 4,
+          "debut_s": 9.222,
+          "fin_s": 12.177,
+          "lignes": [
+            "un bouton de contact",
+            "introuvable sur mobile…"
+          ]
+        },
+        {
+          "index": 5,
+          "debut_s": 12.177,
+          "fin_s": 15.255,
+          "lignes": [
+            "Chaque détail peut freiner",
+            "la prise de contact."
+          ]
+        },
+        {
+          "index": 6,
+          "debut_s": 15.325,
+          "fin_s": 18.414,
+          "lignes": [
+            "SmartFixx crée votre site :",
+            "un design soigné,"
+          ]
+        },
+        {
+          "index": 7,
+          "debut_s": 18.414,
+          "fin_s": 20.587,
+          "lignes": [
+            "une lecture confortable",
+            "sur mobile,"
+          ]
+        },
+        {
+          "index": 8,
+          "debut_s": 20.587,
+          "fin_s": 22.543,
+          "lignes": [
+            "des services clairement",
+            "présentés…"
+          ]
+        },
+        {
+          "index": 9,
+          "debut_s": 22.543,
+          "fin_s": 25.563,
+          "lignes": [
+            "Et un formulaire simple,",
+            "pour recevoir vos demandes."
+          ]
+        },
+        {
+          "index": 10,
+          "debut_s": 25.783,
+          "fin_s": 27.498,
+          "lignes": [
+            "Vous avez déjà un site ?"
+          ]
+        },
+        {
+          "index": 11,
+          "debut_s": 27.498,
+          "fin_s": 29.383,
+          "lignes": [
+            "SmartFixx peut le repenser…"
+          ]
+        },
+        {
+          "index": 12,
+          "debut_s": 29.383,
+          "fin_s": 32.111,
+          "lignes": [
+            "et connecter vos outils,",
+            "pour que chaque demande"
+          ]
+        },
+        {
+          "index": 13,
+          "debut_s": 32.111,
+          "fin_s": 34.904,
+          "lignes": [
+            "arrive dans un tableau",
+            "de suivi clair."
+          ]
+        },
+        {
+          "index": 14,
+          "debut_s": 35.074,
+          "fin_s": 37.808,
+          "lignes": [
+            "Parlez de votre projet",
+            "sur smartfixx.fr…"
+          ]
+        },
+        {
+          "index": 15,
+          "debut_s": 37.808,
+          "fin_s": 40.13,
+          "lignes": [
+            "et demandez votre devis."
+          ]
+        }
+      ]
+    },
+    "courte": {
+      "titre": "Version courte 15 s (9:16)",
+      "duree_s": 15,
+      "voix_debut_s": 0.25,
+      "voix_fin_s": 13.227,
+      "ecran_final_debut_s": 9.05,
+      "ecran_final_tenu_s": 5.95,
+      "provisoire": true,
+      "segments": [
+        {
+          "id": "A1",
+          "role": "Accroche alternative 1 : l'envie de contacter",
+          "debut_s": 0.25,
+          "fin_s": 2.822,
+          "duree_s": 2.572,
+          "ecran_final": false,
+          "fichier": "voix/provisoire/A1_PROVISOIRE.wav",
+          "statut": "PROVISOIRE",
+          "texte_voix": "Votre site donne-t-il envie de vous contacter ?",
+          "cartons": [
+            {
+              "debut_s": 0.17,
+              "fin_s": 3.082,
+              "lignes": [
+                "Votre site donne-t-il envie",
+                "de vous contacter ?"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "C2",
+          "role": "Offre condensée (version courte)",
+          "debut_s": 3.122,
+          "fin_s": 8.7,
+          "duree_s": 5.578,
+          "ecran_final": false,
+          "fichier": "voix/provisoire/C2_PROVISOIRE.wav",
+          "statut": "PROVISOIRE",
+          "texte_voix": "SmartFixx crée ou modernise votre site : clair sur mobile, avec un formulaire pour vos demandes.",
+          "cartons": [
+            {
+              "debut_s": 3.082,
+              "fin_s": 5.479,
+              "lignes": [
+                "SmartFixx crée ou modernise",
+                "votre site :"
+              ]
+            },
+            {
+              "debut_s": 5.479,
+              "fin_s": 9.01,
+              "lignes": [
+                "clair sur mobile, avec",
+                "un formulaire pour vos demandes."
+              ]
+            }
+          ]
+        },
+        {
+          "id": "P7",
+          "role": "Appel à l'action",
+          "debut_s": 9.05,
+          "fin_s": 13.227,
+          "duree_s": 4.176,
+          "ecran_final": true,
+          "fichier": "voix/provisoire/P7_PROVISOIRE.wav",
+          "statut": "PROVISOIRE",
+          "texte_voix": "Parlez de votre projet sur smartfixx.fr… et demandez votre devis.",
+          "cartons": [
+            {
+              "debut_s": 9.01,
+              "fin_s": 11.704,
+              "lignes": [
+                "Parlez de votre projet",
+                "sur smartfixx.fr…"
+              ]
+            },
+            {
+              "debut_s": 11.704,
+              "fin_s": 14.027,
+              "lignes": [
+                "et demandez votre devis."
+              ]
+            }
+          ]
+        }
+      ],
+      "sous_titres": [
+        {
+          "index": 1,
+          "debut_s": 0.17,
+          "fin_s": 3.082,
+          "lignes": [
+            "Votre site donne-t-il envie",
+            "de vous contacter ?"
+          ]
+        },
+        {
+          "index": 2,
+          "debut_s": 3.082,
+          "fin_s": 5.479,
+          "lignes": [
+            "SmartFixx crée ou modernise",
+            "votre site :"
+          ]
+        },
+        {
+          "index": 3,
+          "debut_s": 5.479,
+          "fin_s": 9.01,
+          "lignes": [
+            "clair sur mobile, avec",
+            "un formulaire pour vos demandes."
+          ]
+        },
+        {
+          "index": 4,
+          "debut_s": 9.01,
+          "fin_s": 11.704,
+          "lignes": [
+            "Parlez de votre projet",
+            "sur smartfixx.fr…"
+          ]
+        },
+        {
+          "index": 5,
+          "debut_s": 11.704,
+          "fin_s": 14.027,
+          "lignes": [
+            "et demandez votre devis."
+          ]
+        }
+      ]
+    },
+    "accroche-1": {
+      "titre": "Accroche alternative 1",
+      "duree_s": 3.222,
+      "voix_debut_s": 0.15,
+      "voix_fin_s": 2.722,
+      "ecran_final_debut_s": null,
+      "ecran_final_tenu_s": null,
+      "provisoire": true,
+      "segments": [
+        {
+          "id": "A1",
+          "role": "Accroche alternative 1 : l'envie de contacter",
+          "debut_s": 0.15,
+          "fin_s": 2.722,
+          "duree_s": 2.572,
+          "ecran_final": false,
+          "fichier": "voix/provisoire/A1_PROVISOIRE.wav",
+          "statut": "PROVISOIRE",
+          "texte_voix": "Votre site donne-t-il envie de vous contacter ?",
+          "cartons": [
+            {
+              "debut_s": 0.07,
+              "fin_s": 3.122,
+              "lignes": [
+                "Votre site donne-t-il envie",
+                "de vous contacter ?"
+              ]
+            }
+          ]
+        }
+      ],
+      "sous_titres": [
+        {
+          "index": 1,
+          "debut_s": 0.07,
+          "fin_s": 3.122,
+          "lignes": [
+            "Votre site donne-t-il envie",
+            "de vous contacter ?"
+          ]
+        }
+      ]
+    },
+    "accroche-2": {
+      "titre": "Accroche alternative 2",
+      "duree_s": 3.624,
+      "voix_debut_s": 0.15,
+      "voix_fin_s": 3.124,
+      "ecran_final_debut_s": null,
+      "ecran_final_tenu_s": null,
+      "provisoire": true,
+      "segments": [
+        {
+          "id": "A2",
+          "role": "Accroche alternative 2 : la lecture sur mobile",
+          "debut_s": 0.15,
+          "fin_s": 3.124,
+          "duree_s": 2.974,
+          "ecran_final": false,
+          "fichier": "voix/provisoire/A2_PROVISOIRE.wav",
+          "statut": "PROVISOIRE",
+          "texte_voix": "Sur mobile, comprend-on votre offre d'un coup d'œil ?",
+          "cartons": [
+            {
+              "debut_s": 0.07,
+              "fin_s": 3.524,
+              "lignes": [
+                "Sur mobile, comprend-on",
+                "votre offre d'un coup d'œil ?"
+              ]
+            }
+          ]
+        }
+      ],
+      "sous_titres": [
+        {
+          "index": 1,
+          "debut_s": 0.07,
+          "fin_s": 3.524,
+          "lignes": [
+            "Sur mobile, comprend-on",
+            "votre offre d'un coup d'œil ?"
+          ]
+        }
+      ]
+    },
+    "accroche-3": {
+      "titre": "Accroche alternative 3",
+      "duree_s": 3.626,
+      "voix_debut_s": 0.15,
+      "voix_fin_s": 3.126,
+      "ecran_final_debut_s": null,
+      "ecran_final_tenu_s": null,
+      "provisoire": true,
+      "segments": [
+        {
+          "id": "A3",
+          "role": "Accroche alternative 3 : la clarté qui guide",
+          "debut_s": 0.15,
+          "fin_s": 3.126,
+          "duree_s": 2.976,
+          "ecran_final": false,
+          "fichier": "voix/provisoire/A3_PROVISOIRE.wav",
+          "statut": "PROVISOIRE",
+          "texte_voix": "Un site clair, et vos clients savent où vous écrire.",
+          "cartons": [
+            {
+              "debut_s": 0.07,
+              "fin_s": 3.526,
+              "lignes": [
+                "Un site clair, et vos clients",
+                "savent où vous écrire."
+              ]
+            }
+          ]
+        }
+      ],
+      "sous_titres": [
+        {
+          "index": 1,
+          "debut_s": 0.07,
+          "fin_s": 3.526,
+          "lignes": [
+            "Un site clair, et vos clients",
+            "savent où vous écrire."
+          ]
+        }
+      ]
+    }
+  }
+}
