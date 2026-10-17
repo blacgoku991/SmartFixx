@@ -11,6 +11,12 @@ import {serviceSlugs,guideSlugs} from './lib/measured-paths';
    dynamiques (afterFiles), vers un chemin privé sans route (dossier « _ » : jamais routable). Les slugs
    servis viennent de lib/measured-paths.ts (égalité vérifiée par tests/measured-paths.test.mjs) ; notFound()
    reste dans les pages en filet de sécurité.
+   Limite assumée : Next compare ces motifs sans tenir compte de la casse (experimental.caseSensitiveRoutes
+   est global et rendrait aussi les redirections sensibles à la casse). Une variante en majuscules d'un slug
+   servi (/Creation-Site-Internet) est donc exclue de la réécriture comme le slug lui-même, puis refusée par
+   notFound() de la page : 404 + noindex, enveloppe vide remplie par le client. Aucun lien publié n'emploie
+   ces variantes et aucune ne répond 200 (vps/tests/http-seo.test.mjs). Pour un HTML initial complet là
+   aussi, c'est la page (app/[slug], app/conseils/[slug]) qui devra rendre la 404 entière, pas ce fichier.
    Cache long UNIQUEMENT sur des noms versionnés : polices *.v1.woff2 et variantes de public/media. Les
    fichiers non versionnés (/studio-*.webp, /email-*.png, icônes) gardent le cache par défaut. */
 const IMMUTABLE=[{key:'Cache-Control',value:'public, max-age=31536000, immutable'}];

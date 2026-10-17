@@ -5,7 +5,9 @@ import {guides} from "@/lib/guides";
 import {SITE_URL} from "@/lib/seo";
 /* Date de mise en ligne de la refonte : FIXÉE AU DÉPLOIEMENT (décision du propriétaire n° 20). Elle sert de
    lastModified réel aux pages refaites ; un guide garde sa propre date de mise à jour si lib/guides.ts en
-   fournit une (dateModified, modifiedTime, puis datePublished, publishedTime). Pas de changeFrequency ni de
+   fournit une (dateModified, modifiedTime, puis datePublished, publishedTime). Ces dates vivent dans
+   lib/guides.ts et nulle part ailleurs : l'Article JSON-LD de app/conseils/[slug] les lit aussi, et
+   vps/tests/http-seo.test.mjs exige la même date des deux côtés dès que lib/guides.ts les déclare. Pas de changeFrequency ni de
    priority : Google les ignore. Uniquement des URL canoniques en 200 : aucune URL redirigée
    (lib/legacy-redirects.ts), aucune page noindex. Toute nouvelle route publique entre ici ET dans
    lib/measured-paths.ts (mesure d'audience). */
