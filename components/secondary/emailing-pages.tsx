@@ -125,7 +125,7 @@ export function SolutionsPage() {
         crumb={{ name: "Votre fichier de contacts", path: "/solutions" }}
         title={<>Votre fichier<br className="sc-br-m" /> de contacts</>}
         tagline="ou une nouvelle audience"
-        lead="Vos clients et vos prospects : le meilleur point de départ d’une campagne."
+        lead="Vos clients et vos prospects : le meilleur départ d’une campagne."
         seed={11}
       />
       <Section labelledBy="sc-so-titre" className="sc-so-sec">
@@ -159,7 +159,7 @@ export function MethodePage() {
         crumb={{ name: "Méthode", path: "/methode" }}
         title="Méthode de prospection emailing"
         tagline="en 4 étapes"
-        lead="Cadrer, préparer, envoyer, faire le bilan : vous validez chaque message avant qu’il parte."
+        lead="Quatre étapes, et vous validez chaque message avant qu’il parte."
         seed={4}
       />
       <Section labelledBy="sc-mt-titre" className="sc-mt-sec">
@@ -197,7 +197,7 @@ export function TarifsPage({ config }: { config: CampaignConfig }) {
         crumb={{ name: "Formules", path: "/tarifs" }}
         title="Formules de prospection emailing"
         tagline="sur devis"
-        lead="Je ne publie pas de prix : chaque campagne est chiffrée selon son volume et son accompagnement."
+        lead="Pas de prix publié : chaque campagne est chiffrée selon son volume."
         cta="Composer ma demande"
         href="#formules"
         seed={6}
