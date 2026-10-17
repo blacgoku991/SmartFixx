@@ -161,7 +161,7 @@ export function PanelShell({ name, initialTab, signoutHref, hostingNote, vps }: 
             <li><Link className="pn-more-item" href="/" target="_blank" rel="noreferrer"><ArrowUpRight size={20} aria-hidden="true" />Voir le site</Link></li>
             <li><a className="pn-more-item" href={signoutHref} target="_top"><LogOut size={20} aria-hidden="true" />Se déconnecter</a></li>
           </ul>
-          <p className="pn-more-note"><span className="pn-avatar" aria-hidden="true">{first.slice(0, 1).toUpperCase()}</span>{first} · Propriétaire. Le choix clair ou sombre est en haut à droite.</p>
+          <p className="pn-more-note"><span className="pn-avatar" aria-hidden="true">{first.slice(0, 1).toUpperCase()}</span>{first} · Propriétaire. Le choix clair ou sombre est en haut à droite, une fois ce menu fermé.</p>
         </SheetContent>
       </Sheet>
     </div>

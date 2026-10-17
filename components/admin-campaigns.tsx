@@ -119,7 +119,7 @@ export function AdminCampaigns({onFollowup,onInbox}:{onFollowup:()=>void;onInbox
  </Dialog>
 
  <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}><SheetContent className="pn-sheet pn-sheet--wide" showCloseButton={false} onOpenAutoFocus={e=>{e.preventDefault();document.getElementById('pn-settings-title')?.focus()}}>
-  <div className="pn-sheet-head"><div><SheetTitle id="pn-settings-title" tabIndex={-1} className="pn-sheet-title">Réglages d’envoi</SheetTitle><SheetDescription className="pn-muted">Quatre étapes, dans l’ordre : compte SMTP, relais, vérifications, cadence.</SheetDescription></div><button type="button" className="pn-close" onClick={()=>setSettingsOpen(false)}><X size={18} aria-hidden="true"/><span>Fermer</span></button></div>
+  <div className="pn-sheet-head"><div><SheetTitle id="pn-settings-title" tabIndex={-1} className="pn-sheet-title">Réglages d’envoi</SheetTitle><SheetDescription className="pn-muted">Quatre étapes, dans l’ordre : compte SMTP, relais, vérifications, cadence.</SheetDescription></div><button type="button" className="pn-close" onClick={()=>setSettingsOpen(false)}><X size={18} aria-hidden="true"/><span>Fermer</span></button></div>
   <div className="pn-sheet-body">{sender?<AdminSmtpSettings state={sender} onRefresh={()=>void refresh()}/>:syncError?<StateError message={syncError} onRetry={retryList}/>:<StateLoading rows={4} rowHeight={72} label="Chargement des réglages…"/>}</div>
  </SheetContent></Sheet>
  <Sheet open={journalOpen} onOpenChange={setJournalOpen}><SheetContent className="pn-sheet pn-sheet--journal" showCloseButton={false}>
